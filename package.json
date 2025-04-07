@@ -7,11 +7,11 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "start": "tsc && node dist/server.js"
-  }, 
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/segnitsega/CSEC-portal-backend.git"
-  }, 
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
