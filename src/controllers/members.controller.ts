@@ -7,7 +7,7 @@ const refreshKey = process.env.REFRESH_KEY || ""
 
 export const getMembers = async(req: Request, res: Response): Promise<void> => {
     try{
-        const members = await Member.find()
+        const members = await Member.find().select("-password -refreshToken")
         res.status(200).json(members)
     }
     catch(error){
