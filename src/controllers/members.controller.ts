@@ -2,7 +2,6 @@ import Member from "../models/membersModel";
 import { Request, Response } from "express";
 import bcrypt from 'bcrypt'
 import jwt, {JwtPayload, VerifyErrors} from 'jsonwebtoken'
-
 const secretKey = process.env.SECRET_KEY || ""
 const refreshKey = process.env.REFRESH_KEY || ""
 
@@ -37,23 +36,16 @@ export const handleLogin = async(req: Request, res: Response): Promise<void> => 
             return  
         }
 
-        const token = jwt.sign({id: foundMember.user_id, email: foundMember.email}, secretKey, {expiresIn: "2h"})
-        const refreshToken = jwt.sign({id: foundMember.user_id, email: foundMember.email}, refreshKey, {expiresIn: "7d"})
+        const token = jwt.sign({id: foundMember.id, email: foundMember.email}, secretKey, {expiresIn: "2h"})
+        const refreshToken = jwt.sign({id: foundMember.id, email: foundMember.email}, refreshKey, {expiresIn: "7d"})
 
         await Member.updateOne({email}, {$set: {refreshToken}})
 
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'strict',
-            maxAge: 2 * 60 * 60 * 1000
-        }).cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'strict',
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        }).status(200).json({message: "Login Successful"})
-
+       res.status(200).json({
+        message: "Login Successful",
+        token,
+        refreshToken
+       })
     }
     catch (error){
         console.log(error)
@@ -63,8 +55,8 @@ export const handleLogin = async(req: Request, res: Response): Promise<void> => 
 
 export const handleRefreshToken = async(req: Request, res: Response): Promise<void> => { 
     try{
-        const refreshToken = req.cookies.refreshToken
-        if(!refreshToken){
+        let refreshToken = req.body.refreshToken || req.headers['authorization']?.split(' ')[1]
+        if(!refreshToken){ 
             res.status(401).json({message: "No refresh token provided"})
             return
         }
@@ -78,18 +70,15 @@ export const handleRefreshToken = async(req: Request, res: Response): Promise<vo
             if(error){ 
                 return res.status(403).json({message: "Token verification failed"})
             }   
-            const accessToken = jwt.sign({id: foundMember.user_id, email: foundMember.email}, secretKey, {expiresIn: "7d"})
+            const newAccessToken = jwt.sign({id: foundMember.id, email: foundMember.email}, secretKey, {expiresIn: "2h"})
 
-            res.cookie("token", accessToken, {
-                httpOnly: true,
-                secure: true,
-                sameSite: "strict",
-                maxAge: 2 * 60 * 60 * 1000,
-            }).status(200).json({message: "Token refreshed"})
+            res.status(200).json({
+                message: "Token refreshed",
+                token: newAccessToken
+            })
         })
     } catch(error) {
         console.log(error)
         res.status(500).json({message: "Server error", error})
     }
  } 
-

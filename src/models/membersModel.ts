@@ -2,14 +2,14 @@
 import { Schema, model, Document, Types } from 'mongoose';
 
 export interface memberInterface extends Document {
-    user_id: Types.ObjectId; 
+    member_id: string; 
     firstName: string;
     middleName: string; 
     lastName: string;
     email: string; 
     telegramUsername: string;
     phoneNumber: string;
-    year: number; // might be string like 3rd, 4th... 
+    year: string; // might be string like 3rd, 4th... 
     profilePicture: string; // for now I just considered a url for the profile image 
     clubRole: 'Member' | 'President' | 'Vice President' | 'CPD President' | 'Dev President' | 'CBD President' | 'SEC President' | 'DS President';
     division: 'CPD' | 'CBD' | 'DEV' | 'SEC' | 'DS'; 
@@ -21,14 +21,14 @@ export interface memberInterface extends Document {
 } 
 
 const memberSchema = new Schema<memberInterface>({
-    user_id: { type: Schema.Types.ObjectId, required: true, unique: true },
+    member_id: { type: String, required: true}, 
     firstName: { type: String, required: true, trim: true },
     middleName: { type: String, trim: true },
     lastName: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    telegramUsername: { type: String, trim: true },
+    telegramUsername: { type: String, unique: true, trim: true },
     phoneNumber: { type: String, trim: true },
-    year: { type: Number, required: true },
+    year: { type: String},
     profilePicture: { type: String },
     clubRole: {
         type: String,

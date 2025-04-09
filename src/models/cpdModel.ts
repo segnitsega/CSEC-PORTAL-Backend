@@ -2,7 +2,7 @@
 import { Schema, model, Document } from 'mongoose';
 
 export interface cpdInterface extends Document{
-    user_id: String;
+    member_id: String;
     leetcode: String;
     codeforces: String;
     techStack: String[];
@@ -12,7 +12,7 @@ export interface cpdInterface extends Document{
 }
 
 const cpdSchema = new Schema<cpdInterface>({
-    user_id: {type: String, required: true, ref: "Member"},
+    member_id: {type: String, required: true, ref: "Member"},
     leetcode: {type: String, required: true},
     codeforces: {type: String, required: true},
     techStack: {type: [String], required: true},

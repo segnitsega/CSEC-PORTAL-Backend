@@ -9,7 +9,7 @@ interface authenticatedRequest extends Request {
 }
 
 export const authenticateToken = (req: authenticatedRequest, res: Response, next: NextFunction) => {
-    const token = req.cookies.token;
+    const token = req.body.token || req.headers['authorization']?.split(' ')[1];
 
     if(!token){
         return res.status(401).json({message: "No authentication token provided"})

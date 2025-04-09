@@ -5,4 +5,4 @@ export const membersRouter = express.Router()
 
 membersRouter.get('/', getMembers) 
 membersRouter.post('/login', handleLogin) 
-membersRouter.get('/refresh', handleRefreshToken) 
+membersRouter.post('/refresh', handleRefreshToken) 

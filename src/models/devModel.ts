@@ -2,7 +2,7 @@
 import { Schema, model, Document } from "mongoose";
 
 export interface devInterface extends Document{
-    user_id: string;
+    member_id: string;
     github: string;
     techStack: string[];
     projects: string[];
@@ -10,7 +10,7 @@ export interface devInterface extends Document{
 }
 
 const devSchema = new Schema<devInterface>({
-    user_id: {type: String, required: true, ref: "Member"},
+    member_id: {type: String, required: true, ref: "Member"},
     techStack: {type: [String], required: true},
     projects: {type: [String], required: true},
     github: {type: String, required: true}
