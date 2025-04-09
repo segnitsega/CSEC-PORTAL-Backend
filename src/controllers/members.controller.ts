@@ -55,7 +55,7 @@ export const handleLogin = async(req: Request, res: Response): Promise<void> => 
 
 export const handleRefreshToken = async(req: Request, res: Response): Promise<void> => { 
     try{
-        let refreshToken = req.body.refreshToken || req.headers['authorization']?.split(' ')[1]
+        let refreshToken = req.headers['authorization']?.split(' ')[1] || req.body.refreshToken
         if(!refreshToken){ 
             res.status(401).json({message: "No refresh token provided"})
             return
