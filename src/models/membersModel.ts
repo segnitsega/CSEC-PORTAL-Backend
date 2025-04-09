@@ -3,8 +3,8 @@ import { Schema, model, Document, Types } from 'mongoose';
 
 export interface memberInterface extends Document {
     user_id: Types.ObjectId; 
-    firstName: string;
-    middleName: string;
+    firstNambe: string;
+    middleName: string; 
     lastName: string;
     email: string; 
     telegramUsername: string;
