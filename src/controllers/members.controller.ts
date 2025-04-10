@@ -16,6 +16,22 @@ export const getMembers = async(req: Request, res: Response): Promise<void> => {
     }
 }
 
+export const getMemberById = async(req: Request, res: Response): Promise<void> => {
+    const id = req.params.id
+    try{
+        const memberById = await Member.findById(id).select("-password -refreshToken")
+        if(!memberById){
+            res.status(404).json({message: "Member not found"})
+        }
+
+        res.status(200).json(memberById)
+    }
+    catch(error){
+        res.status(501).json({ message: "Error retrieving Member", error: error })
+    }
+
+}
+
 export const handleLogin = async(req: Request, res: Response): Promise<void> => {
     try{
         if(Object.keys(req.body).length === 0){
