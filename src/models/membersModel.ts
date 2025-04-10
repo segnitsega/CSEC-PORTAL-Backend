@@ -9,14 +9,16 @@ export interface memberInterface extends Document {
     email: string; 
     telegramUsername: string;
     phoneNumber: string;
-    year: string; // might be string like 3rd, 4th... 
+    year: string;  
     profilePicture: string; // for now I just considered a url for the profile image 
     clubRole: 'Member' | 'President' | 'Vice President' | 'CPD President' | 'Dev President' | 'CBD President' | 'SEC President' | 'DS President';
     division: 'CPD' | 'CBD' | 'DEV' | 'SEC' | 'DS'; 
     divisionRole: 'Admin' | 'Coordinator' | 'Member';
-    status: 'Active' | 'Alumni' | 'Banned';
+    membershipStatus: 'Active' | 'Alumni' | 'Banned';
+    campusStatus: 'On Campus' | 'Off Campus' | 'Withdrawn';
+    Attendance: 'Active' | 'Inactive' | 'Needs Attention'
     password: string;
-    refreshToken: string | null; // to store the jwt refresh token 
+    refreshToken: string | null; 
     createdAt: Date;
 } 
 
@@ -45,11 +47,21 @@ const memberSchema = new Schema<memberInterface>({
         enum: ['Admin', 'Coordinator', 'Member'],
         default: 'Member'
     },
-    status: {
+    membershipStatus: {
         type: String,
         enum: ['Active', 'Alumni', 'Banned'],
         default: 'Active'
     }, 
+    campusStatus: {
+        type: String,
+        enum: ['On Campus', 'Off Campus', 'Withdrawn'],
+        default: 'On Campus'
+    },
+    Attendance: {
+        type: String,
+        enum: ['Active', 'Inactive', 'Needs Attention'],
+        default: 'Active'
+    },
     password: {type: String, required: true},
     refreshToken: {type: String, default: null},
     createdAt: { type: Date, default: Date.now }
