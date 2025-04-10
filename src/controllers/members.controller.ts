@@ -70,7 +70,7 @@ export const handleRefreshToken = async(req: Request, res: Response): Promise<vo
             if(error){ 
                 return res.status(403).json({message: "Token verification failed"})
             }   
-            const newAccessToken = jwt.sign({id: foundMember.member_id, email: foundMember.email}, secretKey, {expiresIn: "2h"})
+            const newAccessToken = jwt.sign({id: foundMember._id, email: foundMember.email, clubRole: foundMember.clubRole}, secretKey, {expiresIn: "2h"})
 
             res.status(200).json({
                 message: "Token refreshed",
