@@ -36,8 +36,8 @@ export const handleLogin = async(req: Request, res: Response): Promise<void> => 
             return  
         }
 
-        const token = jwt.sign({id: foundMember.id, email: foundMember.email}, secretKey, {expiresIn: "2h"})
-        const refreshToken = jwt.sign({id: foundMember.id, email: foundMember.email}, refreshKey, {expiresIn: "7d"})
+        const token = jwt.sign({id: foundMember._id, email: foundMember.email, clubRole: foundMember.clubRole}, secretKey, {expiresIn: "2h"}) 
+        const refreshToken = jwt.sign({id: foundMember._id, email: foundMember.email}, refreshKey, {expiresIn: "7d"})
 
         await Member.updateOne({email}, {$set: {refreshToken}})
 
@@ -70,7 +70,7 @@ export const handleRefreshToken = async(req: Request, res: Response): Promise<vo
             if(error){ 
                 return res.status(403).json({message: "Token verification failed"})
             }   
-            const newAccessToken = jwt.sign({id: foundMember.id, email: foundMember.email}, secretKey, {expiresIn: "2h"})
+            const newAccessToken = jwt.sign({id: foundMember.member_id, email: foundMember.email}, secretKey, {expiresIn: "2h"})
 
             res.status(200).json({
                 message: "Token refreshed",

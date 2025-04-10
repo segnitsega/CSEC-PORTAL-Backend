@@ -1,4 +1,3 @@
-
 import { Schema, model, Document } from 'mongoose';
 
 export interface cpdInterface extends Document{
@@ -6,7 +5,8 @@ export interface cpdInterface extends Document{
     leetcode: String;
     codeforces: String;
     techStack: String[];
-    group: Number
+    github: String;
+    group: Number;
     // additional fields could be added..
 
 }
@@ -16,8 +16,8 @@ const cpdSchema = new Schema<cpdInterface>({
     leetcode: {type: String, required: true},
     codeforces: {type: String, required: true},
     techStack: {type: [String], required: true},
+    github: {type: String, required: true},
     group: {type: Number, required: true}
-    // additional fields could be added here too
 })
 
-export default model<cpdInterface>("CPD", cpdSchema);
+export default model<cpdInterface>("CPD", cpdSchema); 
