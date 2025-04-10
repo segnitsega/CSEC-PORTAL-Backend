@@ -3,9 +3,9 @@ import { Schema, model, Document, Types } from 'mongoose';
 
 export interface memberInterface extends Document {
     member_id: string; 
-    firstName: string;
+    firstName?: string;
     middleName: string; 
-    lastName: string;
+    lastName?: string;
     email: string; 
     telegramUsername: string;
     phoneNumber: string;

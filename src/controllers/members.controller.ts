@@ -2,8 +2,10 @@ import Member from "../models/membersModel";
 import { Request, Response } from "express";
 import bcrypt from 'bcrypt'
 import jwt, {JwtPayload, VerifyErrors} from 'jsonwebtoken'
+import { sendOnboardingEmail } from "../utils/Mailer";
 const secretKey = process.env.SECRET_KEY || ""
 const refreshKey = process.env.REFRESH_KEY || ""
+const saltRound = process.env.SALT_ROUND || ""// ??
 
 export const getMembers = async(req: Request, res: Response): Promise<void> => {
     try{
@@ -82,3 +84,38 @@ export const handleRefreshToken = async(req: Request, res: Response): Promise<vo
         res.status(500).json({message: "Server error", error})
     }
  } 
+
+export const handleMemberOnboarding = async(req: Request, res: Response): Promise<void> => {
+
+    if(Object.keys(req.body).length === 0){
+        res.status(400).json({ message: "Request body is empty" })
+        return
+    }
+
+    const { division, group, email, generatedPassword } = req.body
+    const emailExist = await Member.findOne({email})
+    
+    console.log(division, group, email, generatedPassword)
+
+    if(emailExist){
+        res.status(400).json('Email already used')
+        return
+    }
+
+    try{
+        const hashedPassword = await bcrypt.hash(generatedPassword, saltRound)
+        const newMember = new Member({
+            division,
+            group,
+            email,
+            password: hashedPassword
+        }) 
+        await newMember.save()
+
+        await sendOnboardingEmail(email, generatedPassword)
+
+    }catch(error){
+        res.status(500).json({ message: "Faied to create new member", error: error })
+    }
+
+}
