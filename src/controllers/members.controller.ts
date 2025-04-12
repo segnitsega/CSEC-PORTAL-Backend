@@ -62,7 +62,7 @@ export const handleLogin = async(req: Request, res: Response): Promise<void> => 
         }
 
         const token = jwt.sign({id: foundMember._id, email: foundMember.email, clubRole: foundMember.clubRole}, secretKey, {expiresIn: "2h"})  
-        const refreshToken = jwt.sign({id: foundMember._id, email: foundMember.email}, refreshKey, {expiresIn: "7d"})
+        const refreshToken = jwt.sign({id: foundMember._id, email: foundMember.email, clubRole: foundMember.clubRole}, refreshKey, {expiresIn: "7d"})
 
         await Member.updateOne({email}, {$set: {refreshToken}})
 
@@ -161,7 +161,6 @@ export const handleMemberOnboarding = async(req: Request, res: Response): Promis
 } 
 
 export const handleProfileDetails = async(req: Request, res: Response): Promise<void> => {
-    let memberFound = false
     const {
         firstName, 
         lastName, 
@@ -213,47 +212,28 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
                     mentor
             }})
 
-
         switch(division){
             case "DEV":  
-                const devResult = await DEV.updateOne( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle} });
-                if (devResult.matchedCount > 0) {
-                    memberFound = true;
-                }  
+                await DEV.updateOne( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle } }); 
                 break
             case "CPD":
-                const cpdResult = await CPD.updateOne( { member: foundMember._id }, { $set: { codeforcesHandle: codeforcesHandle, leetcodeHandle: leetcodeHandle} });
-                if (cpdResult.matchedCount > 0) {
-                    memberFound = true;
-                }
+                await CPD.updateOne( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle  } });
                 break
             case "SEC":
-                const secResult = await SEC.updateOne( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle} });
-                if (secResult.matchedCount > 0) {
-                    memberFound = true;
-                }
+                await SEC.updateOne( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle  } });
                 break
             case "DS":
-                const dsResult = await DS.updateOne( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle} });
-                if (dsResult.matchedCount > 0) {
-                    memberFound = true;
-                }
+                await DS.updateOne( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle  } });
                 break
             case "CBD":
-                const cbdResult = await CBD.updateOne( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle} });
-                if (cbdResult.matchedCount > 0) {
-                    memberFound = true;
-                }
+                await CBD.updateOne( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle  } });
                 break 
             default:
                 res.status(400).json({ message: "Invalid division" }) 
             }
-        if (!memberFound) {
-            res.status(404).json({ message: `Member not found in ${division} division` });
-            return
-        }
+        
         res.status(200).json({ message: "Profile updated successfully" });
-    }
+    } 
     catch(error){
         console.error(error);
         res.status(500).json({ message: "Failed to update member profile", error });
