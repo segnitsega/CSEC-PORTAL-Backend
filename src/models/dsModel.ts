@@ -16,8 +16,8 @@ export interface dsInterface extends Document {
 const dsSchema = new Schema<dsInterface>({
   member: { type: Schema.Types.ObjectId, required: true, ref: "Member" },
   kaggle: { type: String },
-  codeforcesHandle: { type: String },
-  leetcodeHandle: { type: String },
+  codeforcesHandle: { type: String, default: ""  },
+  leetcodeHandle: { type: String, default: ""  },
   techStack: { type: [String] },
   projects: { type: [String] },
   group: { type: Number, default: 1 },

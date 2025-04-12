@@ -14,8 +14,8 @@ const cbdSchema = new Schema<cbdInterface>({
   member: { type: Schema.Types.ObjectId, required: true, ref: "Member" },
   eventsOrganized: { type: [String] },
   responsibilities: { type: [String] },
-  codeforcesHandle: { type: String },  
-  leetcodeHandle: { type: String },  
+  codeforcesHandle: { type: String, default: ""  },  
+  leetcodeHandle: { type: String, default: ""  },  
   group: { type: Number, default: 1 } 
 
 });

@@ -10,8 +10,8 @@ export interface cpdInterface extends Document{
 
 const cpdSchema = new Schema<cpdInterface>({
     member: {type: Schema.Types.ObjectId, required: true, ref: "Member"},
-    leetcodeHandle: {type: String },
-    codeforcesHandle: {type: String },
+    leetcodeHandle: {type: String, default: ""  },
+    codeforcesHandle: {type: String, default: ""  },
     group: {type: Number, required: true}
 })
 

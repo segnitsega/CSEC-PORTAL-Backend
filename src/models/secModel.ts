@@ -17,8 +17,8 @@ export interface secInterface extends Document {
 
 const secSchema = new Schema<secInterface>({
   member: { type: Schema.Types.ObjectId, required: true, ref: "member" },
-  codeforcesHandle: { type: String },
-  leetcodeHandle: { type: String },
+  codeforcesHandle: { type: String, default: ""},
+  leetcodeHandle: { type: String, default: "" },
   tryhackme: { type: String },
   hackthebox: { type: String },
   certifications: { type: [String] },

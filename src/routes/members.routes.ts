@@ -13,6 +13,6 @@ membersRouter.get('/:id',authenticateToken, getMemberById)
 membersRouter.post('/login', handleLogin) 
 membersRouter.post('/refresh', handleRefreshToken)
 membersRouter.post('/createMember', validateMemberOnboarding, handleMemberOnboarding) 
-membersRouter.post('/profileDetails', validateProfileDetails, handleProfileDetails) 
+membersRouter.post('/profileDetails', validateProfileDetails, handleProfileDetails)  
 
 

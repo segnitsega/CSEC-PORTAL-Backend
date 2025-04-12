@@ -9,7 +9,6 @@ import DS from "../models/dsModel"
 import CBD from "../models/cbdModel"
 import SEC from "../models/secModel"
 
-
 const secretKey = process.env.SECRET_KEY || ""
 const refreshKey = process.env.REFRESH_KEY || ""
 
@@ -109,7 +108,7 @@ export const handleRefreshToken = async(req: Request, res: Response): Promise<vo
  } 
 
 export const handleMemberOnboarding = async(req: Request, res: Response): Promise<void> => {
-  
+
     const { 
         division, 
         group, 
@@ -214,19 +213,19 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
 
         switch(division){
             case "DEV":  
-                await DEV.updateOne( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle } }); 
+                await DEV.findOneAndUpdate( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle } }); 
                 break
             case "CPD":
-                await CPD.updateOne( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle  } });
+                await CPD.findOneAndUpdate( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle  } });
                 break
             case "SEC":
-                await SEC.updateOne( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle  } });
-                break
+                await SEC.findOneAndUpdate( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle  } });
+                break 
             case "DS":
-                await DS.updateOne( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle  } });
+                await DS.findOneAndUpdate( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle  } });
                 break
             case "CBD":
-                await CBD.updateOne( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle  } });
+                await CBD.findOneAndUpdate( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle  } });
                 break 
             default:
                 res.status(400).json({ message: "Invalid division" }) 

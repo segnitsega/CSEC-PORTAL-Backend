@@ -14,8 +14,8 @@ const devSchema = new Schema<devInterface>({
     member: { type: Schema.Types.ObjectId, required: true, ref: 'Member' },
     techStack: {type: [String] },
     projects: {type: [String] },
-    leetcodeHandle: {type: String },
-    codeforcesHandle: {type: String },
+    leetcodeHandle: {type: String, default: ""  },
+    codeforcesHandle: {type: String, default: ""  },
     group: { type: Number, default: 1 } 
     // additional fields could be added here too
     
