@@ -1,24 +1,26 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model, Document, Types } from "mongoose";
 
 export interface dsInterface extends Document {
-  member_id: string;
-  github?: string;
+  member: Types.ObjectId;
   kaggle?: string;
-  techStack: string[];        
-  projects: string[];        
-  group?: number;             
+  leetcodeHandle?: string;
+  codeforcesHandle?: string;
+  techStack?: string[];        
+  projects?: string[];        
+  group: number;             
   researchArea?: string; // like NLP, CV, or any specialization of the member in Data science  
   publications?: string[];  
   // additional fields can be added 
 }
 
 const dsSchema = new Schema<dsInterface>({
-  member_id: { type: String, required: true, ref: "Member" },
-  github: { type: String },
+  member: { type: Schema.Types.ObjectId, required: true, ref: "Member" },
   kaggle: { type: String },
-  techStack: { type: [String], required: true },
-  projects: { type: [String], required: true },
-  group: { type: Number },
+  codeforcesHandle: { type: String },
+  leetcodeHandle: { type: String },
+  techStack: { type: [String] },
+  projects: { type: [String] },
+  group: { type: Number, default: 1 },
   researchArea: { type: String },
   publications: { type: [String] },
 });

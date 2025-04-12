@@ -1,36 +1,63 @@
 
-import { Schema, model, Document, Types } from 'mongoose';
+import { Schema, model, Document } from 'mongoose';
 
+// indexing later
 export interface memberInterface extends Document {
-    member_id: string; 
     firstName?: string;
-    middleName: string; 
+    middleName?: string; 
     lastName?: string;
+    phoneNumber?: string;
     email: string; 
-    telegramUsername: string;
-    phoneNumber: string;
-    year: string;  
-    profilePicture: string; // for now I just considered a url for the profile image 
+    birthDate?: string,
+    github?: string,
+    gender?: string;
+    telegramHandle?: string;
+    graduationYear?: number;  
+    specialization?: string;
+    department?: string;
+    mentor?: string; // do we need it actually?
+    universityId?: string; 
+    instagramHandle?: string;
+    linkedinHandle?: string;
+    cv?: string, //considering it a link for now
+    bio?: string,
+    resourceName?: string,
+    resourceLink?: string,
+    banned: boolean; 
+
+    profilePicture?: string; // for now I just considered a url for the profile image 
     clubRole: 'Member' | 'President' | 'Vice President' | 'CPD President' | 'Dev President' | 'CBD President' | 'SEC President' | 'DS President';
     division: 'CPD' | 'CBD' | 'DEV' | 'SEC' | 'DS'; 
     divisionRole: 'Admin' | 'Coordinator' | 'Member';
     membershipStatus: 'Active' | 'Alumni' | 'Banned';
     campusStatus: 'On Campus' | 'Off Campus' | 'Withdrawn';
-    Attendance: 'Active' | 'Inactive' | 'Needs Attention'
+    attendance: 'Active' | 'Inactive' | 'Needs Attention';
     password: string;
+    mustChangePassword: boolean; // to force new member change their password, the frontend force the new member to change password using this as a flag
     refreshToken: string | null; 
     createdAt: Date;
+    updatedAt: Date;
 } 
 
 const memberSchema = new Schema<memberInterface>({
-    member_id: { type: String, required: true}, 
-    firstName: { type: String, required: true, trim: true },
+    universityId: { type: String }, 
+    firstName: { type: String, trim: true },
     middleName: { type: String, trim: true },
-    lastName: { type: String, required: true, trim: true },
-    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-    telegramUsername: { type: String, unique: true, trim: true },
+    lastName: { type: String, trim: true },
+    email: { type: String, unique: true, lowercase: true, trim: true, sparse: true},
+    banned: { type: Boolean, default: false },
+    telegramHandle: { type: String, trim: true },
     phoneNumber: { type: String, trim: true },
-    year: { type: String},
+    bio: { type: String },
+    department: { type: String },
+    mentor: { type: String },
+    specialization: { type: String },
+    github: { type: String }, 
+    resourceName: { type: String },
+    resourceLink: { type: String },
+    birthDate: { type: String },
+    graduationYear: { type: Number},
+    cv: { type: String }, 
     profilePicture: { type: String },
     clubRole: {
         type: String,
@@ -39,8 +66,8 @@ const memberSchema = new Schema<memberInterface>({
     },
     division: {
         type: String,
-        enum: ['CPD', 'CBD', 'DEV', 'SEC', 'DS'],
-        required: true
+        required: true,
+        enum: ['CPD', 'CBD', 'DEV', 'SEC', 'DS']
     },
     divisionRole: {
         type: String,
@@ -57,13 +84,15 @@ const memberSchema = new Schema<memberInterface>({
         enum: ['On Campus', 'Off Campus', 'Withdrawn'],
         default: 'On Campus'
     },
-    Attendance: {
+    attendance: {
         type: String,
         enum: ['Active', 'Inactive', 'Needs Attention'],
         default: 'Active'
     },
-    password: {type: String, required: true},
-    refreshToken: {type: String, default: null},
-    createdAt: { type: Date, default: Date.now }
-});
+    password: { type: String },
+    mustChangePassword: { type: Boolean, default: false },
+    refreshToken: { type: String, default: null },
+
+}, { timestamps: true });
+
 export default model<memberInterface>('Member', memberSchema);
