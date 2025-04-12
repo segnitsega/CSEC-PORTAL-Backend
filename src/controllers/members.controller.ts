@@ -150,9 +150,10 @@ export const handleMemberOnboarding = async(req: Request, res: Response): Promis
                 await CBD.create({ member: newMember._id, group: group });
                 break
         }     
-        const sendResult = await sendOnboardingEmail(email, generatedPassword)
-        res.status(200).json({ message: "New member created successfuly", result: sendResult })
-    }catch(error){
+        // const sendResult = await sendOnboardingEmail(email, generatedPassword)
+        // res.status(200).json({ message: "New member created successfuly", result: sendResult })
+        res.status(200).json({ message: "New member created successfuly" })
+    }catch(error){ 
         console.log(error)
         res.status(500).json({ message: "Faied to create new member", error: error })
     }
