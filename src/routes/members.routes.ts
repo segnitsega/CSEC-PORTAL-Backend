@@ -9,7 +9,7 @@ import { authenticateToken } from "../middlewares/authMiddleware"
 export const membersRouter = express.Router()
 
 membersRouter.get('/', authenticateToken, getMembers) 
-membersRouter.get('/:id', getMemberById) 
+membersRouter.get('/:id',authenticateToken, getMemberById) 
 membersRouter.post('/login', handleLogin) 
 membersRouter.post('/refresh', handleRefreshToken)
 membersRouter.post('/createMember', validateMemberOnboarding, handleMemberOnboarding) 
