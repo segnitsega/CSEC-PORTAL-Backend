@@ -2,17 +2,18 @@ import { Request, Response, NextFunction } from "express";
 import jwt, {JwtPayload, VerifyErrors} from "jsonwebtoken"
 
 
-const secretKey = process.env.SECRET_KEY || ""
+const secretKey = process.env.REFRESH_KEY || ""
 
 interface authenticatedRequest extends Request {
     user ?: string | JwtPayload
 }
-
-export const authenticateToken = (req: authenticatedRequest, res: Response, next: NextFunction) => {
-    const token = req.body.token || req.headers['authorization']?.split(' ')[1];
+ 
+export const authenticateToken = (req: authenticatedRequest, res: Response, next: NextFunction): void => {
+    const token = req.headers['authorization']?.split(' ')[1];
 
     if(!token){
-        return res.status(401).json({message: "No authentication token provided"})
+        res.status(401).json({message: "No authentication token provided"})
+        return
     }
 
     jwt.verify(token, secretKey, (error: VerifyErrors | null, user: string | JwtPayload | undefined) => {
@@ -22,4 +23,4 @@ export const authenticateToken = (req: authenticatedRequest, res: Response, next
         req.user = user 
         next() 
     })
-} 
+}  

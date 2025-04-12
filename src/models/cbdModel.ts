@@ -1,16 +1,23 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model, Document, Types } from "mongoose";
 
 export interface cbdInterface extends Document {
-  member_id: string;
-  eventsOrganized: string[]; // tutors, seminars or any event organized by the member  
+  member: Types.ObjectId;
+  eventsOrganized?: string[]; // tutors, seminars or any event organized by the member  
   responsibilities?: string[]; 
+  codeforcesHandle?: string;
+  leetcodeHandle?: string;
+  group: number;
   // additional fields can be added too
 }
 
 const cbdSchema = new Schema<cbdInterface>({
-  member_id: { type: String, required: true, ref: "Member" },
-  eventsOrganized: { type: [String], required: true },
+  member: { type: Schema.Types.ObjectId, required: true, ref: "Member" },
+  eventsOrganized: { type: [String] },
   responsibilities: { type: [String] },
+  codeforcesHandle: { type: String },  
+  leetcodeHandle: { type: String },  
+  group: { type: Number, default: 1 } 
+
 });
 
 export default model<cbdInterface>("CBD", cbdSchema);

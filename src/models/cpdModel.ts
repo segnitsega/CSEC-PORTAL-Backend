@@ -1,22 +1,17 @@
-import { Schema, model, Document } from 'mongoose';
+import { Schema, model, Document, Types } from 'mongoose';
 
 export interface cpdInterface extends Document{
-    member_id: String;
-    leetcode: String;
-    codeforces: String;
-    techStack: String[];
-    github: String;
+    member: Types.ObjectId;
+    leetcodeHandle?: String;
+    codeforcesHandle?: String;
     group: Number;
     // additional fields could be added..
-
 }
 
 const cpdSchema = new Schema<cpdInterface>({
-    member_id: {type: String, required: true, ref: "Member"},
-    leetcode: {type: String, required: true},
-    codeforces: {type: String, required: true},
-    techStack: {type: [String], required: true},
-    github: {type: String, required: true},
+    member: {type: Schema.Types.ObjectId, required: true, ref: "Member"},
+    leetcodeHandle: {type: String },
+    codeforcesHandle: {type: String },
     group: {type: Number, required: true}
 })
 

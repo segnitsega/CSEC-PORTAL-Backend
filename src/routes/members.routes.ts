@@ -1,8 +1,18 @@
+
 import express from "express"
-import { handleLogin, handleRefreshToken, getMembers, getMemberById } from "../controllers/members.controller"
+import { getMembers } from "../controllers/members.controller"
+import { handleLogin, handleRefreshToken, handleMemberOnboarding, handleProfileDetails, getMemberById } from "../controllers/members.controller"
+import { validateMemberOnboarding } from "../middlewares/validateMemberOnboarding"
+import { validateProfileDetails } from "../middlewares/validateProfileDetails"
+import { authenticateToken } from "../middlewares/authMiddleware"
+
 export const membersRouter = express.Router()
 
-membersRouter.get('/', getMembers) 
+membersRouter.get('/', authenticateToken, getMembers) 
 membersRouter.get('/:id', getMemberById) 
 membersRouter.post('/login', handleLogin) 
-membersRouter.post('/refresh', handleRefreshToken) 
+membersRouter.post('/refresh', handleRefreshToken)
+membersRouter.post('/createMember', validateMemberOnboarding, handleMemberOnboarding) 
+membersRouter.post('/profileDetails', validateProfileDetails, handleProfileDetails) 
+
+
