@@ -61,7 +61,7 @@ export const handleLogin = async(req: Request, res: Response): Promise<void> => 
             return  
         }
 
-        const token = jwt.sign({id: foundMember._id, email: foundMember.email, clubRole: foundMember.clubRole}, secretKey, {expiresIn: "2h"})  
+        const token = jwt.sign({id: foundMember._id, email: foundMember.email, clubRole: foundMember.clubRole}, secretKey, {expiresIn: "5h"})  
         const refreshToken = jwt.sign({id: foundMember._id, email: foundMember.email, clubRole: foundMember.clubRole}, refreshKey, {expiresIn: "7d"})
 
         await Member.updateOne({email}, {$set: {refreshToken}})
