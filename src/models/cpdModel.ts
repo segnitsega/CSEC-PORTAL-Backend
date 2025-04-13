@@ -4,7 +4,7 @@ export interface cpdInterface extends Document{
     member: Types.ObjectId;
     leetcodeHandle?: String;
     codeforcesHandle?: String;
-    group: string;
+    group: string; 
     // additional fields could be added..
 }
 

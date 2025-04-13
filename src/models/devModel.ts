@@ -6,7 +6,7 @@ export interface devInterface extends Document{
     codeforcesHandle?: string;
     techStack?: string[];
     projects?: string[];
-    group: string;
+    group: string; 
     // additional fields could be added..
 }
 

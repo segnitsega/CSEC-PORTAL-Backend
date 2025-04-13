@@ -2,6 +2,7 @@ import express from "express";
 import { connectDB } from "./config/db";
 import dotenv from "dotenv";
 import { membersRouter } from "./routes/members.routes";
+import { groupsRouter } from "./routes/groups.routes";
 import cookieParser from "cookie-parser"
 import cors from "cors"
 
@@ -23,3 +24,4 @@ server.listen(PORT, () => {
 })
 
 server.use('/api/members', membersRouter)
+server.use('/api/groups', groupsRouter) 

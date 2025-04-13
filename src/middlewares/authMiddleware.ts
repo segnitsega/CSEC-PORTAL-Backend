@@ -7,7 +7,7 @@ const secretKey = process.env.REFRESH_KEY || ""
 interface authenticatedRequest extends Request {
     user ?: string | JwtPayload
 }
- 
+
 export const authenticateToken = (req: authenticatedRequest, res: Response, next: NextFunction): void => {
     const token = req.headers['authorization']?.split(' ')[1];
 
@@ -18,9 +18,9 @@ export const authenticateToken = (req: authenticatedRequest, res: Response, next
 
     jwt.verify(token, secretKey, (error: VerifyErrors | null, user: string | JwtPayload | undefined) => {
         if(error){
-            return res.status(403).json({message: "Invalid token."})
+            return res.status(403).json({message: "Invalid token"})
         }
         req.user = user 
         next() 
     })
-}  
+} 

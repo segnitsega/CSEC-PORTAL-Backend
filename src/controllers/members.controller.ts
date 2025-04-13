@@ -13,7 +13,7 @@ const secretKey = process.env.SECRET_KEY || ""
 const refreshKey = process.env.REFRESH_KEY || ""
 
 
-export const getMembers = async(req: Request, res: Response): Promise<void> => {
+export const getMembers = async(req: Request | any, res: Response): Promise<void> => {
     try{
         const members = await Member.find().select("-password -refreshToken")
         
