@@ -8,7 +8,7 @@ import CPD from "../models/cpdModel"
 import DS from "../models/dsModel"
 import CBD from "../models/cbdModel"
 import SEC from "../models/secModel"
-
+import { getDivisionData } from "../utils/getDivisionData";
 const secretKey = process.env.SECRET_KEY || ""
 const refreshKey = process.env.REFRESH_KEY || ""
 
@@ -16,7 +16,17 @@ const refreshKey = process.env.REFRESH_KEY || ""
 export const getMembers = async(req: Request, res: Response): Promise<void> => {
     try{
         const members = await Member.find().select("-password -refreshToken")
-        res.status(200).json(members)
+        
+        const membersWithDivisionData = await Promise.all(
+            members.map(async(member) => {
+                const divisionData = await getDivisionData(member)
+                return {
+                    ...member.toObject(), 
+                    divisionData
+                }
+            })
+        )
+        res.status(200).json(membersWithDivisionData)
     } 
     catch(error){
         res.status(500).json({message: 'Error to fetch members', error})
@@ -27,12 +37,18 @@ export const getMembers = async(req: Request, res: Response): Promise<void> => {
 export const getMemberById = async(req: Request, res: Response): Promise<void> => {
     const id = req.params.id
     try{
-        const memberById = await Member.findById(id).select("-password -refreshToken")
-        if(!memberById){
+        const member = await Member.findById(id).select("-password -refreshToken")
+
+        if(!member){
             res.status(404).json({message: "Member not found"})
+            return
         }
 
-        res.status(200).json(memberById)
+        const divisionData = await getDivisionData(member)        
+        res.status(200).json({
+            ...member?.toObject(),
+            divisionData
+        })
     }
     catch(error){
         res.status(501).json({ message: "Error retrieving Member", error: error })
