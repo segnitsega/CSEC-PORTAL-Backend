@@ -161,9 +161,11 @@ export const handleMemberOnboarding = async(req: Request, res: Response): Promis
             case "SEC":
                 await SEC.create({ member: newMember._id, group: group });
                 break
-            default:
+            case "CBD": 
                 await CBD.create({ member: newMember._id, group: group });
                 break
+            default:
+                res.status(400).json({ message: `${division} is not a valid division` })
         }     
         // const sendResult = await sendOnboardingEmail(email, generatedPassword)
         // res.status(200).json({ message: "New member created successfuly", result: sendResult })
