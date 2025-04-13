@@ -11,7 +11,7 @@ export interface secInterface extends Document {
   projects?: string[];             
   tools?: string[];               
   specialization?: string;    
-  group: number;    
+  group: string;    
   //any additional field can be added
 }
 
@@ -26,7 +26,7 @@ const secSchema = new Schema<secInterface>({
   projects: { type: [String] },
   tools: { type: [String] },
   specialization: { type: String },
-  group: { type: Number, default: 1 } 
+  group: { type: String, default: "Group 1" } 
 
 });
 

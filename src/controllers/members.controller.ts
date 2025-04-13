@@ -17,10 +17,10 @@ export const getMembers = async(req: Request, res: Response): Promise<void> => {
     try{
         const members = await Member.find().select("-password -refreshToken")
         res.status(200).json(members)
-    }
+    } 
     catch(error){
         res.status(500).json({message: 'Error to fetch members', error})
-        console.log(error)
+        console.log(error) 
     }
 }
 

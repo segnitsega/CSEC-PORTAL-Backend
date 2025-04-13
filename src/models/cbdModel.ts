@@ -6,7 +6,7 @@ export interface cbdInterface extends Document {
   responsibilities?: string[]; 
   codeforcesHandle?: string;
   leetcodeHandle?: string;
-  group: number;
+  group: string;
   // additional fields can be added too
 }
 
@@ -16,7 +16,7 @@ const cbdSchema = new Schema<cbdInterface>({
   responsibilities: { type: [String] },
   codeforcesHandle: { type: String, default: ""  },  
   leetcodeHandle: { type: String, default: ""  },  
-  group: { type: Number, default: 1 } 
+  group: { type: String, default: "Group 1" } 
 
 });
 
