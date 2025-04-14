@@ -34,11 +34,10 @@ export const getGroups = async (req: Request, res:Response): Promise<void> => {
 }
 
 export const createDivision = async (req: Request | any, res: Response): Promise<void> => {
-    // check role
-    const { divisionName, email } = req.body;
+    
+    const { divisionName, headName, email } = req.body;
     const { clubRole } = req.user;
-    const allowedRoles = ["President", "Vice President"]
-    const head = divisionName + " " + "President"
+    const allowedRoles = ["President", "Vice President"];
 
     if(!divisionName || !email){
         res.status(403).json({message: "divisionName and email required"})
@@ -47,19 +46,19 @@ export const createDivision = async (req: Request | any, res: Response): Promise
     if(!allowedRoles.includes(clubRole)){
         res.status(403).json({message: `${clubRole} can not add a division`})
     }
-
+    
+    const head = divisionName + " " + "President";
     try{
         const newDivision = await divisionGroupModel.create({ division: divisionName })
         await Member.findOneAndUpdate({email}, {$set:{clubRole: head}})
 
         const Division = getDivisionModel(divisionName)
-        await Division.create({ name: divisionName})
+        await Division.create({ name: divisionName, divisionHead: headName})
 
         res.status(201).json({ message:"Division created successfully", division:  newDivision})
 
     }catch(error){
         res.status(500).json({message: "Failed to create division"})
     }
- 
 
 }
