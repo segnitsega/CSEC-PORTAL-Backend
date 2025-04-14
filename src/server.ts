@@ -5,6 +5,7 @@ import { membersRouter } from "./routes/members.routes";
 import { groupsRouter } from "./routes/groups.routes";
 import cookieParser from "cookie-parser"
 import cors from "cors"
+import { divisionsRouter } from "./routes/divisions.routes";
 
 dotenv.config()
 
@@ -25,3 +26,4 @@ server.listen(PORT, () => {
 
 server.use('/api/members', membersRouter)
 server.use('/api/groups', groupsRouter) 
+server.use('/api/divisions', divisionsRouter) 
