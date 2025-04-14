@@ -183,6 +183,8 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
         division // the frontend should add the division of the member in the form submitted
     } = req.body 
 
+    const profilePicture = req.file?.filename || null
+
     const foundMember = await Member.findOne({ email: email }).exec()
 
     if(!foundMember){
@@ -208,7 +210,8 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
                     LinkedinHandle, 
                     cv, 
                     bio,
-                    mentor
+                    mentor,
+                    profilePicture
             }})
 
         switch(division){
