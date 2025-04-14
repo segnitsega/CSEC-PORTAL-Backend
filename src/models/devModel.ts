@@ -6,7 +6,7 @@ export interface devInterface extends Document{
     codeforcesHandle?: string;
     techStack?: string[];
     projects?: string[];
-    group: number;
+    group: string; 
     // additional fields could be added..
 }
 
@@ -16,7 +16,7 @@ const devSchema = new Schema<devInterface>({
     projects: {type: [String] },
     leetcodeHandle: {type: String, default: ""  },
     codeforcesHandle: {type: String, default: ""  },
-    group: { type: Number, default: 1 } 
+    group: { type: String, default: "Group 1" } 
     // additional fields could be added here too
     
 }) 

@@ -7,7 +7,7 @@ export interface dsInterface extends Document {
   codeforcesHandle?: string;
   techStack?: string[];        
   projects?: string[];        
-  group: number;             
+  group: string;             
   researchArea?: string; // like NLP, CV, or any specialization of the member in Data science  
   publications?: string[];  
   // additional fields can be added 
@@ -20,7 +20,7 @@ const dsSchema = new Schema<dsInterface>({
   leetcodeHandle: { type: String, default: ""  },
   techStack: { type: [String] },
   projects: { type: [String] },
-  group: { type: Number, default: 1 },
+  group: { type: String, default: "Group 1" },
   researchArea: { type: String },
   publications: { type: [String] },
 });

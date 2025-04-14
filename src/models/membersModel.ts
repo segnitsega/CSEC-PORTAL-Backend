@@ -24,7 +24,6 @@ export interface memberInterface extends Document {
     resourceName?: string,
     resourceLink?: string,
     banned: boolean; 
-
     profilePicture?: string; // for now I just considered a url for the profile image 
     clubRole: 'Member' | 'President' | 'Vice President' | 'CPD President' | 'Dev President' | 'CBD President' | 'SEC President' | 'DS President';
     division: 'CPD' | 'CBD' | 'DEV' | 'SEC' | 'DS'; 
