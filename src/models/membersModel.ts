@@ -26,7 +26,8 @@ export interface memberInterface extends Document {
     banned: boolean; 
     profilePicture?: string; // for now I just considered a url for the profile image 
     clubRole: 'Member' | 'President' | 'Vice President' | 'CPD President' | 'Dev President' | 'CBD President' | 'SEC President' | 'DS President';
-    division: 'CPD' | 'CBD' | 'DEV' | 'SEC' | 'DS'; 
+    // division: 'CPD' | 'CBD' | 'DEV' | 'SEC' | 'DS'; 
+    division: string 
     divisionRole: 'Admin' | 'Coordinator' | 'Member';
     membershipStatus: 'Active' | 'Alumni' | 'Banned';
     campusStatus: 'On Campus' | 'Off Campus' | 'Withdrawn';
@@ -66,7 +67,7 @@ const memberSchema = new Schema<memberInterface>({
     division: {
         type: String,
         required: true,
-        enum: ['CPD', 'CBD', 'DEV', 'SEC', 'DS']
+        // enum: ['CPD', 'CBD', 'DEV', 'SEC', 'DS']
     },
     divisionRole: {
         type: String,
