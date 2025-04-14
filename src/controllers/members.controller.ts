@@ -9,6 +9,7 @@ import DS from "../models/dsModel"
 import CBD from "../models/cbdModel"
 import SEC from "../models/secModel"
 import { getDivisionData } from "../utils/getDivisionData";
+import DivisionGroup from "../models/divisionGroupModel";
 const secretKey = process.env.SECRET_KEY || ""
 const refreshKey = process.env.REFRESH_KEY || ""
 
@@ -124,7 +125,7 @@ export const handleRefreshToken = async(req: Request, res: Response): Promise<vo
  } 
 
 export const handleMemberOnboarding = async(req: Request, res: Response): Promise<void> => {
-
+    const currentDivisions = await DivisionGroup.distinct('division')
     const { 
         division, 
         group, 
@@ -135,8 +136,7 @@ export const handleMemberOnboarding = async(req: Request, res: Response): Promis
     if(emailExist){
         res.status(400).json('Email already used')
         return
-    }
-
+    } 
     try{
         const hashedPassword = await bcrypt.hash(generatedPassword, 10) 
 

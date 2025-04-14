@@ -3,6 +3,7 @@ import { Request, Response } from "express"
 import DivisionGroup from "../models/divisionGroupModel"
 import { authenticateToken } from "../middlewares/authMiddleware";
 import Member from "../models/membersModel";
+import { getDivisionModel } from "../models/dynamicDivisionModel";
 
 export const getAllDivisions = async (req: Request, res: Response): Promise<void> => {
     try{
@@ -40,24 +41,25 @@ export const createDivision = async (req: Request | any, res: Response): Promise
     const head = divisionName + " " + "President"
 
     if(!divisionName || !email){
-        res.status(403).json({message: "divisionName and head name required"})
+        res.status(403).json({message: "divisionName and email required"})
     }
-
 
     if(!allowedRoles.includes(clubRole)){
         res.status(403).json({message: `${clubRole} can not add a division`})
     }
 
-
     try{
         const newDivision = await divisionGroupModel.create({ division: divisionName })
         await Member.findOneAndUpdate({email}, {$set:{clubRole: head}})
 
-        res.status(201).json({ message:"Division created successfully", division:  divisionName})
+        const Division = getDivisionModel(divisionName)
+        await Division.create({ name: divisionName})
+
+        res.status(201).json({ message:"Division created successfully", division:  newDivision})
 
     }catch(error){
         res.status(500).json({message: "Failed to create division"})
     }
-    
-    
+ 
+
 }

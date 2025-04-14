@@ -20,7 +20,7 @@ export interface memberInterface extends Document {
     instagramHandle?: string;
     linkedinHandle?: string;
     cv?: string, //considering it a link for now
-    bio?: string,
+    bio?: string, 
     resourceName?: string,
     resourceLink?: string,
     banned: boolean; 
