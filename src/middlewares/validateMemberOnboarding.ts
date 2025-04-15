@@ -10,7 +10,7 @@ export const validateMemberOnboarding = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  try { 
+  try {  
     const validDivisions = await DivisionGroup.distinct('division');
 
     const onboardingSchema = z.object({

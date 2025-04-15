@@ -5,7 +5,7 @@ import { authenticateToken } from "../middlewares/authMiddleware"
 export const divisionsRouter = express.Router()
 
 divisionsRouter.get('/allDivisions', getAllDivisions)
-divisionsRouter.get('/getGroups', getGroups) 
+divisionsRouter.post('/getGroups', getGroups) 
 divisionsRouter.post('/createDivision', authenticateToken, createDivision) 
 
 

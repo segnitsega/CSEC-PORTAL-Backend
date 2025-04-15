@@ -24,7 +24,10 @@ export const getMembers = async(req: Request | any, res: Response): Promise<void
                 }
             })
         ) 
-        res.status(200).json(membersWithDivisionData)
+        res.status(200).json({
+            length: membersWithDivisionData.length,
+            members: membersWithDivisionData
+        })
     } 
     catch(error){
         res.status(500).json({message: 'Error to fetch members', error})
@@ -54,13 +57,18 @@ export const getMemberById = async(req: Request, res: Response): Promise<void> =
 
 }
 
-export const handleLogin = async(req: Request, res: Response): Promise<void> => {
+export const handleLogin = async(req: Request, res: Response): Promise<void> => { 
     try{
         if(Object.keys(req.body).length === 0){
             res.status(400).json({message: "Login request body is empty"})
             return
         } 
         const { email, password } = req.body
+        if (!email || !password) {
+            res.status(400).json({ message: "Email and password are required" });
+            return;
+          }
+          
         const foundMember = await Member.findOne({email})
 
         if(!foundMember){
@@ -224,3 +232,19 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
         res.status(500).json({ message: "Failed to update member profile", error });
     }
 }
+
+
+export const getAllHeads = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const heads = await Member.find({ clubRole: { $ne: "Member" } }).select("clubRole email");
+  
+      if (!heads || heads.length === 0) {
+        res.status(400).json({ message: "No heads found" });
+        return;
+      }
+      res.status(200).json({length:heads.length, heads });
+    } catch (error) {
+      res.status(500).json({ message: "Cannot get heads", error });
+    }
+  };
+  

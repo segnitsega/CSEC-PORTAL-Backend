@@ -6,7 +6,7 @@ import { getDivisionModel } from "../models/dynamicDivisionModel";
 export const getAllDivisions = async (req: Request, res: Response): Promise<void> => {
     try{ 
         const divisions = await DivisionGroup.distinct('division');
-        res.status(200).json(divisions)
+        res.status(200).json({length: divisions.length, divisions: divisions})
     } 
     catch(error){
         res.status(500).json({message: "Failed to get divisions"})
@@ -31,7 +31,10 @@ export const getGroups = async (req: Request, res:Response): Promise<void> => {
     try{
         const groups = await DivisionGroup.find({division}).select('group');
         const groupList = groups.map(group => group.group)
-        res.status(200).json(groupList) 
+        res.status(200).json({
+            length: groupList.length,
+            groups: groupList
+        }) 
     }catch{ 
         res.status(500).json({message: "Failed to get groups"})
     }

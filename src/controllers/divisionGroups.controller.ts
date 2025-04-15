@@ -55,9 +55,9 @@ export const createGroup = async(req: Request | any, res: Response): Promise<voi
 export const getGroupMembers = async(req: Request, res: Response): Promise<void> => {
  
     if(!req.body){
-        res.status(400).json({message: "Login request body is empty"})
+        res.status(400).json({message: "Group name and division required"})
         return
-    } 
+    }  
     const {division, group} = req.body 
     if(!group || !division){
         res.status(400).json({ message: "Group name and division required" })  
@@ -74,7 +74,10 @@ export const getGroupMembers = async(req: Request, res: Response): Promise<void>
             res.status(404).json({ message: "No members found in this group" });
             return;
         }
-        res.status(200).json({ message: "Members retrieved", groupMembers });
+        res.status(200).json({ 
+            message: "Members retrieved", 
+            length: groupMembers.length,
+            groupMembers: groupMembers });
 
     }catch (error) {
         console.error("Error fetching group members:", error);
