@@ -1,4 +1,3 @@
-import divisionGroupModel from "../models/divisionGroupModel";
 import { Request, Response } from "express"
 import DivisionGroup from "../models/divisionGroupModel"
 import Member from "../models/membersModel";
@@ -64,7 +63,7 @@ export const createDivision = async (req: Request | any, res: Response): Promise
         return
     } 
     try{ 
-        const newDivision = await divisionGroupModel.create({ division: divisionName })
+        const newDivision = await DivisionGroup.create({ division: divisionName })
         await Member.findOneAndUpdate({email}, {$set:{clubRole: divisionName + " " + "President"}})
 
         const Division = getDivisionModel(divisionName)
