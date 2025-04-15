@@ -23,7 +23,7 @@ export const getMembers = async(req: Request | any, res: Response): Promise<void
                     divisionData
                 }
             })
-        )
+        ) 
         res.status(200).json(membersWithDivisionData)
     } 
     catch(error){
@@ -123,6 +123,7 @@ export const handleRefreshToken = async(req: Request, res: Response): Promise<vo
 
 export const handleMemberOnboarding = async(req: Request, res: Response): Promise<void> => {
     const currentDivisions = await DivisionGroup.distinct('division')
+    console.log("current Divisions: ", currentDivisions)
     const { 
         division, 
         group, 
@@ -141,16 +142,16 @@ export const handleMemberOnboarding = async(req: Request, res: Response): Promis
     } 
     const hashedPassword = await bcrypt.hash(generatedPassword, 10) 
 
-    const newMember = new Member({
+    const newMember =  new Member({
         division,  
         email, 
         password: hashedPassword 
-    }) 
-
+    })  
+    await newMember.save() 
     const DivisionModel = getDivisionModel(division) 
     await DivisionModel.create({ member: newMember._id, group: group})
 
-    res.status(200).json({ message: "New member created successfully" });
+    res.status(200).json({ message: "New member created successfully", newMember });
     // const sendResult = await sendOnboardingEmail(email, generatedPassword)
     // res.status(200).json({ message: "New member created successfuly", result: sendResult })
 
@@ -186,7 +187,7 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
         if(!foundMember){
             res.status(404).json({ message: "Member not found" })
             return
-        }
+        } 
         await Member.updateOne( { email: email },
             { $set: {
                 firstName,
@@ -208,10 +209,7 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
                 profilePicture
             }}) 
             try{
-                if (!division) {
-                    res.status(400).json({ message: "Division is required" });
-                    return;
-                }                
+                              
                 const DivisionModel = getDivisionModel(division)       
                 await DivisionModel.findOneAndUpdate({member: foundMember._id}, {$set: { codeforcesHandle, leetcodeHandle }})                
                 res.status(200).json({ message: "Profile updated successfully" });

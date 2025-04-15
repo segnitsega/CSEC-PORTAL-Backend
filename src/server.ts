@@ -25,5 +25,5 @@ server.listen(PORT, () => {
 })
 
 server.use('/api/members', membersRouter)
-server.use('/api/groups', groupsRouter) 
 server.use('/api/divisions', divisionsRouter)  
+server.use('/api/groups', groupsRouter) 

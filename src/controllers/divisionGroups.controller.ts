@@ -3,9 +3,13 @@ import DivisionGroup from "../models/divisionGroupModel"
 import Member from "../models/membersModel"
 
 export const createGroup = async(req: Request | any, res: Response): Promise<void> => {
+
+    if(!req.body){
+        res.status(400).json({message: "Request body empty"})
+        return
+    }
     const {group, division} = req.body 
     const {clubRole} = req.user 
-    // const allowedDivisions = [ "DEV", "CPD", "CBD", "SEC", "DS" ]
     const availableDivisions = await DivisionGroup.distinct('division'); 
 
     if(!group || !division){
@@ -26,8 +30,9 @@ export const createGroup = async(req: Request | any, res: Response): Promise<voi
     const groupExist = await DivisionGroup.findOne({group, division})
     
     if(groupExist){
-        res.status(400).json( {message: `${group} exists in ${division}`})         
-    } 
+        res.status(400).json( {message: `${group} exists in ${division}`})     
+        return    
+    }  
     const topRoles = ["President", "Vice President"]
     const divisionPresidents:{[key: string]: string} = {}
     availableDivisions.forEach((division) => {
@@ -48,7 +53,21 @@ export const createGroup = async(req: Request | any, res: Response): Promise<voi
 } 
 
 export const getGroupMembers = async(req: Request, res: Response): Promise<void> => {
-    const {division, group} = req.body //  params?
+ 
+    if(!req.body){
+        res.status(400).json({message: "Login request body is empty"})
+        return
+    } 
+    const {division, group} = req.body 
+    if(!group || !division){
+        res.status(400).json({ message: "Group name and division required" })  
+        return;
+    }  
+    const groupExist = await DivisionGroup.findOne({group, division})
+    if(!groupExist){
+        res.status(400).json({ message: `Group "${group}" does not exist in ${division}`})  
+        return;
+    }
     try{
         const groupMembers = await Member.find({division, group})
         if (groupMembers.length === 0) {
@@ -62,7 +81,7 @@ export const getGroupMembers = async(req: Request, res: Response): Promise<void>
         res.status(500).json({ message: "Failed to fetch members", error });
       }
     
-}
+} 
 // const divisionPresidents: { [key: string]: string } = {
     //     "CPD President": "CPD",
     //     "CBD President": "CBD",

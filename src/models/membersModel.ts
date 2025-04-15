@@ -19,14 +19,13 @@ export interface memberInterface extends Document {
     universityId?: string; 
     instagramHandle?: string;
     linkedinHandle?: string;
-    cv?: string, //considering it a link for now
+    cv?: string, 
     bio?: string, 
     resourceName?: string,
     resourceLink?: string,
     banned: boolean; 
-    profilePicture?: string; // for now I just considered a url for the profile image 
+    profilePicture?: string; 
     clubRole: 'Member' | 'President' | 'Vice President' | 'CPD President' | 'Dev President' | 'CBD President' | 'SEC President' | 'DS President';
-    // division: 'CPD' | 'CBD' | 'DEV' | 'SEC' | 'DS'; 
     division: string; 
     group: string;
     divisionRole: 'Admin' | 'Coordinator' | 'Member';
