@@ -3,11 +3,6 @@ import { Request, Response } from "express";
 import bcrypt from 'bcrypt'
 import jwt, {JwtPayload, VerifyErrors} from 'jsonwebtoken'
 import { sendOnboardingEmail } from "../utils/Mailer";
-import DEV from "../models/devModel"
-import CPD from "../models/cpdModel"
-import DS from "../models/dsModel"
-import CBD from "../models/cbdModel"
-import SEC from "../models/secModel"
 import { getDivisionData } from "../utils/getDivisionData";
 import DivisionGroup from "../models/divisionGroupModel";
 import { getDivisionModel } from "../models/dynamicDivisionModel";
@@ -136,7 +131,7 @@ export const handleMemberOnboarding = async(req: Request, res: Response): Promis
     } = req.body 
 
     const emailExist = await Member.findOne({email})
-    if(emailExist){
+    if(emailExist){ 
         res.status(400).json('Email already used')
         return
     }  
@@ -158,122 +153,74 @@ export const handleMemberOnboarding = async(req: Request, res: Response): Promis
     res.status(200).json({ message: "New member created successfully" });
     // const sendResult = await sendOnboardingEmail(email, generatedPassword)
     // res.status(200).json({ message: "New member created successfuly", result: sendResult })
-    // try{
-    //     const hashedPassword = await bcrypt.hash(generatedPassword, 10) 
 
-    //     const newMember = new Member({
-    //         division,  
-    //         email, 
-    //         password: hashedPassword 
-    //     }) 
-    //     await newMember.save() 
-
-    //     switch(division){
-    //         case "DEV":
-    //             await DEV.create({ member: newMember._id, group: group});
-    //             break
-    //         case "CPD":
-    //             await CPD.create({ member: newMember._id, group: group });
-    //             break
-
-    //         case "DS":
-    //             await DS.create({ member: newMember._id, group: group });
-    //             break
-    //         case "SEC":
-    //             await SEC.create({ member: newMember._id, group: group });
-    //             break
-    //         case "CBD": 
-    //             await CBD.create({ member: newMember._id, group: group });
-    //             break
-    //         default: 
-    //             res.status(400).json({ message: `${division} is not a valid division` })
-    //     }     
-    //     // const sendResult = await sendOnboardingEmail(email, generatedPassword)
-    //     // res.status(200).json({ message: "New member created successfuly", result: sendResult })
-    //     res.status(200).json({ message: "New member created successfuly" })
-    // }catch(error){ 
-    //     console.log(error)
-    //     res.status(500).json({ message: "Faied to create new member", error: error })
-    // }
 } 
 
 export const handleProfileDetails = async(req: Request, res: Response): Promise<void> => {
-    const {
-        firstName, 
-        lastName, 
-        phoneNumber, 
-        email, 
-        birthDate, 
-        github, 
-        gender, 
-        telegramHandle, 
-        graduationYear, 
-        specialization, 
-        department,
-        mentor, 
-        universityId, 
-        instagramHandle, 
-        LinkedinHandle,     
-        codeforcesHandle, 
-        cv, 
-        leetcodeHandle, 
-        bio,
-        division // the frontend should add the division of the member in the form submitted
-    } = req.body 
+    try{
+        const {
+                firstName, 
+                lastName, 
+                phoneNumber, 
+                email, 
+                birthDate, 
+                github, 
+                gender, 
+                telegramHandle, 
+                graduationYear, 
+                specialization, 
+                department,
+                mentor, 
+                universityId, 
+                instagramHandle, 
+                LinkedinHandle,     
+                codeforcesHandle, 
+                cv, 
+                leetcodeHandle, 
+                bio,
+                division // the frontend should add the division of the member in the form submitted
+            } = req.body 
 
-    const profilePicture = req.file?.filename || null
-
-    const foundMember = await Member.findOne({ email: email }).exec()
-
-    if(!foundMember){
-        res.status(404).json({ message: "Member not found" })
-        return
-    }
-
-    try {
+        const profilePicture = req.file?.filename || null
+        const foundMember = await Member.findOne({ email: email }).exec()
+        if(!foundMember){
+            res.status(404).json({ message: "Member not found" })
+            return
+        }
         await Member.updateOne( { email: email },
             { $set: {
-                    firstName,
-                    lastName, 
-                    phoneNumber, 
-                    birthDate, 
-                    github, 
-                    gender, 
-                    telegramHandle, 
-                    graduationYear, 
-                    specialization, 
-                    department, 
-                    universityId, 
-                    instagramHandle, 
-                    LinkedinHandle, 
-                    cv, 
-                    bio,
-                    mentor,
-                    profilePicture
-            }})
-
-        switch(division){
-            case "DEV":  
-                await DEV.findOneAndUpdate( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle } }); 
-                break
-            case "CPD":
-                await CPD.findOneAndUpdate( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle  } });
-                break
-            case "SEC":
-                await SEC.findOneAndUpdate( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle  } });
-                break 
-            case "DS":
-                await DS.findOneAndUpdate( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle  } });
-                break
-            case "CBD":
-                await CBD.findOneAndUpdate( { member: foundMember._id }, { $set: { codeforcesHandle, leetcodeHandle  } });
-                break 
-            default:
-                res.status(400).json({ message: "Invalid division" }) 
+                firstName,
+                lastName, 
+                phoneNumber, 
+                birthDate, 
+                github, 
+                gender, 
+                telegramHandle, 
+                graduationYear, 
+                specialization, 
+                department, 
+                universityId, 
+                instagramHandle, 
+                LinkedinHandle, 
+                cv, 
+                bio,
+                mentor,
+                profilePicture
+            }}) 
+            try{
+                if (!division) {
+                    res.status(400).json({ message: "Division is required" });
+                    return;
+                }                
+                const DivisionModel = getDivisionModel(division)       
+                await DivisionModel.findOneAndUpdate({member: foundMember._id}, {$set: { codeforcesHandle, leetcodeHandle }})                
+                res.status(200).json({ message: "Profile updated successfully" });
+            }catch(divisionError){
+                console.error("Division model error:", divisionError);
+                res.status(500).json({ message: "Division update failed", error: divisionError });
+                return;
             }
-        
-        res.status(200).json({ message: "Profile updated successfully" });
-    } 
+    }    
     catch(error){
         console.error(error);
         res.status(500).json({ message: "Failed to update member profile", error });

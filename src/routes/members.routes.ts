@@ -16,4 +16,3 @@ membersRouter.post('/refresh', handleRefreshToken)
 membersRouter.post('/createMember', validateMemberOnboarding, handleMemberOnboarding) 
 membersRouter.post('/profileDetails',upload.single('profilePicture'),  validateProfileDetails, handleProfileDetails)  
 
-
