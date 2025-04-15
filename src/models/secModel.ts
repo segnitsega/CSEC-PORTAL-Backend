@@ -14,7 +14,7 @@ export interface secInterface extends Document {
   group: string;    
   //any additional field can be added
 }
-
+ 
 const secSchema = new Schema<secInterface>({
   member: { type: Schema.Types.ObjectId, required: true, ref: "member" },
   codeforcesHandle: { type: String, default: ""},
