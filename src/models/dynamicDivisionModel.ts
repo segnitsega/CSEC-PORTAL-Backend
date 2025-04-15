@@ -9,4 +9,3 @@ export const getDivisionModel = (divisionName: string) => {
   const modelName = divisionName.replace(/\s+/g, '') + 'Model';
   return mongoose.models[modelName] || mongoose.model(modelName, divisionSchema, divisionName);
 };
-

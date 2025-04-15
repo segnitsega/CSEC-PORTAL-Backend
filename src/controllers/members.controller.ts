@@ -10,6 +10,8 @@ import CBD from "../models/cbdModel"
 import SEC from "../models/secModel"
 import { getDivisionData } from "../utils/getDivisionData";
 import DivisionGroup from "../models/divisionGroupModel";
+import { getDivisionModel } from "../models/dynamicDivisionModel";
+
 const secretKey = process.env.SECRET_KEY || ""
 const refreshKey = process.env.REFRESH_KEY || ""
 
@@ -129,52 +131,70 @@ export const handleMemberOnboarding = async(req: Request, res: Response): Promis
     const { 
         division, 
         group, 
-        email, 
+        email,  
         generatedPassword 
     } = req.body 
+
     const emailExist = await Member.findOne({email})
     if(emailExist){
         res.status(400).json('Email already used')
         return
+    }  
+    if(!currentDivisions.includes(division)){
+        res.status(400).json(`${division} not present`)
+        return
     } 
-    try{
-        const hashedPassword = await bcrypt.hash(generatedPassword, 10) 
+    const hashedPassword = await bcrypt.hash(generatedPassword, 10) 
 
-        const newMember = new Member({
-            division,  
-            email, 
-            password: hashedPassword 
-        }) 
-        await newMember.save() 
+    const newMember = new Member({
+        division,  
+        email, 
+        password: hashedPassword 
+    }) 
 
-        switch(division){
-            case "DEV":
-                await DEV.create({ member: newMember._id, group: group});
-                break
-            case "CPD":
-                await CPD.create({ member: newMember._id, group: group });
-                break
+    const DivisionModel = getDivisionModel(division) 
+    await DivisionModel.create({ member: newMember._id, group: group})
 
-            case "DS":
-                await DS.create({ member: newMember._id, group: group });
-                break
-            case "SEC":
-                await SEC.create({ member: newMember._id, group: group });
-                break
-            case "CBD": 
-                await CBD.create({ member: newMember._id, group: group });
-                break
-            default:
-                res.status(400).json({ message: `${division} is not a valid division` })
-        }     
-        // const sendResult = await sendOnboardingEmail(email, generatedPassword)
-        // res.status(200).json({ message: "New member created successfuly", result: sendResult })
-        res.status(200).json({ message: "New member created successfuly" })
-    }catch(error){ 
-        console.log(error)
-        res.status(500).json({ message: "Faied to create new member", error: error })
-    }
+    res.status(200).json({ message: "New member created successfully" });
+    // const sendResult = await sendOnboardingEmail(email, generatedPassword)
+    // res.status(200).json({ message: "New member created successfuly", result: sendResult })
+    // try{
+    //     const hashedPassword = await bcrypt.hash(generatedPassword, 10) 
 
+    //     const newMember = new Member({
+    //         division,  
+    //         email, 
+    //         password: hashedPassword 
+    //     }) 
+    //     await newMember.save() 
+
+    //     switch(division){
+    //         case "DEV":
+    //             await DEV.create({ member: newMember._id, group: group});
+    //             break
+    //         case "CPD":
+    //             await CPD.create({ member: newMember._id, group: group });
+    //             break
+
+    //         case "DS":
+    //             await DS.create({ member: newMember._id, group: group });
+    //             break
+    //         case "SEC":
+    //             await SEC.create({ member: newMember._id, group: group });
+    //             break
+    //         case "CBD": 
+    //             await CBD.create({ member: newMember._id, group: group });
+    //             break
+    //         default: 
+    //             res.status(400).json({ message: `${division} is not a valid division` })
+    //     }     
+    //     // const sendResult = await sendOnboardingEmail(email, generatedPassword)
+    //     // res.status(200).json({ message: "New member created successfuly", result: sendResult })
+    //     res.status(200).json({ message: "New member created successfuly" })
+    // }catch(error){ 
+    //     console.log(error)
+    //     res.status(500).json({ message: "Faied to create new member", error: error })
+    // }
 } 
 
 export const handleProfileDetails = async(req: Request, res: Response): Promise<void> => {

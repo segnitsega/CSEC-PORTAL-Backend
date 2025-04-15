@@ -2,7 +2,6 @@ import { Schema, model, Document } from 'mongoose';
 
 export interface divisionGroupInterface extends Document {
     group?: string; 
-    // division: 'DEV' | 'CPD' | 'CBD' | 'DS' | 'SEC';
     division: string
 }
 
@@ -11,7 +10,6 @@ const divisionGroupSchema = new Schema<divisionGroupInterface>({
   division: { 
     type: String, 
     required: true, 
-    // enum: ['DEV', 'CPD', 'CBD', 'DS', 'SEC'] 
   },
   
 }, { timestamps: true });
