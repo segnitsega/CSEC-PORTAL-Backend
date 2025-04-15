@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import DivisionGroup from "../models/divisionGroupModel"
+import Member from "../models/membersModel"
 
 export const createGroup = async(req: Request | any, res: Response): Promise<void> => {
     const {group, division} = req.body 
@@ -46,10 +47,27 @@ export const createGroup = async(req: Request | any, res: Response): Promise<voi
     }
 } 
 
- // const divisionPresidents: { [key: string]: string } = {
+export const getGroupMembers = async(req: Request, res: Response): Promise<void> => {
+    const {division, group} = req.body //  params?
+    try{
+        const groupMembers = await Member.find({division, group})
+        if (groupMembers.length === 0) {
+            res.status(404).json({ message: "No members found in this group" });
+            return;
+        }
+        res.status(200).json({ message: "Members retrieved", groupMembers });
+
+    }catch (error) {
+        console.error("Error fetching group members:", error);
+        res.status(500).json({ message: "Failed to fetch members", error });
+      }
+    
+}
+// const divisionPresidents: { [key: string]: string } = {
     //     "CPD President": "CPD",
     //     "CBD President": "CBD",
     //     "DEV President": "DEV",
     //     "SEC President": "SEC",
     //     "DS President": "DS"
     // }
+

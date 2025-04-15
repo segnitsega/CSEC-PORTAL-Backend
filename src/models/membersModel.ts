@@ -1,7 +1,7 @@
 
 import { Schema, model, Document } from 'mongoose';
 
-// indexing later
+// indexing later 
 export interface memberInterface extends Document {
     firstName?: string;
     middleName?: string; 
@@ -27,7 +27,8 @@ export interface memberInterface extends Document {
     profilePicture?: string; // for now I just considered a url for the profile image 
     clubRole: 'Member' | 'President' | 'Vice President' | 'CPD President' | 'Dev President' | 'CBD President' | 'SEC President' | 'DS President';
     // division: 'CPD' | 'CBD' | 'DEV' | 'SEC' | 'DS'; 
-    division: string 
+    division: string; 
+    group: string;
     divisionRole: 'Admin' | 'Coordinator' | 'Member';
     membershipStatus: 'Active' | 'Alumni' | 'Banned';
     campusStatus: 'On Campus' | 'Off Campus' | 'Withdrawn';
@@ -69,6 +70,7 @@ const memberSchema = new Schema<memberInterface>({
         required: true,
         // enum: ['CPD', 'CBD', 'DEV', 'SEC', 'DS']
     },
+    group: {type: String, default: "Group 1"},
     divisionRole: {
         type: String,
         enum: ['Admin', 'Coordinator', 'Member'],
