@@ -1,14 +1,11 @@
 
 import { z } from "zod";
 import { Request, Response, NextFunction } from "express";
-import DivisionGroup from "../models/divisionGroupModel";
 
 const phoneRegex = /^(?:\+2519\d{8}|\+2517\d{8}|0[79]\d{8})$/;
 
 export const validateProfileDetails = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const availableDivisions = await DivisionGroup.distinct("division");
-
     const requiredDetailSchema = z.object({
       firstName: z.string().min(3, "First name should be at least 3 characters"),
       lastName: z.string().min(3, "Last name should be at least 3 characters"),
@@ -29,7 +26,7 @@ export const validateProfileDetails = async (req: Request, res: Response, next: 
       cv: z.string().optional(),
       leetcodeHandle: z.string().optional(),
       bio: z.string().optional(),
-      division: z.enum([...(availableDivisions.length ? availableDivisions : ['dummy'])] as [string, ...string[]]),
+      
     });
 
     const result = requiredDetailSchema.safeParse(req.body);

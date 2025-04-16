@@ -74,7 +74,7 @@ export const createDivision = async (req: Request | any, res: Response): Promise
         const newDivision = await DivisionGroup.create({ division: divisionName }) 
         await Member.findOneAndUpdate({email}, {$set:{clubRole: divisionName + " " + "President"}})
 
-        const Division = getDivisionModel(divisionName)
+        const Division = await getDivisionModel(divisionName)
 
         const existingDivisionDoc = await Division.findOne({ name: divisionName });
         

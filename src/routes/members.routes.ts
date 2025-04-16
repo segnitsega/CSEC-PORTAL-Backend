@@ -5,16 +5,16 @@ import { handleLogin, handleRefreshToken, handleMemberOnboarding, handleProfileD
 import { validateMemberOnboarding } from "../middlewares/validateMemberOnboarding"
 import { validateProfileDetails } from "../middlewares/validateProfileDetails"
 import { authenticateToken } from "../middlewares/authMiddleware"
-import { upload } from "../middlewares/upload"
+import { upload } from "../middlewares/profilePictureuploadMiddleware"
 
 
 export const membersRouter = express.Router()
 
-membersRouter.get('/heads', getAllHeads)
+membersRouter.get('/heads', authenticateToken, getAllHeads)
 membersRouter.get('/', authenticateToken, getMembers) 
 membersRouter.get('/:id',authenticateToken, getMemberById) 
 membersRouter.post('/login', handleLogin)    
-membersRouter.post('/refresh', handleRefreshToken)
-membersRouter.post('/createMember', validateMemberOnboarding, handleMemberOnboarding) 
+membersRouter.post('/refresh', handleRefreshToken) 
+membersRouter.post('/createMember',authenticateToken, validateMemberOnboarding, handleMemberOnboarding) 
 membersRouter.post('/profileDetails', upload.single('profilePicture'),  validateProfileDetails, handleProfileDetails)  
 

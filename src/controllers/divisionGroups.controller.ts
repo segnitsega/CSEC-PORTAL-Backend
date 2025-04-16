@@ -45,7 +45,7 @@ export const createGroup = async(req: Request | any, res: Response): Promise<voi
                 { division },
                 { $addToSet: { groups: group } }
               );
-            // const newGroup = await DivisionGroup.updateOne({division}, { $set:{groups:[...group]} });
+              
             res.status(201).json({ message: "New group created", group: newGroup });
 
         } catch (error) {
@@ -72,9 +72,9 @@ export const getGroupMembers = async(req: Request, res: Response): Promise<void>
     if(!groupExist){
         res.status(400).json({ message: `Group "${group}" does not exist in ${division}`})  
         return;
-    } 
+    }   
     try{
-        const groupMembers = await Member.find({division, group})
+        const groupMembers = await Member.find({division, group}).select("-password -refreshToken")
         if (groupMembers.length === 0) {
             res.status(404).json({ message: "No members found in this group" });
             return;
@@ -90,11 +90,3 @@ export const getGroupMembers = async(req: Request, res: Response): Promise<void>
       }
     
 } 
-// const divisionPresidents: { [key: string]: string } = {
-    //     "CPD President": "CPD",
-    //     "CBD President": "CBD",
-    //     "DEV President": "DEV",
-    //     "SEC President": "SEC",
-    //     "DS President": "DS"
-    // }
-

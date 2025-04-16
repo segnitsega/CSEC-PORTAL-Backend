@@ -16,6 +16,8 @@ server.use(cors({
     origin: "*",
     credentials: true
 }))
+
+server.use('/uploads', express.static('uploads'));
 server.use(express.json())
 server.use(cookieParser())
 connectDB();

@@ -3,9 +3,7 @@ import { Request, Response } from "express";
 import bcrypt from 'bcrypt'
 import jwt, {JwtPayload, VerifyErrors} from 'jsonwebtoken'
 import { sendOnboardingEmail } from "../utils/Mailer";
-import { getDivisionData } from "../utils/getDivisionData";
 import DivisionGroup from "../models/divisionGroupModel";
-import { getDivisionModel } from "../models/dynamicDivisionModel";
 
 const secretKey = process.env.SECRET_KEY || ""
 const refreshKey = process.env.REFRESH_KEY || ""
@@ -14,19 +12,9 @@ const refreshKey = process.env.REFRESH_KEY || ""
 export const getMembers = async(req: Request | any, res: Response): Promise<void> => {
     try{
         const members = await Member.find().select("-password -refreshToken")
-        
-        const membersWithDivisionData = await Promise.all(
-            members.map(async(member) => {
-                const divisionData = await getDivisionData(member)
-                return {
-                    ...member.toObject(), 
-                    divisionData
-                }
-            })
-        ) 
         res.status(200).json({
-            length: membersWithDivisionData.length,
-            members: membersWithDivisionData
+            length: members.length,
+            members: members
         })
     } 
     catch(error){
@@ -44,11 +32,8 @@ export const getMemberById = async(req: Request, res: Response): Promise<void> =
             res.status(404).json({message: "Member not found"})
             return
         }
-
-        const divisionData = await getDivisionData(member)        
         res.status(200).json({
-            ...member?.toObject(),
-            divisionData
+            member
         })
     }
     catch(error){
@@ -128,9 +113,14 @@ export const handleRefreshToken = async(req: Request, res: Response): Promise<vo
     }
  } 
 
-export const handleMemberOnboarding = async(req: Request, res: Response): Promise<void> => {
+export const handleMemberOnboarding = async(req: Request | any, res: Response): Promise<void> => {
+    const { clubRole } = req.user;
+    
+    if(clubRole === "Member"){
+        res.status(403).json({message: `${clubRole} can not add a new member`})
+    } 
     const currentDivisions = await DivisionGroup.distinct('division')
-    console.log("current Divisions: ", currentDivisions)
+    
     const {  
         division, 
         group, 
@@ -148,20 +138,18 @@ export const handleMemberOnboarding = async(req: Request, res: Response): Promis
         return
     } 
     const hashedPassword = await bcrypt.hash(generatedPassword, 10) 
-
     const newMember =  new Member({
         division,  
+        group,
         email, 
         password: hashedPassword 
     })  
     await newMember.save() 
-    const DivisionModel = getDivisionModel(division) 
-    await DivisionModel.create({ member: newMember._id, group: group})
 
     res.status(200).json({ message: "New member created successfully", newMember });
     // const sendResult = await sendOnboardingEmail(email, generatedPassword)
     // res.status(200).json({ message: "New member created successfuly", result: sendResult })
-
+    //add link in the email for the new member to log in with
 } 
 
 export const handleProfileDetails = async(req: Request, res: Response): Promise<void> => {
@@ -186,45 +174,33 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
                 cv, 
                 leetcodeHandle, 
                 bio,
-                division // the frontend should add the division of the member in the form submitted
             } = req.body 
 
-        const profilePicture = req.file?.filename || null
+        const profilePicture = req.file? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`: null;
+
         const foundMember = await Member.findOne({ email: email }).exec()
         if(!foundMember){
             res.status(404).json({ message: "Member not found" })
             return
         } 
-        await Member.updateOne( { email: email },
-            { $set: {
-                firstName,
-                lastName, 
-                phoneNumber, 
-                birthDate, 
-                github, 
-                gender, 
-                telegramHandle, 
-                graduationYear, 
-                specialization, 
-                department, 
-                universityId, 
-                instagramHandle, 
-                LinkedinHandle, 
-                cv, 
-                bio,
-                mentor,
-                profilePicture
-            }}) 
-            try{
-                              
-                const DivisionModel = getDivisionModel(division)       
-                await DivisionModel.findOneAndUpdate({member: foundMember._id}, {$set: { codeforcesHandle, leetcodeHandle }})                
-                res.status(200).json({ message: "Profile updated successfully" });
-            }catch(divisionError){
-                console.error("Division model error:", divisionError);
-                res.status(500).json({ message: "Division update failed", error: divisionError });
-                return;
+
+        const updateData: { [key: string]: any } = {
+            firstName, lastName, phoneNumber, birthDate, github,
+            gender, telegramHandle, graduationYear, specialization,
+            department, universityId, instagramHandle, LinkedinHandle,
+            codeforcesHandle, leetcodeHandle, cv, bio, mentor,profilePicture
+        };
+
+        Object.keys(updateData).forEach((key) => {
+            if (updateData[key] === undefined || updateData[key] === null) {
+                delete updateData[key];
             }
+        });
+
+        await Member.updateOne( { email: email }, { $set: { ...updateData }})
+
+        res.status(200).json({ message: "Profile updated successfully" });
+            
     }    
     catch(error){
         console.error(error);
