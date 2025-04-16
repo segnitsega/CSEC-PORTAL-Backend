@@ -17,6 +17,7 @@ export const getGroups = async (req: Request, res:Response): Promise<void> => {
     
     if(!req.body){ 
         res.status(400).json({message: "request body is empty, division required to retrieve division groups"})
+        return
     }
     
     const {division} = req.body
@@ -27,14 +28,18 @@ export const getGroups = async (req: Request, res:Response): Promise<void> => {
     const availableDivisions = await DivisionGroup.distinct('division'); 
     if(!availableDivisions.includes(division)){
         res.status(400).json({message: "Invalid division"})
+        return
     }
+
     try{
-        const groups = await DivisionGroup.find({division}).select('group');
-        const groupList = groups.map(group => group.group)
-        res.status(200).json({
-            length: groupList.length,
-            groups: groupList
-        }) 
+        const divisionDocument = await DivisionGroup.findOne({division}).select('groups');
+        if(divisionDocument){
+            res.status(200).json({
+                length: divisionDocument.groups.length,
+                groups: divisionDocument.groups 
+            })
+        }
+                
     }catch{ 
         res.status(500).json({message: "Failed to get groups"})
     }

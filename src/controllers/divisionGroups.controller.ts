@@ -26,20 +26,26 @@ export const createGroup = async(req: Request | any, res: Response): Promise<voi
         return;
     }  
 
-    const groupExist = await DivisionGroup.findOne({group, division})
+    const groupExist = await DivisionGroup.findOne({ division, groups: group})
     
     if(groupExist){
         res.status(400).json( {message: `${group} exists in ${division}`})     
         return    
     }  
     const topRoles = ["President", "Vice President"]
+
     const divisionPresidents:{[key: string]: string} = {}
     availableDivisions.forEach((division) => {
         divisionPresidents[`${division} President`] = division
     })    
+
     if (topRoles.includes(clubRole) || divisionPresidents[clubRole] === division) {       
-        try {
-            const newGroup = await DivisionGroup.create({ group, division });
+        try {  
+            const newGroup = await DivisionGroup.updateOne(
+                { division },
+                { $addToSet: { groups: group } }
+              );
+            // const newGroup = await DivisionGroup.updateOne({division}, { $set:{groups:[...group]} });
             res.status(201).json({ message: "New group created", group: newGroup });
 
         } catch (error) {
@@ -62,11 +68,11 @@ export const getGroupMembers = async(req: Request, res: Response): Promise<void>
         res.status(400).json({ message: "Group name and division required" })  
         return;
     }  
-    const groupExist = await DivisionGroup.findOne({group, division})
+    const groupExist = await DivisionGroup.findOne({ groups: group, division}) 
     if(!groupExist){
         res.status(400).json({ message: `Group "${group}" does not exist in ${division}`})  
         return;
-    }
+    } 
     try{
         const groupMembers = await Member.find({division, group})
         if (groupMembers.length === 0) {
