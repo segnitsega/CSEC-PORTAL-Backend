@@ -7,6 +7,8 @@ const divisionSchema = new mongoose.Schema({
 });
 
 export const getDivisionModel = (divisionName: string) => {
-  const modelName = divisionName.replace(/\s+/g, '') + 'Model';
-  return mongoose.models[modelName] || mongoose.model(modelName, divisionSchema, divisionName);
+  const modelName = divisionName.toLowerCase().replace(/\s+/g, '') + 'Model';
+  return mongoose.models[modelName] || mongoose.model(modelName, divisionSchema, divisionName.toLowerCase().replace(/\s+/g, '_'));
 };
+
+

@@ -86,7 +86,6 @@ export const handleLogin = async(req: Request, res: Response): Promise<void> => 
         const refreshToken = jwt.sign({id: foundMember._id, email: foundMember.email, clubRole: foundMember.clubRole}, refreshKey, {expiresIn: "7d"})
 
         await Member.updateOne({email}, {$set: {refreshToken}})
-
        res.status(200).json({
         message: "Login Successful",
         token,
@@ -132,7 +131,7 @@ export const handleRefreshToken = async(req: Request, res: Response): Promise<vo
 export const handleMemberOnboarding = async(req: Request, res: Response): Promise<void> => {
     const currentDivisions = await DivisionGroup.distinct('division')
     console.log("current Divisions: ", currentDivisions)
-    const { 
+    const {  
         division, 
         group, 
         email,  
@@ -235,7 +234,7 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
 
 
 export const getAllHeads = async (req: Request, res: Response): Promise<void> => {
-    try {
+    try { 
       const heads = await Member.find({ clubRole: { $ne: "Member" } }).select("clubRole email");
   
       if (!heads || heads.length === 0) {
@@ -247,4 +246,3 @@ export const getAllHeads = async (req: Request, res: Response): Promise<void> =>
       res.status(500).json({ message: "Cannot get heads", error });
     }
   };
-  

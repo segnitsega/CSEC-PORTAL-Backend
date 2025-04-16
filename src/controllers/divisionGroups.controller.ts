@@ -7,7 +7,7 @@ export const createGroup = async(req: Request | any, res: Response): Promise<voi
     if(!req.body){
         res.status(400).json({message: "Request body empty"})
         return
-    }
+    } 
     const {group, division} = req.body 
     const {clubRole} = req.user 
     const availableDivisions = await DivisionGroup.distinct('division'); 
@@ -16,7 +16,6 @@ export const createGroup = async(req: Request | any, res: Response): Promise<voi
         res.status(400).json({ message: "Group name and division required" })  
         return;
     }  
-    
     if(!availableDivisions.includes(division)){
         res.status(400).json({ message: `${division} is not a valid division` });
         return;

@@ -50,8 +50,8 @@ export const createDivision = async (req: Request | any, res: Response): Promise
     const { clubRole } = req.user;
     const allowedRoles = ["President", "Vice President"];
 
-    if(!divisionName || !email){
-        res.status(403).json({message: "divisionName and email required"})
+    if(!divisionName || !email || !headName){
+        res.status(403).json({message: "divisionName, headName and email required"})
         return
     }
 
@@ -66,7 +66,7 @@ export const createDivision = async (req: Request | any, res: Response): Promise
         return
     } 
     try{ 
-        const newDivision = await DivisionGroup.create({ division: divisionName })
+        const newDivision = await DivisionGroup.create({ division: divisionName }) 
         await Member.findOneAndUpdate({email}, {$set:{clubRole: divisionName + " " + "President"}})
 
         const Division = getDivisionModel(divisionName)
