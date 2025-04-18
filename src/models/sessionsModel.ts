@@ -10,7 +10,8 @@ export interface sessionsInterface extends Document {
         day: string,
         startTime: string,
         endTime: string
-    }[]
+    }[],
+    status: string;
 }
 
 const sessionSchema = new Schema<sessionsInterface>({
@@ -25,7 +26,8 @@ const sessionSchema = new Schema<sessionsInterface>({
       startTime: {type: String, required: true},
       endTime: {type: String, required: true}
     }
-  ]
+  ],
+  status: {type: String, default: "Planned"}
 })
 
 export default model<sessionsInterface>('Session', sessionSchema)
