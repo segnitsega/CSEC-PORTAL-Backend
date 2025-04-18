@@ -19,7 +19,7 @@ export const createSession = async(req: Request | any, res: Response): Promise<v
     } = req.body
 
     if(!sessionTitle || !division || !groups || !startDate || !endDate){
-        res.status(400).json({ message: "sessionTitle,division, groups, startDate, endDate, and sessions are required" });
+        res.status(400).json({ message: "sessionTitle,division, groups, startDate,and endDate are required" });
         return
     }
 
@@ -29,7 +29,7 @@ export const createSession = async(req: Request | any, res: Response): Promise<v
         return;
     }
 
-    if (!Array.isArray(sessions) || sessions.some(session => !session.day || !session.startTime || !session.endTime)) {
+    if (!Array.isArray(sessions) || sessions.length === 0 || sessions.some(session => !session.day || !session.startTime || !session.endTime)) {
         res.status(400).json({ message: "Invalid session format" });
         return
     }
