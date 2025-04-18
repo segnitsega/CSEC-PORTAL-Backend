@@ -3,28 +3,23 @@ import DivisionGroup from "../models/divisionGroupModel"
 import Member from "../models/membersModel"
 
 export const createGroup = async(req: Request | any, res: Response): Promise<void> => {
-
-    if(!req.body){
-        res.status(400).json({message: "Request body empty"})
-        return
-    } 
-    const {group, division} = req.body 
     const {clubRole} = req.user 
+    if(clubRole === "Member"){
+        res.status(403).json({message: "Unauthorized to create a group"})
+        return;
+    }  
+    const {group, division} = req.body    
     const availableDivisions = await DivisionGroup.distinct('division'); 
 
     if(!group || !division){
         res.status(400).json({ message: "Group name and division required" })  
         return;
-    }  
+    } 
+
     if(!availableDivisions.includes(division)){
         res.status(400).json({ message: `${division} is not a valid division` });
         return;
     }
-
-    if(clubRole === "Member"){
-        res.status(403).json({message: "Unauthorized to create a group"})
-        return;
-    }  
 
     const groupExist = await DivisionGroup.findOne({ division, groups: group})
     

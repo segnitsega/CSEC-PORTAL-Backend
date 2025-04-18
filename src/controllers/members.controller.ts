@@ -118,6 +118,7 @@ export const handleMemberOnboarding = async(req: Request | any, res: Response): 
     
     if(clubRole === "Member"){
         res.status(403).json({message: `${clubRole} can not add a new member`})
+        return
     } 
     const currentDivisions = await DivisionGroup.distinct('division')
     
