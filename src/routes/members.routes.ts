@@ -16,5 +16,5 @@ membersRouter.get('/:id',authenticateToken, getMemberById)
 membersRouter.post('/login', handleLogin)    
 membersRouter.post('/refresh', handleRefreshToken) 
 membersRouter.post('/createMember',authenticateToken, validateMemberOnboarding, handleMemberOnboarding) 
-membersRouter.post('/profileDetails', upload.single('profilePicture'),  validateProfileDetails, handleProfileDetails)  
+membersRouter.post('/profileDetails', upload.single('profilePicture'),  validateProfileDetails, handleProfileDetails)   
 
