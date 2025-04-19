@@ -59,7 +59,7 @@ const memberSchema = new Schema<memberInterface>({
     graduationYear: { type: Number},
     cv: { type: String }, 
     profilePicture: { type: String },
-    clubRole: {
+    clubRole: { 
         type: String,
         enum: ['Member', 'President', 'Vice President', 'CPD President', 'Dev President', 'CBD President', 'SEC President', 'DS President'],
         default: 'Member'
@@ -67,7 +67,7 @@ const memberSchema = new Schema<memberInterface>({
     division: {
         type: String,
         required: true,
-        // enum: ['CPD', 'CBD', 'DEV', 'SEC', 'DS']
+        
     },
     group: {type: String, default: "Group 1"},
     divisionRole: {
