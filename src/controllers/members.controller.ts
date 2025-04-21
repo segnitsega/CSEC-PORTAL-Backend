@@ -33,8 +33,8 @@ export const getMembers = async (req: Request | any, res: Response): Promise<voi
         attendance,
         membershipStatus,
         divisionRole,
-        page = 1,
-        limit = 10,
+        page,
+        limit,
       } = req.query;
 
       const query: any = {};
