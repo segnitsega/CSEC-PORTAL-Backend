@@ -21,7 +21,7 @@ export const validateProfileDetails = async (req: Request, res: Response, next: 
       mentor: z.string(),
       universityId: z.string().optional(),
       instagramHandle: z.string().optional(),
-      LinkedinHandle: z.string().optional(),
+      linkedinHandle: z.string().optional(),
       codeforcesHandle: z.string().optional(),
       cv: z.string().optional(),
       leetcodeHandle: z.string().optional(),
