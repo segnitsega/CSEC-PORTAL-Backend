@@ -229,7 +229,7 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
                 mentor, 
                 universityId, 
                 instagramHandle, 
-                LinkedinHandle,     
+                linkedinHandle,     
                 codeforcesHandle, 
                 cv, 
                 leetcodeHandle, 
