@@ -10,6 +10,8 @@ export interface memberInterface extends Document {
     email: string; 
     birthDate?: string,
     github?: string,
+    leetcodeHandle?: string;
+    codeforcesHandle?: string;
     gender?: string;
     telegramHandle?: string;
     graduationYear?: number;  
@@ -47,12 +49,16 @@ const memberSchema = new Schema<memberInterface>({
     email: { type: String, unique: true, lowercase: true, trim: true, sparse: true},
     banned: { type: Boolean, default: false },
     telegramHandle: { type: String, trim: true },
+    instagramHandle: { type: String, trim: true },
+    linkedinHandle: { type: String, trim: true },
     phoneNumber: { type: String, trim: true },
     bio: { type: String },
     department: { type: String },
     mentor: { type: String },
     specialization: { type: String },
     github: { type: String }, 
+    leetcodeHandle: { type: String }, 
+    codeforcesHandle: { type: String }, 
     resourceName: { type: String },
     resourceLink: { type: String },
     birthDate: { type: String },
