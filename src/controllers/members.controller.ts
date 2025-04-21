@@ -9,19 +9,78 @@ const secretKey = process.env.SECRET_KEY || ""
 const refreshKey = process.env.REFRESH_KEY || ""
 
 
-export const getMembers = async(req: Request | any, res: Response): Promise<void> => {
-    try{
-        const members = await Member.find().select("-password -refreshToken")
-        res.status(200).json({
-            length: members.length,
-            members: members
-        })
-    } 
-    catch(error){
-        res.status(500).json({message: 'Error to fetch members', error})
-        console.log(error) 
+// export const getMembers = async(req: Request | any, res: Response): Promise<void> => {
+//     try{
+//         const members = await Member.find().select("-password -refreshToken")
+//         res.status(200).json({
+//             length: members.length,
+//             members: members
+//         })
+//     } 
+//     catch(error){
+//         res.status(500).json({message: 'Error to fetch members', error})
+//         console.log(error) 
+//     }
+// }
+
+export const getMembers = async (req: Request | any, res: Response): Promise<void> => {
+    try { 
+      const {
+        search,
+        division,
+        group,
+        campusStatus,
+        attendance,
+        membershipStatus,
+        divisionRole,
+        page = 1,
+        limit = 10,
+      } = req.query;
+
+      const query: any = {};
+  
+      if (search) {
+        const regex = new RegExp(search, 'i'); 
+        query.$or = [
+          { firstName: regex },
+          { middleName: regex },
+          { lastName: regex },
+          { email: regex },
+          { universityId: regex },
+          { phoneNumber: regex }
+        ];
+      }
+  
+      if (division) query.division = division;
+      if (group) query.group = group;
+      if (campusStatus) query.campusStatus = campusStatus;
+      if (attendance) query.attendance = attendance;
+      if (membershipStatus) query.membershipStatus = membershipStatus;
+      if (divisionRole) query.divisionRole = divisionRole;
+  
+      const skip = (parseInt(page) - 1) * parseInt(limit);
+      const parsedLimit = parseInt(limit);
+  
+      const [members, total] = await Promise.all([
+        Member.find(query)
+          .select('-password -refreshToken')
+          .skip(skip)
+          .limit(parsedLimit)
+          .sort({ createdAt: -1 }),
+        Member.countDocuments(query)
+      ]);
+  
+      res.status(200).json({
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(total / parsedLimit),
+        totalMembers: total,
+        members
+      });
+    } catch (error) {
+      console.error("Error fetching members:", error);
+      res.status(500).json({ message: 'Error fetching members', error });
     }
-}
+  };
 
 export const getMemberById = async(req: Request, res: Response): Promise<void> => {
     const id = req.params.id

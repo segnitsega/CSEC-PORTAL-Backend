@@ -35,7 +35,7 @@ export interface memberInterface extends Document {
     campusStatus: 'On Campus' | 'Off Campus' | 'Withdrawn';
     attendance: 'Active' | 'Inactive' | 'Needs Attention';
     password: string;
-    mustChangePassword: boolean; // to force new member change their password, the frontend force the new member to change password using this as a flag
+    mustChangePassword: boolean;
     refreshToken: string | null; 
     createdAt: Date;
     updatedAt: Date;
