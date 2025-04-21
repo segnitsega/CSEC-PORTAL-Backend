@@ -247,7 +247,7 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
         const updateData: { [key: string]: any } = {
             firstName, lastName, phoneNumber, birthDate, github,
             gender, telegramHandle, graduationYear, specialization,
-            department, universityId, instagramHandle, LinkedinHandle,
+            department, universityId, instagramHandle, linkedinHandle,
             codeforcesHandle, leetcodeHandle, cv, bio, mentor,profilePicture
         };
 
