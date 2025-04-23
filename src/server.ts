@@ -9,6 +9,7 @@ import { divisionsRouter } from "./routes/divisions.routes";
 import { sessionsRouter } from "./routes/sessions.routes";
 import { eventsRouter } from "./routes/events.routes";
 import attendanceRouter from "./routes/attendance.routes";
+import { resourcesRouter } from "./routes/resources.routes";
 
 dotenv.config()
 
@@ -35,3 +36,4 @@ server.use('/api/groups', groupsRouter)
 server.use('/api/sessions', sessionsRouter)
 server.use('/api/events', eventsRouter)
 server.use('/api/attendance', attendanceRouter) 
+server.use('/api/resources', resourcesRouter)
