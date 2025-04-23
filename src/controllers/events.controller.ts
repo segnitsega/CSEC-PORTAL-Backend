@@ -17,7 +17,8 @@ export const addEvent = async(req: Request | any, res: Response) => {
         eventDate,
         startTime,
         endTime,
-        visibility
+        visibility,
+        attendance
     } = req.body 
     const eventExist = await Event.findOne({eventTitle})
     
@@ -49,7 +50,8 @@ export const addEvent = async(req: Request | any, res: Response) => {
                     eventDate: formattedDate,
                     startTime,
                     endTime,
-                    visibility
+                    visibility,
+                    attendance
                 })
                 res.status(201).json({ message: "New event added", Event: newEvent })
                 return
