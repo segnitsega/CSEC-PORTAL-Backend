@@ -9,12 +9,12 @@ export const createGroup = async(req: Request | any, res: Response): Promise<voi
         return;
     }  
     const {group, division} = req.body    
-    const availableDivisions = await DivisionGroup.distinct('division'); 
 
     if(!group || !division){
         res.status(400).json({ message: "Group name and division required" })  
         return;
     } 
+    const availableDivisions = await DivisionGroup.distinct('division'); 
 
     if(!availableDivisions.includes(division)){
         res.status(400).json({ message: `${division} is not a valid division` });
