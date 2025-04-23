@@ -1,5 +1,7 @@
 import Event from "../models/eventsModel";
 import { Request, Response } from "express";
+import DivisionGroup from "../models/divisionGroupModel"
+import dayjs from "dayjs";
 
 export const addEvent = async(req: Request | any, res: Response) => {
     const {clubRole} = req.user
@@ -10,6 +12,8 @@ export const addEvent = async(req: Request | any, res: Response) => {
 
     const {
         eventTitle,
+        division,
+        groups,
         eventDate,
         startTime,
         endTime,
@@ -19,22 +23,58 @@ export const addEvent = async(req: Request | any, res: Response) => {
     
     if(eventExist){
         res.status(400).json({message: `Event ${eventTitle} already exists`})
+        return
     }
 
-    // president, vice president, and division presidents can add event
+    const formattedDate = dayjs(eventDate).format("YY/MM/DD")
+    const topRoles = ["President", "Vice President"]
+
+    if(division && groups){
+        const availableDivisions = await DivisionGroup.distinct('division'); 
+        if(!availableDivisions.includes(division)){
+            res.status(400).json({ message: `${division} is not a valid division` });
+            return;
+        }
+        const divisionPresidents:{[key: string]: string} = {}
+        availableDivisions.forEach((division) => {
+            divisionPresidents[`${division} President`] = division
+        })
+
+        if(topRoles.includes(clubRole) || divisionPresidents[clubRole] === division){
+            try{
+                const newEvent = await Event.create({
+                    eventTitle,
+                    division,
+                    groups,
+                    eventDate: formattedDate,
+                    startTime,
+                    endTime,
+                    visibility
+                })
+                res.status(201).json({ message: "New event added", Event: newEvent })
+                return
+            }catch(error){
+                console.error("Error creating session:", error);
+                res.status(500).json({ message: "Failed to add event", error });
+                return
+            }
+        }
+    }    
+
     try{
         const newEvent = await Event.create({
             eventTitle,
-            eventDate,
+            eventDate: formattedDate,
             startTime,
             endTime,
             visibility
         })
-
         res.status(201).json({ message: "New event added", Event: newEvent })
+        return
     } catch(error){
         console.error("Error creating session:", error);
         res.status(500).json({ message: "Failed to add event", error });
+        return
     }
     
 } 
