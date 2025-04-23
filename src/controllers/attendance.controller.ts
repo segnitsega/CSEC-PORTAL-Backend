@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import Attendance from "../models/attendance";
+import Attendance from "../models/attendanceModel";
 import Member from "../models/membersModel";
 import Session from "../models/sessionsModel";
-import mongoose from "mongoose";
+import moment from "moment";
 
 
 export const submitAttendance = async (req: Request, res: Response): Promise<void> => {
@@ -13,7 +13,7 @@ export const submitAttendance = async (req: Request, res: Response): Promise<voi
 //     "sessionId": "abc123",
 //     "records": [
 //       { "memberId": "u123", "status": "Present" },
-//       { "memberId": "u456", "status": "Absent" }
+//       { "memberId": "u456", "status": "Absent", "headsUp": "..."}
 //     ]
 //   }
 
@@ -26,7 +26,7 @@ if (!sessionId || !Array.isArray(records) || records.length === 0) {
     const bulkOperations = records.map((record: any) => ({
       updateOne: {
         filter: { memberId: record.memberId, sessionId },
-        update: { $set: { status: record.status, date: new Date() } },
+        update: { $set: { status: record.status, headsUp: record.headsUp, date: new Date() } },
         upsert: true,
       },
     }));
@@ -59,45 +59,63 @@ export const getAttendanceData = async (req: Request, res: Response): Promise<vo
     }
   };
 
-export const getMemberAttendanceSummary = async (req: Request, res: Response) => {
-    const { memberId } = req.params;
-  
-    try {
-      const now = new Date();
-      const weekAgo = new Date(now);
-      weekAgo.setDate(now.getDate() - 7);
-  
-      const monthAgo = new Date(now);
-      monthAgo.setDate(now.getDate() - 30);
-  
-      const getSummary = async (since: Date) => {
-        const records = await Attendance.aggregate([
-          { $match: { memberId: new mongoose.Types.ObjectId(memberId), date: { $gte: since } } },
-          { $group: {
-              _id: "$status",
-              count: { $sum: 1 }
-          }}
-        ]);
-        const total = records.reduce((acc, r) => acc + r.count, 0);
-        const present = records.find(r => r._id === "Present")?.count || 0;
-        return {
-          percentage: total === 0 ? 0 : Math.round((present / total) * 100),
-          total,
-          present
-        };
+export const getMemberAttendanceSummary = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const memberId = req.params.memberId;
+
+    const allRecords = await Attendance.find({ memberId })
+      .populate({
+        path: "sessionId",
+        select: "title startTime endTime date",
+      })
+      .lean();
+
+    const transformRecord = (record: any) => {
+      const session = record.sessionId;
+      return {
+        _id: record._id,
+        date: record.date,
+        status: record.status,
+        sessionTitle: session?.title || "N/A",
+        day: moment(session?.date || record.date).format("dddd"),
+        startTime: moment(session?.startTime).format("hh:mm A"),
+        endTime: moment(session?.endTime).format("hh:mm A"),
+        headsUp: record.headsUp || null
       };
-  
-      const summary = {
-        week: await getSummary(weekAgo),
-        month: await getSummary(monthAgo),
-        overall: await getSummary(new Date("2000-01-01"))
+    };
+
+    const getStats = (records: any[]) => {
+      const present = records.filter(r => r.status === "Present").length;
+      const headsUpCount = records.filter(r => r.status === "Excused").length;
+      const total = records.length;
+
+      return {
+        percentage: total > 0 ? Math.round((present / total) * 100) : 0,
+        total,
+        present,
+        headsUp: {
+          count: headsUpCount,
+          percentage: total > 0 ? Math.round((headsUpCount / total) * 100) : 0
+        },
+        records: records.map(transformRecord)
       };
-  
-      res.status(200).json(summary);
-    } catch (error) {
-      res.status(500).json({ message: "Error fetching attendance summary", error });
-    }
-  };
+    };
 
+    const now = moment();
+    const startOfWeek = now.clone().startOf("week");
+    const startOfMonth = now.clone().startOf("month");
 
+    const weekRecords = allRecords.filter(r => moment(r.date).isSameOrAfter(startOfWeek));
+    const monthRecords = allRecords.filter(r => moment(r.date).isSameOrAfter(startOfMonth));
+    const overallRecords = allRecords;
 
+    res.json({
+      week: getStats(weekRecords),
+      month: getStats(monthRecords),
+      overall: getStats(overallRecords)
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error." });
+  }
+};

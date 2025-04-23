@@ -4,6 +4,7 @@ export interface attendanceInterface extends Document {
   memberId: Types.ObjectId;
   sessionId: Types.ObjectId;
   status: "Present" | "Absent" | "Excused";
+  headsUp: string;
   date: Date;
 }
 
@@ -15,6 +16,7 @@ const attendanceSchema = new Schema<attendanceInterface>({
     enum: ["Present", "Absent", "Excused"],
     required: true,
   },
+  headsUp: {type: String},
   date: { type: Date, default: Date.now },
 }, { timestamps: true });
 

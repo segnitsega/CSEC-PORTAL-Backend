@@ -7,5 +7,4 @@ attendanceRouter.post("/", submitAttendance);
 attendanceRouter.get("/data/:sessionId", getAttendanceData)
 attendanceRouter.get("/member/:memberId", getMemberAttendanceSummary)
 
-
 export default attendanceRouter;
