@@ -53,12 +53,27 @@ export const addResource = async(req: Request | any, res: Response): Promise<voi
 
 export const getResources = async(req: Request, res: Response): Promise<void> => {
     try{
-        const resources = await Resource.find()
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+
+        const skip = (page - 1) * limit;
+
+         const [resources, total] = await Promise.all([
+            Resource.find().skip(skip).limit(limit).sort({ createdAt: -1 }), 
+            Resource.countDocuments()
+        ]);
+
+        // const resources = await Resource.find()
         if (resources.length === 0) {
             res.status(200).json({ message: "No resources available", Resources: [] });
             return;
         }
-        res.status(200).json({Resources: resources})
+        res.status(200).json({
+            page,
+            totalPages: Math.ceil(total / limit),
+            totalResources: total,
+            Resources: resources
+        })
         
     }catch(err){
         res.status(500).json({message: "unable to get resources", error: err})
