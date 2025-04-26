@@ -104,3 +104,75 @@ export const getEvents = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Failed to fetch events", error });
       }
 }
+
+export const deleteEvent = async (req: Request | any, res: Response): Promise<void> => {
+    const { clubRole } = req.user;
+  
+    if (clubRole === "Member") {
+      res.status(403).json({ message: `${clubRole} cannot delete an event` });
+      return;
+    }
+  
+    const { id } = req.params;
+    const event = await Event.findById(id);
+  
+    const availableDivisions = await DivisionGroup.distinct('division');
+    const topRoles = ["President", "Vice President"];
+    const divisionPresidents: { [key: string]: string } = {};
+  
+    availableDivisions.forEach((division) => {
+      divisionPresidents[`${division} President`] = division;
+    });
+  
+    if (topRoles.includes(clubRole) || divisionPresidents[clubRole] === event?.division) {
+      try {
+        const deletedEvent = await Event.findByIdAndDelete(id);
+        if (!deletedEvent) {
+          res.status(404).json({ message: "Event not found" });
+          return;
+        }
+        res.status(200).json({ message: "Event deleted successfully" });
+      } catch (error) {
+        res.status(500).json({ message: "Error deleting event", error });
+      }
+    } else {
+      res.status(403).json({ message: "Unauthorized to delete this event" });
+    }
+  };
+
+
+export const updateEvent = async (req: Request | any, res: Response): Promise<void> => {
+  const { clubRole } = req.user;
+
+  if (clubRole === "Member") {
+    res.status(403).json({ message: `${clubRole} cannot update an event` });
+    return;
+  }
+
+  const { id } = req.params;
+  const updatedData = req.body;
+  const event = await Event.findById(id);
+
+  const availableDivisions = await DivisionGroup.distinct('division');
+  const topRoles = ["President", "Vice President"];
+  const divisionPresidents: { [key: string]: string } = {};
+
+  availableDivisions.forEach((division) => {
+    divisionPresidents[`${division} President`] = division;
+  });
+
+  if (topRoles.includes(clubRole) || divisionPresidents[clubRole] === event?.division) {
+    try {
+      const updatedEvent = await Event.findByIdAndUpdate(id, updatedData, { new: true });
+      if (!updatedEvent) {
+        res.status(404).json({ message: "Event not found" });
+        return;
+      }
+      res.status(200).json({ message: "Event updated successfully", updatedEvent });
+    } catch (error) {
+      res.status(500).json({ message: "Error updating event", error });
+    }
+  } else {
+    res.status(403).json({ message: "Unauthorized to update this event" });
+  }
+};
