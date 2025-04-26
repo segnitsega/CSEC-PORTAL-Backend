@@ -33,7 +33,7 @@ export const createSession = async(req: Request | any, res: Response): Promise<v
         res.status(400).json({ message: "Invalid session format" });
         return
     }
-    
+   
     const topRoles = ["President", "Vice President"]
     const divisionPresidents:{[key: string]: string} = {}
     availableDivisions.forEach((division) => {
@@ -90,6 +90,70 @@ export const getSessions = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error fetching sessions:", error);
     res.status(500).json({ message: "Failed to fetch sessions", error });
+  }
+};
+
+export const deleteSession = async (req: Request | any, res: Response): Promise<void> => {
+  const { clubRole } = req.user;
+  const { id } = req.params;
+
+  if (clubRole === "Member") {
+    res.status(403).json({ message: `${clubRole} cannot delete a session` });
+    return;
+  }
+
+  const session = await Session.findById(id);
+  if (!session) {
+    res.status(404).json({ message: "Session not found" });
+    return;
+  }
+
+  const availableDivisions = await DivisionGroup.distinct('division');
+  const topRoles = ["President", "Vice President"];
+  const divisionPresidents: { [key: string]: string } = {};
+  availableDivisions.forEach((division) => {
+    divisionPresidents[`${division} President`] = division;
+  });
+
+  if (topRoles.includes(clubRole) || divisionPresidents[clubRole] === session.division) {
+    try { 
+     const deletedSession = await session.deleteOne(); 
+      res.status(200).json({ message: "Session deleted successfully", deletedSession });
+    } catch (error) {
+      res.status(500).json({ message: "Error deleting session", error });
+    }
+  } else {
+    res.status(403).json({ message: "You are not authorized to delete this session" });
+  }
+};
+
+export const updateSession = async (req: Request | any, res: Response): Promise<void> => {
+  const { id } = req.params;
+  const { clubRole } = req.user;
+  const updatedData = req.body;
+
+  try {
+    const session = await Session.findById(id);
+    if (!session) {
+      res.status(404).json({ message: "Session not found" });
+      return;
+    }
+
+    const availableDivisions = await DivisionGroup.distinct('division');
+    const topRoles = ["President", "Vice President"];
+    const divisionPresidents: { [key: string]: string } = {};
+    availableDivisions.forEach((division) => {
+      divisionPresidents[`${division} President`] = division;
+    });
+
+    if (topRoles.includes(clubRole) || divisionPresidents[clubRole] === session.division) {
+      const updatedSession = await Session.findByIdAndUpdate(id, updatedData, { new: true });
+      res.status(200).json({ message: "Session updated successfully", updatedSession });
+    } else {
+      res.status(403).json({ message: "You are not authorized to update this session" });
+    } 
+  } catch (error) {
+    res.status(500).json({ message: "Error updating session", error });
   }
 };
 
