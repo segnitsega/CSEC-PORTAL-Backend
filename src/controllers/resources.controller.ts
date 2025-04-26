@@ -79,3 +79,74 @@ export const getResources = async(req: Request, res: Response): Promise<void> =>
         res.status(500).json({message: "unable to get resources", error: err})
     }
 }
+
+export const deleteResource = async (req: Request | any, res: Response): Promise<void> => {
+    const { clubRole } = req.user;
+    
+    if (clubRole === "Member") {
+      res.status(403).json({ message: `${clubRole} cannot delete a resource` });
+      return;
+    }
+  
+    const { id } = req.params;
+    const resource = await Resource.findById(id);
+  
+    const availableDivisions = await DivisionGroup.distinct('division');
+    const topRoles = ["President", "Vice President"];
+    const divisionPresidents: { [key: string]: string } = {};
+    
+    availableDivisions.forEach((division) => {
+      divisionPresidents[`${division} President`] = division;
+    });
+  
+    if (topRoles.includes(clubRole) || divisionPresidents[clubRole] === resource?.division) {
+      try {
+        const deletedResource = await Resource.findByIdAndDelete(id);
+        if (!deletedResource) {
+          res.status(404).json({ message: "Resource not found" });
+          return;
+        } 
+        res.status(200).json({ message: "Resource deleted successfully" });
+      } catch (error) {
+        res.status(500).json({ message: "Error deleting resource", error });
+      }
+    } else {
+      res.status(403).json({ message: "Unauthorized to delete this resource" });
+    }
+  };
+
+export const updateResource = async (req: Request | any, res: Response): Promise<void> => {
+  const { clubRole } = req.user;
+
+  if (clubRole === "Member") {
+    res.status(403).json({ message: `${clubRole} cannot update a resource` });
+    return;
+  }
+
+  const { id } = req.params;
+  const updatedData = req.body;
+  const resource = await Resource.findById(id);
+
+  const availableDivisions = await DivisionGroup.distinct('division');
+  const topRoles = ["President", "Vice President"];
+  const divisionPresidents: { [key: string]: string } = {};
+
+  availableDivisions.forEach((division) => {
+    divisionPresidents[`${division} President`] = division;
+  });
+
+  if (topRoles.includes(clubRole) || divisionPresidents[clubRole] === resource?.division) {
+    try {
+      const updatedResource = await Resource.findByIdAndUpdate(id, updatedData, { new: true });
+      if (!updatedResource) {
+        res.status(404).json({ message: "Resource not found" });
+        return;
+      }
+      res.status(200).json({ message: "Resource updated successfully", updatedResource });
+    } catch (error) {
+      res.status(500).json({ message: "Error updating resource", error });
+    }
+  } else {
+    res.status(403).json({ message: "Unauthorized to update this resource" });
+  }
+};

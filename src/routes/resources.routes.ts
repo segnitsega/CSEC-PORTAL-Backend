@@ -1,9 +1,12 @@
 import express from "express"
-import { addResource, getResources } from "../controllers/resources.controller"
+import { addResource, deleteResource, getResources, updateResource } from "../controllers/resources.controller"
 import { authenticateToken } from "../middlewares/authMiddleware"
 
 export const resourcesRouter = express.Router()
 
 resourcesRouter.post('/addResource',authenticateToken, addResource)
 resourcesRouter.get('/', getResources)
+resourcesRouter.delete('/:id', authenticateToken, deleteResource);
+resourcesRouter.put('/:id', authenticateToken, updateResource);
+
 
