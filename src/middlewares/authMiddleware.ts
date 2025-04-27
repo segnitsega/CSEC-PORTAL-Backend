@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, {JwtPayload, VerifyErrors} from "jsonwebtoken"
 
-const secretKey = process.env.REFRESH_KEY || ""
+const secretKey = process.env.SECRET_KEY || "SECRET_KEY"
 
 interface authenticatedRequest extends Request {
     user ?: string | JwtPayload
