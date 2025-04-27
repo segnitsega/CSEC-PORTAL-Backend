@@ -3,7 +3,7 @@ import { connectDB } from "./config/db";
 import dotenv from "dotenv";
 import { membersRouter } from "./routes/members.routes";
 import { groupsRouter } from "./routes/groups.routes";
-import cookieParser from "cookie-parser"
+// import cookieParser from "cookie-parser"
 import cors from "cors"
 import { divisionsRouter } from "./routes/divisions.routes";
 import { sessionsRouter } from "./routes/sessions.routes";
@@ -23,12 +23,7 @@ server.use(cors({
 
 server.use('/uploads', express.static('uploads'));
 server.use(express.json())
-server.use(cookieParser())
-connectDB();
-
-server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
-})
+// server.use(cookieParser())
 
 server.use('/api/members', membersRouter)
 server.use('/api/divisions', divisionsRouter)  
@@ -36,4 +31,10 @@ server.use('/api/groups', groupsRouter)
 server.use('/api/sessions', sessionsRouter)
 server.use('/api/events', eventsRouter)
 server.use('/api/attendance', attendanceRouter) 
-server.use('/api/resources', resourcesRouter) 
+server.use('/api/resources', resourcesRouter)
+
+connectDB();
+
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`)
+})
