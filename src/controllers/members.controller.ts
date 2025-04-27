@@ -5,23 +5,8 @@ import jwt, {JwtPayload, VerifyErrors} from 'jsonwebtoken'
 import { sendOnboardingEmail } from "../utils/Mailer";
 import DivisionGroup from "../models/divisionGroupModel";
 
-const secretKey = process.env.SECRET_KEY || ""
-const refreshKey = process.env.REFRESH_KEY || ""
-
-
-// export const getMembers = async(req: Request | any, res: Response): Promise<void> => {
-//     try{
-//         const members = await Member.find().select("-password -refreshToken")
-//         res.status(200).json({
-//             length: members.length,
-//             members: members
-//         })
-//     } 
-//     catch(error){
-//         res.status(500).json({message: 'Error to fetch members', error})
-//         console.log(error) 
-//     }
-// }
+const secretKey = process.env.SECRET_KEY as string
+const refreshKey = process.env.REFRESH_KEY as string
 
 export const getMembers = async (req: Request | any, res: Response): Promise<void> => {
     try { 
@@ -38,7 +23,7 @@ export const getMembers = async (req: Request | any, res: Response): Promise<voi
       } = req.query;
 
       const query: any = {};
-  
+
       if (search) {
         const regex = new RegExp(search, 'i'); 
         query.$or = [
@@ -46,8 +31,7 @@ export const getMembers = async (req: Request | any, res: Response): Promise<voi
           { middleName: regex },
           { lastName: regex },
           { email: regex },
-          { universityId: regex },
-          { phoneNumber: regex }
+          { universityId: regex }
         ];
       }
   
@@ -98,28 +82,25 @@ export const getMemberById = async(req: Request, res: Response): Promise<void> =
     catch(error){
         res.status(501).json({ message: "Error retrieving Member", error: error })
     }
-
 }
 
 export const handleLogin = async(req: Request, res: Response): Promise<void> => { 
-    try{
-        if(Object.keys(req.body).length === 0){
+    if(Object.keys(req.body).length === 0){
             res.status(400).json({message: "Login request body is empty"})
             return
         } 
-        const { email, password } = req.body
-        if (!email || !password) {
-            res.status(400).json({ message: "Email and password are required" });
-            return;
-          }
-          
-        const foundMember = await Member.findOne({email})
+    const { email, password } = req.body
+    if (!email || !password) {
+        res.status(400).json({ message: "Email and password are required" });
+        return;
+    } 
 
+    try{                 
+        const foundMember = await Member.findOne({email})
         if(!foundMember){
             res.status(404).json({message: "Member not found"})
             return
         } 
-
         const passwordMatch = await bcrypt.compare(password, foundMember.password)
         if (!passwordMatch) {
             res.status(401).json({ message: "Invalid password" }) 
@@ -128,8 +109,8 @@ export const handleLogin = async(req: Request, res: Response): Promise<void> => 
 
         const token = jwt.sign({id: foundMember._id, email: foundMember.email, clubRole: foundMember.clubRole}, secretKey, {expiresIn: "5h"})  
         const refreshToken = jwt.sign({id: foundMember._id, email: foundMember.email, clubRole: foundMember.clubRole}, refreshKey, {expiresIn: "7d"})
-
         await Member.updateOne({email}, {$set: {refreshToken}})
+
        res.status(200).json({
         message: "Login Successful",
         token,
@@ -143,18 +124,17 @@ export const handleLogin = async(req: Request, res: Response): Promise<void> => 
 }  
 
 export const handleRefreshToken = async(req: Request, res: Response): Promise<void> => { 
-    try{ 
-        let refreshToken = req.headers['authorization']?.split(' ')[1] 
-        if(!refreshToken){ 
-            res.status(401).json({message: "No refresh token provided"})
-            return
-        }
+    let refreshToken = req.headers['authorization']?.split(' ')[1] 
+    if(!refreshToken){ 
+        res.status(401).json({message: "No refresh token provided"})
+        return
+    }
+    try{        
         const foundMember = await Member.findOne({ refreshToken })
         if(!foundMember){
             res.status(403).json({message: "Invalid refresh token"})
             return
         }
-
         jwt.verify(refreshToken, refreshKey, (error: VerifyErrors | null, decoded:string | JwtPayload | undefined) => {
             if(error){ 
                 return res.status(403).json({message: "Token verification failed"})
@@ -267,7 +247,6 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
         res.status(500).json({ message: "Failed to update member profile", error });
     }
 }
-
 
 export const getAllHeads = async (req: Request, res: Response): Promise<void> => {
     try { 

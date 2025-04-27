@@ -2,17 +2,12 @@ import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import DivisionGroup from '../models/divisionGroupModel';
 
-const strongPasswordRegex =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+const strongPasswordRegex =/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
-export const validateMemberOnboarding = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+export const validateMemberOnboarding = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
   try {  
     const validDivisions = await DivisionGroup.distinct('division');
-
     const onboardingSchema = z.object({
       division: z.string().refine((val) => validDivisions.includes(val), {
         message: `Division must be one of ${validDivisions}`,
