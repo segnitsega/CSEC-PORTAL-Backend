@@ -1,10 +1,11 @@
 import express from "express";
 import { getAttendanceData, getMemberAttendanceSummary, submitAttendance } from "../controllers/attendance.controller";
+import { authenticateToken } from "../middlewares/authMiddleware";
 
 const attendanceRouter = express.Router();
 
-attendanceRouter.post("/", submitAttendance);
-attendanceRouter.get("/data/:sessionId", getAttendanceData)
-attendanceRouter.get("/member/:memberId", getMemberAttendanceSummary)
+attendanceRouter.post("/", authenticateToken, submitAttendance);
+attendanceRouter.get("/data/:sessionId", authenticateToken, getAttendanceData)
+attendanceRouter.get("/member/:memberId", authenticateToken, getMemberAttendanceSummary)
 
 export default attendanceRouter;

@@ -5,7 +5,7 @@ import { authenticateToken } from "../middlewares/authMiddleware"
 export const resourcesRouter = express.Router()
 
 resourcesRouter.post('/addResource',authenticateToken, addResource)
-resourcesRouter.get('/', getResources)
+resourcesRouter.get('/', authenticateToken, getResources)
 resourcesRouter.delete('/:id', authenticateToken, deleteResource);
 resourcesRouter.put('/:id', authenticateToken, updateResource);
 

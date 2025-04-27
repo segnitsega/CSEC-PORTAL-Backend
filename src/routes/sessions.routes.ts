@@ -5,6 +5,6 @@ import { authenticateToken } from "../middlewares/authMiddleware";
 export const sessionsRouter = express.Router();
 
 sessionsRouter.post('/createSession', authenticateToken, createSession) 
-sessionsRouter.get('/', getSessions) 
+sessionsRouter.get('/', authenticateToken, getSessions) 
 sessionsRouter.delete('/:id', authenticateToken, deleteSession);
 sessionsRouter.put('/:id', authenticateToken, updateSession);

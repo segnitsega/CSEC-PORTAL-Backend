@@ -5,6 +5,6 @@ import { authenticateToken } from "../middlewares/authMiddleware"
 export const eventsRouter = express.Router()
 
 eventsRouter.post('/addEvent', authenticateToken, addEvent) 
-eventsRouter.get('/', getEvents)
+eventsRouter.get('/', authenticateToken,  getEvents)
 eventsRouter.delete('/:id', authenticateToken, deleteEvent);
 eventsRouter.put('/:id', authenticateToken, updateEvent);
