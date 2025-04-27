@@ -53,12 +53,10 @@ export const createGroup = async(req: Request | any, res: Response): Promise<voi
 } 
 
 export const getGroupMembers = async(req: Request, res: Response): Promise<void> => {
- 
-    if(!req.body){
-        res.status(400).json({message: "Group name and division required"})
-        return
-    }  
-    const {division, group} = req.body 
+    
+    const division = req.query.division as string
+    const group = req.query.group as string
+
     if(!group || !division){
         res.status(400).json({ message: "Group name and division required" })  
         return;

@@ -5,5 +5,5 @@ import { authenticateToken } from "../middlewares/authMiddleware"
 export const groupsRouter = express.Router()
 
 groupsRouter.post('/createGroup', authenticateToken, createGroup)
-groupsRouter.post('/getMembers', authenticateToken, getGroupMembers)
+groupsRouter.get('/getMembers', authenticateToken, getGroupMembers)
 
