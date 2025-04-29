@@ -10,6 +10,7 @@ import { sessionsRouter } from "./routes/sessions.routes";
 import { eventsRouter } from "./routes/events.routes";
 import attendanceRouter from "./routes/attendance.routes";
 import { resourcesRouter } from "./routes/resources.routes";
+import { adminRouter } from "./routes/admin.routes";
 
 dotenv.config()
 
@@ -32,6 +33,8 @@ server.use('/api/sessions', sessionsRouter)
 server.use('/api/events', eventsRouter)
 server.use('/api/attendance', attendanceRouter) 
 server.use('/api/resources', resourcesRouter)
+server.use('/api/admin', adminRouter)
+
 
 connectDB();
 
