@@ -9,9 +9,9 @@ import { upload } from "../middlewares/profilePictureuploadMiddleware"
 export const membersRouter = express.Router()
 
 membersRouter.get('/', authenticateToken, getMembers) 
-membersRouter.get('/:id',authenticateToken, getMemberById) 
 membersRouter.get('/heads', authenticateToken, getAllHeads)
 membersRouter.post('/login', handleLogin)    
 membersRouter.post('/refresh', handleRefreshToken) 
 membersRouter.post('/createMember', authenticateToken, validateMemberOnboarding, handleMemberOnboarding) 
 membersRouter.post('/profileDetails', authenticateToken, upload.single('profilePicture'),  validateProfileDetails, handleProfileDetails)  
+membersRouter.get('/:id',authenticateToken, getMemberById) 

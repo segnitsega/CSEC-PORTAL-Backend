@@ -250,7 +250,7 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
 
 export const getAllHeads = async (req: Request, res: Response): Promise<void> => {
     try { 
-      const heads = await Member.find({ clubRole: { $ne: "Member" } }).select("clubRole email");
+      const heads = await Member.find({ clubRole: { $ne: "Member" } }).select("firstName middleName lastName clubRole email");
   
       if (!heads || heads.length === 0) {
         res.status(400).json({ message: "No heads found" });
