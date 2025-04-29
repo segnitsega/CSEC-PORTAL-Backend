@@ -27,7 +27,7 @@ export interface memberInterface extends Document {
     resourceLink?: string,
     banned: boolean; 
     profilePicture?: string; 
-    clubRole: 'Member' | 'President' | 'Vice President' | 'CPD President' | 'Dev President' | 'CBD President' | 'SEC President' | 'DS President';
+    clubRole: string;
     division: string; 
     group: string;
     divisionRole: 'Admin' | 'Coordinator' | 'Member';
@@ -67,7 +67,6 @@ const memberSchema = new Schema<memberInterface>({
     profilePicture: { type: String },
     clubRole: { 
         type: String,
-        enum: ['Member', 'President', 'Vice President', 'CPD President', 'Dev President', 'CBD President', 'SEC President', 'DS President'],
         default: 'Member'
     },
     division: {
