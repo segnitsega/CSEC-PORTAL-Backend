@@ -162,6 +162,8 @@ export const handleMemberOnboarding = async(req: Request | any, res: Response): 
     const currentDivisions = await DivisionGroup.distinct('division')
     
     const {  
+        firstName,
+        lastName,
         division, 
         group, 
         email,  
@@ -179,6 +181,8 @@ export const handleMemberOnboarding = async(req: Request | any, res: Response): 
     } 
     const hashedPassword = await bcrypt.hash(generatedPassword, 10) 
     const newMember =  new Member({
+        firstName,
+        lastName,
         division,  
         group,
         email, 

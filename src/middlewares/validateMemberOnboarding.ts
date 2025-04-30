@@ -9,9 +9,16 @@ export const validateMemberOnboarding = async (req: Request, res: Response, next
   try {  
     const validDivisions = await DivisionGroup.distinct('division');
     const onboardingSchema = z.object({
+      firstName: z.string({ required_error: 'First name is required.' })
+        .min(2, 'First name must be at least 2 characters long.')
+        .max(50, 'First name must be at most 50 characters long.'),
+        
+      lastName: z.string({ required_error: 'Last name is required.' })
+        .min(2, 'Last name must be at least 2 characters long.')
+        .max(50, 'Last name must be at most 50 characters long.'),
       division: z.string().refine((val) => validDivisions.includes(val), {
         message: `Division must be one of ${validDivisions}`,
-      }),
+      }), 
       group: z.string({ required_error: 'Group is required.' }),
       email: z.string().email('Invalid email format.'),
       generatedPassword: z.string().regex(strongPasswordRegex, {
