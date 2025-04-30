@@ -6,6 +6,17 @@ const phoneRegex = /^(?:\+2519\d{8}|\+2517\d{8}|0[79]\d{8})$/;
 
 export const validateProfileDetails = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    // Parse `resources` if it's a string
+    if (req.body.resources && typeof req.body.resources === 'string') {
+      try {
+        req.body.resources = JSON.parse(req.body.resources);
+      } catch {
+        res.status(400).json({
+          message: "Invalid JSON format in 'resources'",
+        });
+        return
+      }
+    }
     const requiredDetailSchema = z.object({
       firstName: z.string().min(3, "First name should be at least 3 characters"),
       lastName: z.string().min(3, "Last name should be at least 3 characters"),

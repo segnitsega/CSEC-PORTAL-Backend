@@ -233,7 +233,7 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
             firstName, lastName, phoneNumber, birthDate, github,
             gender, telegramHandle, graduationYear, specialization,
             department, universityId, instagramHandle, linkedinHandle,
-            codeforcesHandle, leetcodeHandle, cv, bio, mentor,profilePicture,resources 
+            codeforcesHandle, leetcodeHandle, cv, bio, mentor,profilePicture,resources
         };
 
         Object.keys(updateData).forEach((key) => {
