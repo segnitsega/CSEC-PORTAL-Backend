@@ -1,9 +1,7 @@
 
-import express from "express"
 import { Request, Response } from "express"
 import Member from "../models/membersModel"
 import { getDivisionModel } from "../models/dynamicDivisionModel";
-import DivisionGroup from "../models/divisionGroupModel";
 
 export const addNewRole = async (req: Request | any,res:Response): Promise<void>=> {
    
@@ -15,15 +13,6 @@ export const addNewRole = async (req: Request | any,res:Response): Promise<void>
         return
     } 
     const { division, name, email, role} = req.body;
-    if(!division || !name || !email || !role){
-        res.status(400).json({message: "division, name, email, and role are required"})
-        return
-    }
-    const divisionExists = await DivisionGroup.findOne({division: division}); 
-    if(!divisionExists){
-        res.status(400).json({message: `division "${division}" does not exist`})
-        return
-    }
 
     const memberExists = await Member.findOne({email})
     if(!memberExists){
@@ -76,32 +65,22 @@ export const addPermissions = async (req: Request | any,res:Response): Promise<v
         return
     } 
     const { role, permissions, permissionStatus } = req.body;
-    if ( !role || !Array.isArray(permissions) || permissions.length === 0 ||
-        !permissionStatus
-      ) {
-        res.status(400).json({
-          message:
-            "role, permissions (non-empty array) and permissionStatus are required.",
-        });
-        return
-      } 
-    const permissionsLower = permissions.map((p: string) => p.toLowerCase().trim());
-    const statusLower = permissionStatus.toLowerCase().trim();
+    
 try{
     await Member.findOneAndUpdate(
         { clubRole: role },
         {
           $set: {
-            permissions: permissionsLower,
-            permissionStatus: statusLower,
+            permissions: permissions,
+            permissionStatus: permissionStatus,
           },
         },
         { new: true, collation: { locale: "en", strength: 2 } }
-      );
+      ); 
     res.status(200).json({
         message: `Permissions updated for ${role}.`,
-        permissions: permissionsLower,
-        permissionStatus: statusLower,
+        permissions: permissions,
+        permissionStatus: permissionStatus,
       });
 }catch (err) {
     console.error("Error updating permissions:", err);
