@@ -22,8 +22,8 @@ export interface memberInterface extends Document {
     linkedinHandle?: string;
     cv?: string, 
     bio?: string, 
-    resourceName?: string,
-    resourceLink?: string,
+    // resourceName?: string,
+    // resourceLink?: string,
     banned: boolean; 
     profilePicture?: string; 
     clubRole: string;
@@ -32,6 +32,10 @@ export interface memberInterface extends Document {
     permissions?: string[];
     permissionStatus?: string;
 
+    resources?: {
+        resourceName: string,
+        resourceLink: string
+    }[];
     division: string; 
     group: string;
     divisionRole: 'Admin' | 'Coordinator' | 'Member';
@@ -63,8 +67,8 @@ const memberSchema = new Schema<memberInterface>({
     github: { type: String }, 
     leetcodeHandle: { type: String }, 
     codeforcesHandle: { type: String }, 
-    resourceName: { type: String },
-    resourceLink: { type: String },
+    // resourceName: { type: String },
+    // resourceLink: { type: String },
     birthDate: { type: String },
     graduationYear: { type: Number},
     cv: { type: String }, 
@@ -80,6 +84,10 @@ const memberSchema = new Schema<memberInterface>({
         enum: ["active", "inactive"] 
     },
 
+    resources: [{ 
+        resourceName: {type: String }, 
+        resourceLink: { type: String } 
+    }], 
     division: {
         type: String,
         required: true,

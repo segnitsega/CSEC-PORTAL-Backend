@@ -27,6 +27,15 @@ export const validateProfileDetails = async (req: Request, res: Response, next: 
       leetcodeHandle: z.string().optional(),
       bio: z.string().optional(),
       
+      resources: z
+        .array(
+          z.object({
+            resourceName: z.string().min(1, "Resource name is required"),
+            resourceLink: z.string().url("Invalid resource link URL"),
+          })
+        )
+        .optional(),
+   
     });
 
     const result = requiredDetailSchema.safeParse(req.body);

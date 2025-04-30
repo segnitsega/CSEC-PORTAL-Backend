@@ -218,6 +218,7 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
                 cv, 
                 leetcodeHandle, 
                 bio,
+                resources
             } = req.body 
 
         const profilePicture = req.file? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`: null;
@@ -232,7 +233,7 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
             firstName, lastName, phoneNumber, birthDate, github,
             gender, telegramHandle, graduationYear, specialization,
             department, universityId, instagramHandle, linkedinHandle,
-            codeforcesHandle, leetcodeHandle, cv, bio, mentor,profilePicture
+            codeforcesHandle, leetcodeHandle, cv, bio, mentor,profilePicture,resources 
         };
 
         Object.keys(updateData).forEach((key) => {
