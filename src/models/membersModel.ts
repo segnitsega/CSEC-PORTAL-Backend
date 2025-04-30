@@ -1,4 +1,3 @@
-
 import { Schema, model, Document } from 'mongoose';
 
 // indexing later 
@@ -28,6 +27,11 @@ export interface memberInterface extends Document {
     banned: boolean; 
     profilePicture?: string; 
     clubRole: string;
+
+    //to add permissions/roles
+    permissions?: string[];
+    permissionStatus?: string;
+
     division: string; 
     group: string;
     divisionRole: 'Admin' | 'Coordinator' | 'Member';
@@ -69,6 +73,13 @@ const memberSchema = new Schema<memberInterface>({
         type: String,
         default: 'Member'
     },
+
+    permissions: { type: [String], default:[] },
+    permissionStatus: { 
+        type: String,
+        enum: ["active", "inactive"] 
+    },
+
     division: {
         type: String,
         required: true,

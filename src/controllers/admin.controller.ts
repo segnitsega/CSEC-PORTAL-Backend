@@ -1,3 +1,4 @@
+
 import express from "express"
 import { Request, Response } from "express"
 import Member from "../models/membersModel"
@@ -12,7 +13,7 @@ export const addNewRole = async (req: Request | any,res:Response): Promise<void>
     if(!topRoles.includes(clubRole)){
         res.status(401).json({message: `${clubRole} can not assign new role`})
         return
-    }
+    } 
     const { division, name, email, role} = req.body;
     if(!division || !name || !email || !role){
         res.status(400).json({message: "division, name, email, and role are required"})
@@ -63,5 +64,51 @@ export const addNewRole = async (req: Request | any,res:Response): Promise<void>
             error: error,
         });
     }
+
+}
+
+export const addPermissions = async (req: Request | any,res:Response): Promise<void> => {
+    const {clubRole} = req.user
+    const topRoles = ["President", "Vice President"]
+
+    if(!topRoles.includes(clubRole)){
+        res.status(401).json({message: `${clubRole} can not add permissions`})
+        return
+    } 
+    const { role, permissions, permissionStatus } = req.body;
+    if ( !role || !Array.isArray(permissions) || permissions.length === 0 ||
+        !permissionStatus
+      ) {
+        res.status(400).json({
+          message:
+            "role, permissions (non-empty array) and permissionStatus are required.",
+        });
+        return
+      } 
+    const permissionsLower = permissions.map((p: string) => p.toLowerCase().trim());
+    const statusLower = permissionStatus.toLowerCase().trim();
+try{
+    await Member.findOneAndUpdate(
+        { clubRole: role },
+        {
+          $set: {
+            permissions: permissionsLower,
+            permissionStatus: statusLower,
+          },
+        },
+        { new: true, collation: { locale: "en", strength: 2 } }
+      );
+    res.status(200).json({
+        message: `Permissions updated for ${role}.`,
+        permissions: permissionsLower,
+        permissionStatus: statusLower,
+      });
+}catch (err) {
+    console.error("Error updating permissions:", err);
+    res.status(500).json({
+      message: "Failed to update permissions.",
+      error: err instanceof Error ? err.message : err,
+    });
+  }
 
 }
