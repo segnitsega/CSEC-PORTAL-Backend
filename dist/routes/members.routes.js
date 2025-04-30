@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.membersRouter = void 0;
+const express_1 = __importDefault(require("express"));
+const members_controller_1 = require("../controllers/members.controller");
+const validateMemberOnboarding_1 = require("../middlewares/validateMemberOnboarding");
+const validateProfileDetails_1 = require("../middlewares/validateProfileDetails");
+const authMiddleware_1 = require("../middlewares/authMiddleware");
+const profilePictureuploadMiddleware_1 = require("../middlewares/profilePictureuploadMiddleware");
+exports.membersRouter = express_1.default.Router();
+exports.membersRouter.get('/', authMiddleware_1.authenticateToken, members_controller_1.getMembers);
+exports.membersRouter.get('/heads', authMiddleware_1.authenticateToken, members_controller_1.getAllHeads);
+exports.membersRouter.post('/login', members_controller_1.handleLogin);
+exports.membersRouter.post('/refresh', members_controller_1.handleRefreshToken);
+exports.membersRouter.post('/createMember', authMiddleware_1.authenticateToken, validateMemberOnboarding_1.validateMemberOnboarding, members_controller_1.handleMemberOnboarding);
+exports.membersRouter.post('/profileDetails', authMiddleware_1.authenticateToken, profilePictureuploadMiddleware_1.upload.single('profilePicture'), validateProfileDetails_1.validateProfileDetails, members_controller_1.handleProfileDetails);
+exports.membersRouter.get('/:id', authMiddleware_1.authenticateToken, members_controller_1.getMemberById);
