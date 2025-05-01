@@ -13,7 +13,7 @@ const attendanceSchema = new Schema<attendanceInterface>({
   sessionId: { type: Schema.Types.ObjectId, ref: "Session", required: true },
   status: {
     type: String,
-    enum: ["Present", "Absent", "Excused"],
+    enum: ["present", "absent", "excused"],
     required: true,
   },
   headsUp: {type: String},

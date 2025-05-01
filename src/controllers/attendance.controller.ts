@@ -1,13 +1,18 @@
 import { Request, Response } from "express";
 import Attendance from "../models/attendanceModel";
 import Member from "../models/membersModel";
+import DivisionGroup from "../models/divisionGroupModel"
 import Session from "../models/sessionsModel";
 import moment from "moment";
 
 
-export const submitAttendance = async (req: Request, res: Response): Promise<void> => {
+export const submitAttendance = async (req: Request | any, res: Response): Promise<void> => {
   const { sessionId, records } = req.body;
-
+  const { clubRole } = req.user
+  if(clubRole === "Member"){
+    res.status(403).json({message: "Unauthorized to submit attendance"})
+    return;
+} 
 //from frontend :
 //   req.body = {
 //     "sessionId": "abc123",
@@ -17,12 +22,26 @@ export const submitAttendance = async (req: Request, res: Response): Promise<voi
 //     ]
 //   }
 
-if (!sessionId || !Array.isArray(records) || records.length === 0) {
-    res.status(400).json({ message: "sessionId and records array are required" });
-    return;
+  const session = await Session.findById(sessionId)
+  console.log(`The session:  ${session}`)
+  if(!session){
+    res.status(400).json({message: `Session with id ${sessionId} not found`})
+    return
   }
 
-  try {
+  const sessionDivision = session?.division
+  const topRoles = ["President", "Vice President"]
+
+  const availableDivisions = await DivisionGroup.distinct('division'); 
+  const divisionPresidents:{[key: string]: string} = {}
+  availableDivisions.forEach((division) => {
+      divisionPresidents[`${division} President`] = division
+  })
+  if (!topRoles.includes(clubRole) && divisionPresidents[clubRole] !== sessionDivision){
+    res.status(403).json({ message: `${clubRole} can not submit attendance in ${sessionDivision} ` })
+    return
+  }
+    try {
     const bulkOperations = records.map((record: any) => ({
       updateOne: {
         filter: { memberId: record.memberId, sessionId },
@@ -37,6 +56,7 @@ if (!sessionId || !Array.isArray(records) || records.length === 0) {
     console.error("Error saving attendance:", error);
     res.status(500).json({ message: "Failed to save attendance" });
   }
+
 };
 
 export const getAttendanceData = async (req: Request, res: Response): Promise<void> => {
