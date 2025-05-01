@@ -18,34 +18,13 @@ export const createSession = async(req: Request | any, res: Response): Promise<v
         sessions
     } = req.body
 
-    if(!sessionTitle || !division || !groups || !startDate || !endDate){
-        res.status(400).json({ message: "sessionTitle,division, groups, startDate,and endDate are required" });
-        return
-    }
-
     const availableDivisions = await DivisionGroup.distinct('division'); 
-    if(!availableDivisions.includes(division)){
-        res.status(400).json({ message: `${division} is not a valid division` });
-        return;
-    }
-
-    if (!Array.isArray(sessions) || sessions.length === 0 || sessions.some(session => !session.day || !session.startTime || !session.endTime)) {
-        res.status(400).json({ message: "Invalid session format" });
-        return
-    }
    
     const topRoles = ["President", "Vice President"]
     const divisionPresidents:{[key: string]: string} = {}
     availableDivisions.forEach((division) => {
         divisionPresidents[`${division} President`] = division
     })
-
-    const sessionExists = await Session.findOne({sessionTitle})
-    if(sessionExists){
-        res.status(400).json({ message: `${sessionTitle} already exist` })
-        return
-    }
-
     const formattedStartDate = dayjs(startDate).format("YY/MM/DD")
     const formattedEndDate = dayjs(endDate).format("YY/MM/DD")
     if (topRoles.includes(clubRole) || divisionPresidents[clubRole] === division) {       
