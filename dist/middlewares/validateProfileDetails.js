@@ -5,6 +5,18 @@ const zod_1 = require("zod");
 const phoneRegex = /^(?:\+2519\d{8}|\+2517\d{8}|0[79]\d{8})$/;
 const validateProfileDetails = async (req, res, next) => {
     try {
+        // Parse `resources` if it's a string
+        if (req.body.resources && typeof req.body.resources === 'string') {
+            try {
+                req.body.resources = JSON.parse(req.body.resources);
+            }
+            catch (_a) {
+                res.status(400).json({
+                    message: "Invalid JSON format in 'resources'",
+                });
+                return;
+            }
+        }
         const requiredDetailSchema = zod_1.z.object({
             firstName: zod_1.z.string().min(3, "First name should be at least 3 characters"),
             lastName: zod_1.z.string().min(3, "Last name should be at least 3 characters"),
@@ -25,6 +37,12 @@ const validateProfileDetails = async (req, res, next) => {
             cv: zod_1.z.string().optional(),
             leetcodeHandle: zod_1.z.string().optional(),
             bio: zod_1.z.string().optional(),
+            resources: zod_1.z
+                .array(zod_1.z.object({
+                resourceName: zod_1.z.string().min(1, "Resource name is required"),
+                resourceLink: zod_1.z.string().url("Invalid resource link URL"),
+            }))
+                .optional(),
         });
         const result = requiredDetailSchema.safeParse(req.body);
         if (!result.success) {

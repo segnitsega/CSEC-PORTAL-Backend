@@ -19,8 +19,8 @@ const memberSchema = new mongoose_1.Schema({
     github: { type: String },
     leetcodeHandle: { type: String },
     codeforcesHandle: { type: String },
-    resourceName: { type: String },
-    resourceLink: { type: String },
+    // resourceName: { type: String },
+    // resourceLink: { type: String },
     birthDate: { type: String },
     graduationYear: { type: Number },
     cv: { type: String },
@@ -29,6 +29,15 @@ const memberSchema = new mongoose_1.Schema({
         type: String,
         default: 'Member'
     },
+    permissions: { type: [String], default: [] },
+    permissionStatus: {
+        type: String,
+        enum: ["active", "inactive"]
+    },
+    resources: [{
+            resourceName: { type: String },
+            resourceLink: { type: String }
+        }],
     division: {
         type: String,
         required: true,

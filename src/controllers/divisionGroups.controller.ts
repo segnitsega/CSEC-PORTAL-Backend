@@ -52,29 +52,64 @@ export const createGroup = async(req: Request | any, res: Response): Promise<voi
     }
 } 
 
-export const getGroupMembers = async(req: Request, res: Response): Promise<void> => {
+export const getGroupMembers = async(req: Request | any, res: Response): Promise<void> => {
     
-    const division = req.query.division as string
-    const group = req.query.group as string
+    const {
+        division, 
+        group, 
+        search, 
+        campusStatus, 
+        attendance, 
+        membershipStatus
+    } = req.query
+
+    const pageNumber = Math.max(1, parseInt(req.query.page as string, 10) || 1)
+    const limitNumber = Math.max(1, parseInt(req.query.limit as string, 10) || 10)
 
     if(!group || !division){
         res.status(400).json({ message: "Group name and division required" })  
         return;
     }  
+    const query: any = {
+        division: division,
+        group: group
+    };
+
+    if (search) {
+        const regex = new RegExp(search as string, 'i'); 
+        query.$or = [
+          { firstName: regex },
+          { middleName: regex },
+          { lastName: regex },
+          { email: regex },
+          { universityId: regex }
+        ];
+      }
+
+      if (campusStatus) query.campusStatus = campusStatus;
+      if (attendance) query.attendance = attendance;
+      if (membershipStatus) query.membershipStatus = membershipStatus;
+
+      const skip = (pageNumber - 1) * limitNumber;
+
     const groupExist = await DivisionGroup.findOne({ groups: group, division}) 
     if(!groupExist){
         res.status(400).json({ message: `Group "${group}" does not exist in ${division}`})  
         return;
     }   
     try{
-        const groupMembers = await Member.find({division, group}).select("-password -refreshToken")
-        if (groupMembers.length === 0) {
-            res.status(404).json({ message: "No members found in this group" });
-            return;
-        }
+        const [groupMembers, total] = await Promise.all([
+            Member.find(query)
+            .select("-password -refreshToken")
+            .skip(skip)
+            .limit(limitNumber)
+            .sort({createdAt: -1}),
+            Member.countDocuments(query)
+        ])
         res.status(200).json({ 
-            message: "Members retrieved", 
-            length: groupMembers.length,
+            currentPage: pageNumber, 
+            totalPages: Math.ceil(total / limitNumber),
+            totalGroupMembers: total,
             groupMembers: groupMembers });
 
     }catch (error) {

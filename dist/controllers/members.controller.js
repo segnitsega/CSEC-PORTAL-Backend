@@ -149,7 +149,7 @@ const handleMemberOnboarding = async (req, res) => {
         return;
     }
     const currentDivisions = await divisionGroupModel_1.default.distinct('division');
-    const { division, group, email, generatedPassword } = req.body;
+    const { firstName, lastName, division, group, email, generatedPassword } = req.body;
     const emailExist = await membersModel_1.default.findOne({ email });
     if (emailExist) {
         res.status(400).json('Email already used');
@@ -161,6 +161,8 @@ const handleMemberOnboarding = async (req, res) => {
     }
     const hashedPassword = await bcrypt_1.default.hash(generatedPassword, 10);
     const newMember = new membersModel_1.default({
+        firstName,
+        lastName,
         division,
         group,
         email,
@@ -175,7 +177,7 @@ const handleMemberOnboarding = async (req, res) => {
 exports.handleMemberOnboarding = handleMemberOnboarding;
 const handleProfileDetails = async (req, res) => {
     try {
-        const { firstName, lastName, phoneNumber, email, birthDate, github, gender, telegramHandle, graduationYear, specialization, department, mentor, universityId, instagramHandle, linkedinHandle, codeforcesHandle, cv, leetcodeHandle, bio, } = req.body;
+        const { firstName, lastName, phoneNumber, email, birthDate, github, gender, telegramHandle, graduationYear, specialization, department, mentor, universityId, instagramHandle, linkedinHandle, codeforcesHandle, cv, leetcodeHandle, bio, resources } = req.body;
         const profilePicture = req.file ? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}` : null;
         const foundMember = await membersModel_1.default.findOne({ email: email }).exec();
         if (!foundMember) {
@@ -186,7 +188,7 @@ const handleProfileDetails = async (req, res) => {
             firstName, lastName, phoneNumber, birthDate, github,
             gender, telegramHandle, graduationYear, specialization,
             department, universityId, instagramHandle, linkedinHandle,
-            codeforcesHandle, leetcodeHandle, cv, bio, mentor, profilePicture
+            codeforcesHandle, leetcodeHandle, cv, bio, mentor, profilePicture, resources
         };
         Object.keys(updateData).forEach((key) => {
             if (updateData[key] === undefined || updateData[key] === null) {
