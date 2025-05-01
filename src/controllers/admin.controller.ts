@@ -91,3 +91,35 @@ try{
   }
 
 }
+
+export const banMembers = async(req: Request | any, res: Response): Promise<void> => {
+    const { clubRole } = req.user
+    const allowedRoles = ["President", "Vice President"]
+    if(!allowedRoles.includes(clubRole)){
+        res.status(403).json({message: `${clubRole} is not allowed to ban members` })
+        return
+    } 
+  try {
+    const { emails } = req.body;
+
+    if (!Array.isArray(emails) || emails.length === 0) {
+        res.status(400).json({ message: 'Email list is required and must be an array.' });
+        return
+    }
+
+    const result = await Member.updateMany(
+      { email: { $in: emails } },
+      { $set: { banned: true, membershipStatus: 'Banned' } }
+    );
+
+    res.status(200).json({
+      message: `${result.modifiedCount} member(s) banned successfully.`,
+      updatedCount: result.modifiedCount
+    });
+  } catch (error) {
+    console.error('Error banning members:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
