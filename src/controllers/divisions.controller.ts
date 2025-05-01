@@ -40,27 +40,13 @@ export const createDivision = async (req: Request | any, res: Response): Promise
     const { clubRole } = req.user;
     const allowedRoles = ["President", "Vice President"];
 
-    if(!divisionName || !email || !headName){
-        res.status(403).json({message: "divisionName, headName and email required"})
-        return
-    }
-
     if(!allowedRoles.includes(clubRole)){
         res.status(403).json({message: `${clubRole} can not add a division`})
         return
     }
  
     try{ 
-        const divisionExists = await DivisionGroup.findOne({division: divisionName}); 
-        if(divisionExists){
-            res.status(400).json({message: `division "${divisionName}" already exist`})
-            return
-        }
-        const memberExists = await Member.findOne({email})
-        if(!memberExists){
-            res.status(400).json({message: `Invalid email, member with email ${email} does not exist`})
-            return
-        }
+    
         const newDivision = await DivisionGroup.create({ division: divisionName })  // creates a new division
         await Member.findOneAndUpdate({email}, {$set:{clubRole: divisionName + " " + "President"}}) // update the head's role to the created division's president
 
