@@ -1,43 +1,63 @@
 import { Request, Response, NextFunction } from 'express';
+import { z } from 'zod';
 import DivisionGroup from '../models/divisionGroupModel';
 import Session from '../models/sessionsModel';
+
+const sessionSchema = z.object({
+  sessionTitle: z.string().min(5, 'sessionTitle is required and must be at least 5 characters'),
+  division:     z.string().min(1, 'division is required'),
+  groups:       z.array(z.string().min(1, 'group name cannot be empty'))
+                   .nonempty('at least one group is required'),
+  startDate:    z.string().min(1, 'startDate is required'),
+  endDate:      z.string().min(1, 'endDate is required'),
+  sessions:     z
+    .array(
+      z.object({
+        day:       z.string().min(1, 'day is required'),
+        startTime: z.string().min(1, 'startTime is required'),
+        endTime:   z.string().min(1, 'endTime is required'),
+      })
+    )
+    .nonempty('you must provide at least one session'),
+});
+
 export const validateSessionInput = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const {
-    sessionTitle,
-    division,
-    groups,
-    startDate,
-    endDate,
-    sessions
-  } = req.body;
-
-  if (!sessionTitle || !division || !groups || !startDate || !endDate) {
+  const parseResult = sessionSchema.safeParse(req.body);
+  if (!parseResult.success) {
     res.status(400).json({
-      message: "sessionTitle, division, groups, startDate, and endDate are required",
+      message: 'Validation failed',
+      errors: parseResult.error.flatten().fieldErrors,
     });
     return
   }
 
+  const {
+    sessionTitle,
+    division,
+    sessions,
+  } = parseResult.data;
+
   const availableDivisions = await DivisionGroup.distinct('division');
   if (!availableDivisions.includes(division)) {
-    res.status(400).json({ message: `${division} is not a valid division` });
+    res.status(400).json({
+      message: `Division "${division}" is not valid`,
+    });
     return
   }
 
-  if (!Array.isArray(sessions) || sessions.length === 0 ||
-      sessions.some(s => !s.day || !s.startTime || !s.endTime)) {
-    res.status(400).json({ message: "Invalid sessions format" });
+  const existing = await Session.findOne({ sessionTitle });
+  if (existing) {
+    res.status(400).json({
+      message: `Session title "${sessionTitle}" already exists`,
+    });
     return
   }
 
-  const sessionExists = await Session.findOne({sessionTitle})
-  if(sessionExists){
-    res.status(400).json({ message: `${sessionTitle} already exist` })
-    return
-}
+  req.body = parseResult.data;
+
   next();
 };

@@ -4,7 +4,7 @@ import DivisionGroup from "../models/divisionGroupModel"
 import dayjs from "dayjs"
 
 export const createSession = async(req: Request | any, res: Response): Promise<void> => {
-    const {clubRole} = req.user
+  const {clubRole} = req.user
     if(clubRole === "Member"){
         res.status(403).json({message: `${clubRole} can not create a session`})
         return
