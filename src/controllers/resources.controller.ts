@@ -15,17 +15,7 @@ export const addResource = async(req: Request | any, res: Response): Promise<voi
         return;
     }       
     const availableDivisions = await DivisionGroup.distinct('division'); 
-    if(!availableDivisions.includes(division)){
-        res.status(400).json({ message: `${division} is not a valid division` });
-        return;
-    }
-    const resourceExists = await Resource.findOne({resourceName, division})
-    if(resourceExists){
-        res.status(400).json({message:  `${resourceName} already exists in ${division}`})
-        return
-    } 
     const topRoles = ["President", "Vice President"]
-
     const divisionPresidents:{[key: string]: string} = {}
     availableDivisions.forEach((division) => {
         divisionPresidents[`${division} President`] = division
@@ -45,9 +35,9 @@ export const addResource = async(req: Request | any, res: Response): Promise<voi
             res.status(500).json({ message: "Failed to add resources", error });
             return
        }
-    }
+    } 
     else{ 
-        res.status(403).json({ message: `${clubRole} can not add resource in ${division} division` });
+        res.status(403).json({ message: `${clubRole} can not add resource in ${division}` });
     }
 }
 

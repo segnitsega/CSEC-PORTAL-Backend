@@ -23,7 +23,6 @@ export const submitAttendance = async (req: Request | any, res: Response): Promi
 //   }
 
   const session = await Session.findById(sessionId)
-  console.log(`The session:  ${session}`)
   if(!session){
     res.status(400).json({message: `Session with id ${sessionId} not found`})
     return
