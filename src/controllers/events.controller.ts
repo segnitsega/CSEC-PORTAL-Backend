@@ -20,12 +20,7 @@ export const addEvent = async(req: Request | any, res: Response) => {
         visibility,
         attendance
     } = req.body 
-    const eventExist = await Event.findOne({eventTitle})
     
-    if(eventExist){
-        res.status(400).json({message: `Event ${eventTitle} already exists`})
-        return
-    }
 
     const formattedDate = dayjs(eventDate).format("YY/MM/DD")
     const topRoles = ["President", "Vice President"]
