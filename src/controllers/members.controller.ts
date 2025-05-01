@@ -18,9 +18,10 @@ export const getMembers = async (req: Request | any, res: Response): Promise<voi
         attendance,
         membershipStatus,
         divisionRole,
-        page,
-        limit,
       } = req.query;
+
+      const pageNumber = Math.max(1, parseInt(req.query.page as string, 10) || 1)
+      const limitNumber = Math.max(1, parseInt(req.query.limit as string, 10) || 10)
 
       const query: any = {};
 
@@ -42,8 +43,8 @@ export const getMembers = async (req: Request | any, res: Response): Promise<voi
       if (membershipStatus) query.membershipStatus = membershipStatus;
       if (divisionRole) query.divisionRole = divisionRole;
   
-      const skip = (parseInt(page) - 1) * parseInt(limit);
-      const parsedLimit = parseInt(limit);
+      const skip = (pageNumber - 1) * limitNumber;
+      const parsedLimit = limitNumber;
   
       const [members, total] = await Promise.all([
         Member.find(query)
@@ -55,7 +56,7 @@ export const getMembers = async (req: Request | any, res: Response): Promise<voi
       ]);
   
       res.status(200).json({
-        currentPage: parseInt(page),
+        currentPage: pageNumber,
         totalPages: Math.ceil(total / parsedLimit),
         totalMembers: total,
         members

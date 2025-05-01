@@ -22,16 +22,12 @@ export interface memberInterface extends Document {
     linkedinHandle?: string;
     cv?: string, 
     bio?: string, 
-    // resourceName?: string,
-    // resourceLink?: string,
     banned: boolean; 
     profilePicture?: string; 
     clubRole: string;
-
     //to add permissions/roles
     permissions?: string[];
     permissionStatus?: string;
-
     resources?: {
         resourceName: string,
         resourceLink: string
@@ -67,8 +63,6 @@ const memberSchema = new Schema<memberInterface>({
     github: { type: String }, 
     leetcodeHandle: { type: String }, 
     codeforcesHandle: { type: String }, 
-    // resourceName: { type: String },
-    // resourceLink: { type: String },
     birthDate: { type: String },
     graduationYear: { type: Number},
     cv: { type: String }, 
