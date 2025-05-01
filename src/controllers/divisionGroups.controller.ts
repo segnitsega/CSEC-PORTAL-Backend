@@ -10,23 +10,7 @@ export const createGroup = async(req: Request | any, res: Response): Promise<voi
     }  
     const {group, division} = req.body    
 
-    if(!group || !division){
-        res.status(400).json({ message: "Group name and division required" })  
-        return;
-    } 
     const availableDivisions = await DivisionGroup.distinct('division'); 
-
-    if(!availableDivisions.includes(division)){
-        res.status(400).json({ message: `${division} is not a valid division` });
-        return;
-    }
-
-    const groupExist = await DivisionGroup.findOne({ division, groups: group})
-    
-    if(groupExist){
-        res.status(400).json( {message: `${group} exists in ${division}`})     
-        return    
-    }  
     const topRoles = ["President", "Vice President"]
 
     const divisionPresidents:{[key: string]: string} = {}
