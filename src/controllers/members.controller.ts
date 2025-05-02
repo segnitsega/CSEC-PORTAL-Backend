@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt'
 import jwt, {JwtPayload, VerifyErrors} from 'jsonwebtoken'
 import { sendOnboardingEmail } from "../utils/Mailer";
 import DivisionGroup from "../models/divisionGroupModel";
+import mongoose from "mongoose";
 
 const secretKey = process.env.SECRET_KEY as string
 const refreshKey = process.env.REFRESH_KEY as string
@@ -276,9 +277,21 @@ export const deleteMember = async(req: Request | any, res: Response): Promise<vo
         return
     } 
     const id = req.params.id 
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        res.status(400).json({ message: `Invalid member ID: ${id}` });
+        return;
+    }
     try{
-        await Member.findByIdAndUpdate({_id: id}, {$set:{banned: true, membershipStatus: 'Banned'}})
-
+        const foundMember = await Member.findById(id)
+        if(!foundMember){
+            res.status(400).json({
+                message: `No member found with ID: ${id}.`
+            })
+            return
+        }
+        foundMember.banned = true;
+        foundMember.membershipStatus = 'Banned';
+        await foundMember.save()
         res.status(200).json({
             message: `Member with ${id} id banned successfully.`
         })
