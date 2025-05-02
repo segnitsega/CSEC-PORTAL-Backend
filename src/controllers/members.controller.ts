@@ -5,11 +5,19 @@ import jwt, {JwtPayload, VerifyErrors} from 'jsonwebtoken'
 import { sendOnboardingEmail } from "../utils/Mailer";
 import DivisionGroup from "../models/divisionGroupModel";
 import mongoose from "mongoose";
+import path from "path";
+import { gfsBucket } from "../config/db";
 
 const secretKey = process.env.SECRET_KEY as string
 const refreshKey = process.env.REFRESH_KEY as string
 
+const makeFullPicUrl = (req: Request, fileId?: string): string | undefined =>
+    fileId
+      ? `${req.protocol}://${req.get('host')}/api/members/photo/${fileId}`
+      : undefined;
+
 export const getMembers = async (req: Request | any, res: Response): Promise<void> => {
+    
     try { 
       const {
         search,
@@ -52,15 +60,25 @@ export const getMembers = async (req: Request | any, res: Response): Promise<voi
           .select('-password -refreshToken')
           .skip(skip)
           .limit(parsedLimit)
-          .sort({ createdAt: -1 }),
+          .sort({ createdAt: -1 })
+          .lean(),
         Member.countDocuments(query)
       ]);
+
+    const updatedProfilePicturemembers = members.map(member => {
+        if (member.profilePicture) {
+          const url = makeFullPicUrl(req, member.profilePicture as string);
+          if (url) member.profilePicture = url;
+          else delete member.profilePicture;
+        }
+        return member;
+      });
   
       res.status(200).json({
         currentPage: pageNumber,
         totalPages: Math.ceil(total / parsedLimit),
         totalMembers: total,
-        members
+        updatedProfilePicturemembers
       });
     } catch (error) {
       console.error("Error fetching members:", error);
@@ -71,12 +89,18 @@ export const getMembers = async (req: Request | any, res: Response): Promise<voi
 export const getMemberById = async(req: Request, res: Response): Promise<void> => {
     const id = req.params.id
     try{
-        const member = await Member.findById(id).select("-password -refreshToken")
+        const member = await Member.findById(id).select("-password -refreshToken").lean()
 
         if(!member){
             res.status(404).json({message: "Member not found"})
             return
         }
+        if (member.profilePicture) {
+            const url = makeFullPicUrl(req, member.profilePicture as string);
+            if (url) member.profilePicture = url;
+            else delete member.profilePicture;
+          }
+        
         res.status(200).json({
             member
         })
@@ -223,9 +247,26 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
                 resources
             } = req.body 
 
-        const profilePicture = req.file? `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`: null;
 
-        const foundMember = await Member.findOne({ email: email }).exec()
+        let profilePictureId: string | undefined;
+        if (req.file) {
+            const ext = path.extname(req.file.originalname);
+            const filename = `${Date.now()}-${Math.round(Math.random()*1e9)}${ext}`;
+            const uploadStream = gfsBucket.openUploadStream(filename, {
+              contentType: req.file.mimetype
+            });
+            uploadStream.end(req.file.buffer);
+
+        await new Promise<void>((resolve, reject) => {
+            uploadStream.on('finish', () => {
+                profilePictureId = uploadStream.id.toString();
+                resolve();
+            });
+            uploadStream.on('error', reject);
+            });
+        }
+
+        const foundMember = await Member.findOne({ email: email })
         if(!foundMember){
             res.status(404).json({ message: "Member not found" })
             return
@@ -235,8 +276,11 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
             firstName, lastName, phoneNumber, birthDate, github,
             gender, telegramHandle, graduationYear, specialization,
             department, universityId, instagramHandle, linkedinHandle,
-            codeforcesHandle, leetcodeHandle, cv, bio, mentor,profilePicture,resources
+            codeforcesHandle, leetcodeHandle, cv, bio, mentor,resources
         };
+        if (profilePictureId) {
+            updateData.profilePicture = profilePictureId;
+          }
 
         Object.keys(updateData).forEach((key) => {
             if (updateData[key] === undefined || updateData[key] === null) {

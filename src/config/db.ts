@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
+import { GridFSBucket } from "mongodb";
 import dotenv from "dotenv"
 
 dotenv.config()
 const MONGO_URI = process.env.MONGO_URI || "";
-
+export let gfsBucket: GridFSBucket;
 export const connectDB = async() => {
     let retry = 5
     let delay = 5000
@@ -11,6 +12,11 @@ export const connectDB = async() => {
         try{ 
             await mongoose.connect(MONGO_URI);
             console.log('Mongodb connected.')
+
+            gfsBucket = new GridFSBucket(mongoose.connection.db!, {
+                bucketName: 'profilePics' // → creates profilePics.files & profilePics.chunks
+            });
+              console.log(' GridFSBucket profilePics is ready.');
             return
         } 
         catch(error){
