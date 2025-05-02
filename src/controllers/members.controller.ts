@@ -268,4 +268,23 @@ export const getAllHeads = async (req: Request, res: Response): Promise<void> =>
     }
   }; 
 
+export const deleteMember = async(req: Request | any, res: Response): Promise<void> => {
+    const { clubRole } = req.user
+    const allowedRoles = ["President", "Vice President"]
+    if(!allowedRoles.includes(clubRole)){
+        res.status(403).json({message: `${clubRole} is not allowed to ban members` })
+        return
+    } 
+    const id = req.params.id 
+    try{
+        await Member.findByIdAndUpdate({_id: id}, {$set:{banned: true, membershipStatus: 'Banned'}})
 
+        res.status(200).json({
+            message: `Member with ${id} id banned successfully.`
+        })
+    }
+    catch(error){
+        console.error('Error banning member:', error)
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}

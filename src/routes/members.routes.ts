@@ -1,6 +1,6 @@
 
 import express from "express"
-import { getAllHeads, getMembers, handleLogin, handleRefreshToken, handleMemberOnboarding, handleProfileDetails, getMemberById } from "../controllers/members.controller"
+import { getAllHeads, getMembers, handleLogin, handleRefreshToken, handleMemberOnboarding, handleProfileDetails, getMemberById, deleteMember } from "../controllers/members.controller"
 import { validateMemberOnboarding } from "../middlewares/validateMemberOnboarding"
 import { validateProfileDetails } from "../middlewares/validateProfileDetails"
 import { authenticateToken } from "../middlewares/authMiddleware"
@@ -15,3 +15,4 @@ membersRouter.post('/refresh', handleRefreshToken)
 membersRouter.post('/createMember', authenticateToken, validateMemberOnboarding, handleMemberOnboarding) 
 membersRouter.post('/profileDetails', authenticateToken, upload.single('profilePicture'),  validateProfileDetails, handleProfileDetails)  
 membersRouter.get('/:id',authenticateToken, getMemberById) 
+membersRouter.delete('/:id',authenticateToken, deleteMember) 
