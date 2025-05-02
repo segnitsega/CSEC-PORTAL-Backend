@@ -216,10 +216,9 @@ export const handleMemberOnboarding = async(req: Request | any, res: Response): 
     })  
     await newMember.save() 
 
-    res.status(200).json({ message: "New member created successfully", newMember });
-    // const sendResult = await sendOnboardingEmail(email, generatedPassword)
-    // res.status(200).json({ message: "New member created successfuly", result: sendResult })
-    //add link in the email for the new member to log in with
+    const sendResult = await sendOnboardingEmail(email, generatedPassword)
+    res.status(200).json({ message: "New member created successfuly", member: newMember, emailResult: sendResult })
+
 } 
 
 export const handleProfileDetails = async(req: Request, res: Response): Promise<void> => {
