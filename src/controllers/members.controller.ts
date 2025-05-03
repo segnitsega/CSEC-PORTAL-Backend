@@ -297,10 +297,10 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
         res.status(500).json({ message: "Failed to update member profile", error });
     }
 }
-
+ 
 export const getAllHeads = async (req: Request, res: Response): Promise<void> => {
     try { 
-      const heads = await Member.find({ clubRole: { $ne: "Member" } }).select("firstName middleName lastName clubRole email");
+      const heads = await Member.find({ clubRole: { $ne: "Member" } }).select("firstName middleName lastName clubRole email permissions permissionStatus");
   
       if (!heads || heads.length === 0) {
         res.status(400).json({ message: "No heads found" });
