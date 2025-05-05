@@ -299,33 +299,43 @@ export const getAllHeads = async (req: Request | any, res: Response): Promise<vo
 
 export const deleteMember = async(req: Request | any, res: Response): Promise<void> => {
     const { clubRole } = req.user
-    const allowedRoles = ["President", "Vice President"]
-    if(!allowedRoles.includes(clubRole)){
-        res.status(403).json({message: `${clubRole} is not allowed to ban members` })
+    if(clubRole === "Member"){
+        res.status(403).json({message: `${clubRole} can not ban a member`})
         return
-    } 
+    }
     const id = req.params.id 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        res.status(400).json({ message: `Invalid member ID: ${id}` });
+        res.status(404).json({ message: `Invalid member ID: ${id}` });
         return;
     }
-    try{
-        const foundMember = await Member.findById(id)
-        if(!foundMember){
-            res.status(400).json({
-                message: `No member found with ID: ${id}.`
+    const foundMember = await Member.findById(id)
+    if(!foundMember){
+        res.status(400).json({message: `No member found with ID: ${id}.`})
+        return
+    }
+    const division = foundMember.division
+    const topRoles = ["President", "Vice President"]
+    const availableDivisions = await DivisionGroup.distinct('division'); 
+    const divisionPresidents:{[key: string]: string} = {}
+    availableDivisions.forEach((division) => {
+        divisionPresidents[`${division} President`] = division
+    })
+    if(topRoles.includes(clubRole) || divisionPresidents[clubRole] === division){
+         try{
+        
+            foundMember.banned = true;
+            foundMember.membershipStatus = 'Banned';
+            await foundMember.save()
+            res.status(200).json({
+                message: `Member with ${id} id banned successfully.`
             })
-            return
         }
-        foundMember.banned = true;
-        foundMember.membershipStatus = 'Banned';
-        await foundMember.save()
-        res.status(200).json({
-            message: `Member with ${id} id banned successfully.`
-        })
+        catch(error){
+            console.error('Error banning member:', error)
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    } else{
+        res.status(403).json({message: `${clubRole} is not allowed to ban members in ${division}` })
     }
-    catch(error){
-        console.error('Error banning member:', error)
-        res.status(500).json({ message: 'Internal server error' });
-    }
+   
 }
