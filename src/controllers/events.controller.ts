@@ -2,6 +2,7 @@ import Event from "../models/eventsModel";
 import { Request, Response } from "express";
 import DivisionGroup from "../models/divisionGroupModel"
 import dayjs from "dayjs";
+import { canManageDivision } from "../utils/checkDivisionHead";
 
 export const addEvent = async(req: Request | any, res: Response) => {
     const {clubRole} = req.user
@@ -20,23 +21,14 @@ export const addEvent = async(req: Request | any, res: Response) => {
         visibility,
         attendance
     } = req.body 
-    
-
     const formattedDate = dayjs(eventDate).format("YY/MM/DD")
-    const topRoles = ["President", "Vice President"]
-
     if(division && groups){
         const availableDivisions = await DivisionGroup.distinct('division'); 
         if(!availableDivisions.includes(division)){
             res.status(400).json({ message: `${division} is not a valid division` });
             return;
         }
-        const divisionPresidents:{[key: string]: string} = {}
-        availableDivisions.forEach((division) => {
-            divisionPresidents[`${division} President`] = division
-        })
-
-        if(topRoles.includes(clubRole) || divisionPresidents[clubRole] === division){
+        if(await canManageDivision(clubRole, division)){
             try{
                 const newEvent = await Event.create({
                     eventTitle,
@@ -101,25 +93,14 @@ export const getEvents = async (req: Request, res: Response) => {
 }
 
 export const deleteEvent = async (req: Request | any, res: Response): Promise<void> => {
-    const { clubRole } = req.user;
-  
+    const { clubRole } = req.user; 
     if (clubRole === "Member") {
       res.status(403).json({ message: `${clubRole} cannot delete an event` });
       return;
     }
-  
     const { id } = req.params;
     const event = await Event.findById(id);
-  
-    const availableDivisions = await DivisionGroup.distinct('division');
-    const topRoles = ["President", "Vice President"];
-    const divisionPresidents: { [key: string]: string } = {};
-  
-    availableDivisions.forEach((division) => {
-      divisionPresidents[`${division} President`] = division;
-    });
-  
-    if (topRoles.includes(clubRole) || divisionPresidents[clubRole] === event?.division) {
+    if (await canManageDivision(clubRole, event?.division!)) {
       try {
         const deletedEvent = await Event.findByIdAndDelete(id);
         if (!deletedEvent) {
@@ -135,7 +116,6 @@ export const deleteEvent = async (req: Request | any, res: Response): Promise<vo
     }
   };
 
-
 export const updateEvent = async (req: Request | any, res: Response): Promise<void> => {
   const { clubRole } = req.user;
 
@@ -147,16 +127,7 @@ export const updateEvent = async (req: Request | any, res: Response): Promise<vo
   const { id } = req.params;
   const updatedData = req.body;
   const event = await Event.findById(id);
-
-  const availableDivisions = await DivisionGroup.distinct('division');
-  const topRoles = ["President", "Vice President"];
-  const divisionPresidents: { [key: string]: string } = {};
-
-  availableDivisions.forEach((division) => {
-    divisionPresidents[`${division} President`] = division;
-  });
-
-  if (topRoles.includes(clubRole) || divisionPresidents[clubRole] === event?.division) {
+  if (await canManageDivision(clubRole, event?.division!)) {
     try {
       const updatedEvent = await Event.findByIdAndUpdate(id, updatedData, { new: true });
       if (!updatedEvent) {

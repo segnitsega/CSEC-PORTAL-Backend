@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import DivisionGroup from "../models/divisionGroupModel"
 import Member from "../models/membersModel"
+import { canManageDivision } from "../utils/checkDivisionHead"
 
 export const createGroup = async(req: Request | any, res: Response): Promise<void> => {
     const {clubRole} = req.user 
@@ -9,16 +10,7 @@ export const createGroup = async(req: Request | any, res: Response): Promise<voi
         return;
     }  
     const {group, division} = req.body    
-
-    const availableDivisions = await DivisionGroup.distinct('division'); 
-    const topRoles = ["President", "Vice President"]
-
-    const divisionPresidents:{[key: string]: string} = {}
-    availableDivisions.forEach((division) => {
-        divisionPresidents[`${division} President`] = division
-    })    
-
-    if (topRoles.includes(clubRole) || divisionPresidents[clubRole] === division) {       
+    if (await canManageDivision(clubRole, division)) {       
         try {  
             const newGroup = await DivisionGroup.updateOne(
                 { division },

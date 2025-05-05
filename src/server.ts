@@ -25,7 +25,7 @@ server.use(cors({
 server.use('/uploads', express.static('uploads'));
 server.use(express.json())
 
-server.use('/api/members', membersRouter)
+server.use('/api/members', membersRouter) 
 server.use('/api/divisions', divisionsRouter)  
 server.use('/api/groups', groupsRouter) 
 server.use('/api/sessions', sessionsRouter)

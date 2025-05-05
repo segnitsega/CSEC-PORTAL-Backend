@@ -1,7 +1,7 @@
 import { Request, Response } from "express"
 import Session from "../models/sessionsModel"
-import DivisionGroup from "../models/divisionGroupModel"
 import dayjs from "dayjs"
+import { canManageDivision } from "../utils/checkDivisionHead"
 
 export const createSession = async(req: Request | any, res: Response): Promise<void> => {
   const {clubRole} = req.user
@@ -18,16 +18,9 @@ export const createSession = async(req: Request | any, res: Response): Promise<v
         sessions
     } = req.body
 
-    const availableDivisions = await DivisionGroup.distinct('division'); 
-   
-    const topRoles = ["President", "Vice President"]
-    const divisionPresidents:{[key: string]: string} = {}
-    availableDivisions.forEach((division) => {
-        divisionPresidents[`${division} President`] = division
-    })
     const formattedStartDate = dayjs(startDate).format("YY/MM/DD")
     const formattedEndDate = dayjs(endDate).format("YY/MM/DD")
-    if (topRoles.includes(clubRole) || divisionPresidents[clubRole] === division) {       
+    if (await canManageDivision(clubRole, division)) {       
         try {  
            const newSession = await Session.create({
                 sessionTitle, 
@@ -86,15 +79,7 @@ export const deleteSession = async (req: Request | any, res: Response): Promise<
     res.status(404).json({ message: "Session not found" });
     return;
   }
-
-  const availableDivisions = await DivisionGroup.distinct('division');
-  const topRoles = ["President", "Vice President"];
-  const divisionPresidents: { [key: string]: string } = {};
-  availableDivisions.forEach((division) => {
-    divisionPresidents[`${division} President`] = division;
-  });
-
-  if (topRoles.includes(clubRole) || divisionPresidents[clubRole] === session.division) {
+  if (await canManageDivision( clubRole, session.division)) {
     try { 
      const deletedSession = await session.deleteOne(); 
       res.status(200).json({ message: "Session deleted successfully", deletedSession });
@@ -117,15 +102,7 @@ export const updateSession = async (req: Request | any, res: Response): Promise<
       res.status(404).json({ message: "Session not found" });
       return;
     }
-
-    const availableDivisions = await DivisionGroup.distinct('division');
-    const topRoles = ["President", "Vice President"];
-    const divisionPresidents: { [key: string]: string } = {};
-    availableDivisions.forEach((division) => {
-      divisionPresidents[`${division} President`] = division;
-    });
-
-    if (topRoles.includes(clubRole) || divisionPresidents[clubRole] === session.division) {
+    if (await canManageDivision(clubRole, session.division)) {
       const updatedSession = await Session.findByIdAndUpdate(id, updatedData, { new: true });
       res.status(200).json({ message: "Session updated successfully", updatedSession });
     } else {

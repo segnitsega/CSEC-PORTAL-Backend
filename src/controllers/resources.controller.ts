@@ -1,7 +1,6 @@
 import Resource from "../models/resourcesModel";
 import { Request, Response } from "express";
-import DivisionGroup from "../models/divisionGroupModel"
-
+import { canManageDivision } from "../utils/checkDivisionHead";
 
 export const addResource = async(req: Request | any, res: Response): Promise<void> => {
     const { clubRole } = req.user;
@@ -14,14 +13,7 @@ export const addResource = async(req: Request | any, res: Response): Promise<voi
         res.status(400).json({ message: "resourceName, resourceLink, and division are required" });
         return;
     }       
-    const availableDivisions = await DivisionGroup.distinct('division'); 
-    const topRoles = ["President", "Vice President"]
-    const divisionPresidents:{[key: string]: string} = {}
-    availableDivisions.forEach((division) => {
-        divisionPresidents[`${division} President`] = division
-    }) 
-
-    if (topRoles.includes(clubRole) || divisionPresidents[clubRole] === division) {
+    if (await canManageDivision(clubRole, division)) {
         try{
              const newResource = await Resource.create({
                 resourceName, 
@@ -80,16 +72,7 @@ export const deleteResource = async (req: Request | any, res: Response): Promise
   
     const { id } = req.params;
     const resource = await Resource.findById(id);
-  
-    const availableDivisions = await DivisionGroup.distinct('division');
-    const topRoles = ["President", "Vice President"];
-    const divisionPresidents: { [key: string]: string } = {};
-    
-    availableDivisions.forEach((division) => {
-      divisionPresidents[`${division} President`] = division;
-    });
-  
-    if (topRoles.includes(clubRole) || divisionPresidents[clubRole] === resource?.division) {
+    if (await canManageDivision(clubRole, resource?.division!)) {
       try {
         const deletedResource = await Resource.findByIdAndDelete(id);
         if (!deletedResource) {
@@ -116,16 +99,7 @@ export const updateResource = async (req: Request | any, res: Response): Promise
   const { id } = req.params;
   const updatedData = req.body;
   const resource = await Resource.findById(id);
-
-  const availableDivisions = await DivisionGroup.distinct('division');
-  const topRoles = ["President", "Vice President"];
-  const divisionPresidents: { [key: string]: string } = {};
-
-  availableDivisions.forEach((division) => {
-    divisionPresidents[`${division} President`] = division;
-  });
-
-  if (topRoles.includes(clubRole) || divisionPresidents[clubRole] === resource?.division) {
+  if (await canManageDivision(clubRole, resource?.division!)) {
     try {
       const updatedResource = await Resource.findByIdAndUpdate(id, updatedData, { new: true });
       if (!updatedResource) {

@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import Attendance from "../models/attendanceModel";
 import Member from "../models/membersModel";
-import DivisionGroup from "../models/divisionGroupModel"
 import Session from "../models/sessionsModel";
 import moment from "moment";
+import { canManageDivision } from "../utils/checkDivisionHead";
 
 
 export const submitAttendance = async (req: Request | any, res: Response): Promise<void> => {
@@ -27,16 +27,8 @@ export const submitAttendance = async (req: Request | any, res: Response): Promi
     res.status(400).json({message: `Session with id ${sessionId} not found`})
     return
   }
-
   const sessionDivision = session?.division
-  const topRoles = ["President", "Vice President"]
-
-  const availableDivisions = await DivisionGroup.distinct('division'); 
-  const divisionPresidents:{[key: string]: string} = {}
-  availableDivisions.forEach((division) => {
-      divisionPresidents[`${division} President`] = division
-  })
-  if (!topRoles.includes(clubRole) && divisionPresidents[clubRole] !== sessionDivision){
+  if (await canManageDivision(clubRole, sessionDivision)){
     res.status(403).json({ message: `${clubRole} can not submit attendance in ${sessionDivision} ` })
     return
   }

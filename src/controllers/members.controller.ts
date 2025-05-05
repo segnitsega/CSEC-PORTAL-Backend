@@ -3,9 +3,9 @@ import { Request, Response } from "express";
 import bcrypt from 'bcrypt'
 import jwt, {JwtPayload, VerifyErrors} from 'jsonwebtoken'
 import { sendOnboardingEmail } from "../utils/Mailer";
-import DivisionGroup from "../models/divisionGroupModel";
 import mongoose from "mongoose";
 import { uploadToCloudinary } from "../config/cloudinary";
+import { canManageDivision } from "../utils/checkDivisionHead";
 
 const secretKey = process.env.SECRET_KEY as string
 const refreshKey = process.env.REFRESH_KEY as string
@@ -176,15 +176,7 @@ export const handleMemberOnboarding = async(req: Request | any, res: Response): 
         res.status(400).json('Email already used')
         return
     }  
-
-    const availableDivisions = await DivisionGroup.distinct('division'); 
-    const topRoles = ["President", "Vice President"]
-    const divisionPresidents:{[key: string]: string} = {}
-    availableDivisions.forEach((division) => {
-        divisionPresidents[`${division} President`] = division
-    })
-
-    if (topRoles.includes(clubRole) || divisionPresidents[clubRole] === division){
+    if (await canManageDivision(clubRole, division)){
         try{
             const hashedPassword = await bcrypt.hash(generatedPassword, 10) 
             const newMember =  new Member({
@@ -312,17 +304,10 @@ export const deleteMember = async(req: Request | any, res: Response): Promise<vo
     if(!foundMember){
         res.status(400).json({message: `No member found with ID: ${id}.`})
         return
-    }
+    } 
     const division = foundMember.division
-    const topRoles = ["President", "Vice President"]
-    const availableDivisions = await DivisionGroup.distinct('division'); 
-    const divisionPresidents:{[key: string]: string} = {}
-    availableDivisions.forEach((division) => {
-        divisionPresidents[`${division} President`] = division
-    })
-    if(topRoles.includes(clubRole) || divisionPresidents[clubRole] === division){
+    if(await canManageDivision(clubRole, division)){
          try{
-        
             foundMember.banned = true;
             foundMember.membershipStatus = 'Banned';
             await foundMember.save()
