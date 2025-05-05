@@ -1,6 +1,5 @@
 import Event from "../models/eventsModel";
 import { Request, Response } from "express";
-import DivisionGroup from "../models/divisionGroupModel"
 import dayjs from "dayjs";
 import { canManageDivision } from "../utils/checkDivisionHead";
 
@@ -23,11 +22,6 @@ export const addEvent = async(req: Request | any, res: Response) => {
     } = req.body 
     const formattedDate = dayjs(eventDate).format("YY/MM/DD")
     if(division && groups){
-        const availableDivisions = await DivisionGroup.distinct('division'); 
-        if(!availableDivisions.includes(division)){
-            res.status(400).json({ message: `${division} is not a valid division` });
-            return;
-        }
         if(await canManageDivision(clubRole, division)){
             try{
                 const newEvent = await Event.create({
