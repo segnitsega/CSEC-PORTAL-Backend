@@ -267,7 +267,13 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
     }
 }
  
-export const getAllHeads = async (req: Request, res: Response): Promise<void> => {
+export const getAllHeads = async (req: Request | any, res: Response): Promise<void> => {
+    const { clubRole } = req.user
+    const allowedRoles = ["President", "Vice President"]
+    if(!allowedRoles.includes(clubRole)){
+        res.status(403).json({message: `${clubRole} is not allowed to get division presidents.` })
+        return
+    } 
     try { 
       const heads = await Member.find({ clubRole: { $ne: "Member" } }).select("firstName middleName lastName clubRole email permissions permissionStatus");
   
