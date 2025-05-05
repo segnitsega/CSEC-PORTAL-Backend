@@ -24,7 +24,7 @@ export const createGroup = async(req: Request | any, res: Response): Promise<voi
             res.status(500).json({ message: "Failed to create group", error });
         }
     } else { 
-        res.status(403).json({ message: `${clubRole} cannot create a group in ${division} division` });
+        res.status(403).json({ message: `${clubRole} can not create a group in ${division}` });
     }
 } 
 
