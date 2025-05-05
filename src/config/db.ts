@@ -12,11 +12,6 @@ export const connectDB = async() => {
         try{ 
             await mongoose.connect(MONGO_URI);
             console.log('Mongodb connected.')
-
-            gfsBucket = new GridFSBucket(mongoose.connection.db!, {
-                bucketName: 'profilePics' // → creates profilePics.files & profilePics.chunks
-            });
-              console.log(' GridFSBucket profilePics is ready.');
             return
         } 
         catch(error){

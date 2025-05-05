@@ -74,12 +74,10 @@ export const getMemberById = async(req: Request, res: Response): Promise<void> =
     const id = req.params.id
     try{
         const member = await Member.findById(id).select("-password -refreshToken").lean()
-
         if(!member){
             res.status(404).json({message: "Member not found"})
             return
-        }
-        
+        }    
         res.status(200).json({
             member
         })
@@ -143,7 +141,7 @@ export const handleRefreshToken = async(req: Request, res: Response): Promise<vo
         }
         jwt.verify(refreshToken, refreshKey, (error: VerifyErrors | null, decoded:string | JwtPayload | undefined) => {
             if(error){ 
-                return res.status(403).json({message: "Token verification failed"})
+                return res.status(403).json({message: "Token verification failed", error: error})
             }   
             const newAccessToken = jwt.sign({id: foundMember._id, email: foundMember.email, clubRole: foundMember.clubRole}, secretKey, {expiresIn: "2h"})
 
@@ -159,14 +157,11 @@ export const handleRefreshToken = async(req: Request, res: Response): Promise<vo
  } 
 
 export const handleMemberOnboarding = async(req: Request | any, res: Response): Promise<void> => {
-    const { clubRole } = req.user;
-    
+    const { clubRole } = req.user;   
     if(clubRole === "Member"){
         res.status(403).json({message: `${clubRole} can not add a new member`})
         return
     } 
-    const currentDivisions = await DivisionGroup.distinct('division')
-    
     const {  
         firstName,
         lastName,
@@ -176,29 +171,43 @@ export const handleMemberOnboarding = async(req: Request | any, res: Response): 
         generatedPassword 
     } = req.body 
 
-    const emailExist = await Member.findOne({email})
+    const emailExist = await Member.findOne({email}).lean()
     if(emailExist){ 
         res.status(400).json('Email already used')
         return
     }  
-    if(!currentDivisions.includes(division)){
-        res.status(400).json(`${division} not present`)
-        return
-    } 
-    const hashedPassword = await bcrypt.hash(generatedPassword, 10) 
-    const newMember =  new Member({
-        firstName,
-        lastName,
-        division,  
-        group,
-        email, 
-        password: hashedPassword 
-    })  
-    await newMember.save() 
 
-    const sendResult = await sendOnboardingEmail(email, generatedPassword)
-    res.status(200).json({ message: "New member created successfuly", member: newMember, emailResult: sendResult })
+    const availableDivisions = await DivisionGroup.distinct('division'); 
+    const topRoles = ["President", "Vice President"]
+    const divisionPresidents:{[key: string]: string} = {}
+    availableDivisions.forEach((division) => {
+        divisionPresidents[`${division} President`] = division
+    })
 
+    if (topRoles.includes(clubRole) || divisionPresidents[clubRole] === division){
+        try{
+            const hashedPassword = await bcrypt.hash(generatedPassword, 10) 
+            const newMember =  new Member({
+                firstName,
+                lastName,
+                division,  
+                group,
+                email, 
+                password: hashedPassword 
+            })  
+            await newMember.save() 
+
+            const sendResult = await sendOnboardingEmail(email, generatedPassword)
+            res.status(200).json({ message: "New member created successfuly", member: newMember, emailResult: sendResult })
+            return
+        }catch(err){
+            res.status(500).json({message: "Error adding a member", error: err})
+            return
+        }
+    } else{
+        res.status(403).json({message: `${clubRole} can not add member in ${division}`})
+    }
+    
 } 
 
 export const handleProfileDetails = async(req: Request, res: Response): Promise<void> => {
