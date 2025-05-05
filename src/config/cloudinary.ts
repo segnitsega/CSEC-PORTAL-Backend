@@ -22,7 +22,7 @@ export const uploadToCloudinary = (
         public_id: publicId,
         resource_type: 'image',
       },
-      (err, result) => {
+      (err: unknown, result: UploadApiResponse | undefined) => {
         if (err) return reject(err);
         resolve(result!);
       }
