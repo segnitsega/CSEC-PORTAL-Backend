@@ -5,16 +5,10 @@ import jwt, {JwtPayload, VerifyErrors} from 'jsonwebtoken'
 import { sendOnboardingEmail } from "../utils/Mailer";
 import DivisionGroup from "../models/divisionGroupModel";
 import mongoose from "mongoose";
-import path from "path";
-import { gfsBucket } from "../config/db";
+import { uploadToCloudinary } from "../config/cloudinary";
 
 const secretKey = process.env.SECRET_KEY as string
 const refreshKey = process.env.REFRESH_KEY as string
-
-const makeFullPicUrl = (req: Request, fileId?: string): string | undefined =>
-    fileId
-      ? `${req.protocol}://${req.get('host')}/api/members/photo/${fileId}`
-      : undefined;
 
 export const getMembers = async (req: Request | any, res: Response): Promise<void> => {
     
@@ -31,6 +25,8 @@ export const getMembers = async (req: Request | any, res: Response): Promise<voi
 
       const pageNumber = Math.max(1, parseInt(req.query.page as string, 10) || 1)
       const limitNumber = Math.max(1, parseInt(req.query.limit as string, 10) || 10)
+      const skip = (pageNumber - 1) * limitNumber;
+
 
       const query: any = {};
 
@@ -51,34 +47,22 @@ export const getMembers = async (req: Request | any, res: Response): Promise<voi
       if (attendance) query.attendance = attendance;
       if (membershipStatus) query.membershipStatus = membershipStatus;
       if (divisionRole) query.divisionRole = divisionRole;
-  
-      const skip = (pageNumber - 1) * limitNumber;
-      const parsedLimit = limitNumber;
-  
+    
       const [members, total] = await Promise.all([
         Member.find(query)
           .select('-password -refreshToken')
           .skip(skip)
-          .limit(parsedLimit)
+          .limit(limitNumber)
           .sort({ createdAt: -1 })
           .lean(),
         Member.countDocuments(query)
       ]);
-
-    const updatedProfilePicturemembers = members.map(member => {
-        if (member.profilePicture) {
-          const url = makeFullPicUrl(req, member.profilePicture as string);
-          if (url) member.profilePicture = url;
-          else delete member.profilePicture;
-        }
-        return member;
-      });
   
       res.status(200).json({
         currentPage: pageNumber,
-        totalPages: Math.ceil(total / parsedLimit),
+        totalPages: Math.ceil(total / limitNumber),
         totalMembers: total,
-        updatedProfilePicturemembers
+        members
       });
     } catch (error) {
       console.error("Error fetching members:", error);
@@ -95,11 +79,6 @@ export const getMemberById = async(req: Request, res: Response): Promise<void> =
             res.status(404).json({message: "Member not found"})
             return
         }
-        if (member.profilePicture) {
-            const url = makeFullPicUrl(req, member.profilePicture as string);
-            if (url) member.profilePicture = url;
-            else delete member.profilePicture;
-          }
         
         res.status(200).json({
             member
@@ -246,26 +225,15 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
                 resources
             } = req.body 
 
-
-        let profilePictureId: string | undefined;
+        let profilePictureUrl: string | undefined;
+        
         if (req.file) {
-            const ext = path.extname(req.file.originalname);
-            const filename = `${Date.now()}-${Math.round(Math.random()*1e9)}${ext}`;
-            const uploadStream = gfsBucket.openUploadStream(filename, {
-              contentType: req.file.mimetype
-            });
-            uploadStream.end(req.file.buffer);
+            const publicId = `member_${Date.now()}_${Math.round(Math.random() * 1e6)}`
+            const result = await uploadToCloudinary(req.file.buffer, publicId)
+            profilePictureUrl = result.secure_url
+          }
 
-        await new Promise<void>((resolve, reject) => {
-            uploadStream.on('finish', () => {
-                profilePictureId = uploadStream.id.toString();
-                resolve();
-            });
-            uploadStream.on('error', reject);
-            });
-        }
-
-        const foundMember = await Member.findOne({ email: email })
+        const foundMember = await Member.findOne({ email })
         if(!foundMember){
             res.status(404).json({ message: "Member not found" })
             return
@@ -277,9 +245,10 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
             department, universityId, instagramHandle, linkedinHandle,
             codeforcesHandle, leetcodeHandle, cv, bio, mentor,resources
         };
-        if (profilePictureId) {
-            updateData.profilePicture = profilePictureId;
-          }
+       
+        if (profilePictureUrl) {
+            updateData.profilePicture = profilePictureUrl
+        }
 
         Object.keys(updateData).forEach((key) => {
             if (updateData[key] === undefined || updateData[key] === null) {
