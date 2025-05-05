@@ -35,32 +35,24 @@ export const getGroups = async (req: Request, res:Response): Promise<void> => {
 }
 
 export const createDivision = async (req: Request | any, res: Response): Promise<void> => {
-
-    const { divisionName, headName, email } = req.body;
     const { clubRole } = req.user;
     const allowedRoles = ["President", "Vice President"];
-
     if(!allowedRoles.includes(clubRole)){
         res.status(403).json({message: `${clubRole} can not add a division`})
         return
     }
- 
+    const { divisionName, headName, email } = req.body;
     try{ 
+        const newDivision = await DivisionGroup.create({ division: divisionName })  
+        await Member.findOneAndUpdate({email}, {$set:{clubRole: `${divisionName} President`}})
+
+        const Division = await getDivisionModel(divisionName)
+        await Division.create({ name: divisionName, divisionHead: headName}) 
     
-        const newDivision = await DivisionGroup.create({ division: divisionName })  // creates a new division
-        await Member.findOneAndUpdate({email}, {$set:{clubRole: divisionName + " " + "President"}}) // update the head's role to the created division's president
-
-        const Division = await getDivisionModel(divisionName) // get the divisionModel to create the new division's collection dynamically
-        const existingDivisionDoc = await Division.findOne({ name: divisionName });
-        
-        if (!existingDivisionDoc) {
-            await Division.create({ name: divisionName, divisionHead: headName}) // if division does not exist, it creates a new division collection
-        }
-
         res.status(201).json({ message:"Division created successfully", division:  newDivision})
 
     }catch(error){
+        console.log(error)
         res.status(500).json({message: "Failed to create division", error: error})
     }
-
 }

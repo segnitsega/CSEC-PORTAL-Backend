@@ -4,8 +4,8 @@ import Member from '../models/membersModel';
 import DivisionGroup from '../models/divisionGroupModel';
 
 const createDivisionSchema = z.object({
-  divisionName: z.string().min(1, 'divisionName is required'),
-  headName: z.string().min(1, 'headName is required'),
+  divisionName: z.string().min(5, 'divisionName is required'),
+  headName: z.string().min(5, 'headName is required'),
   email: z.string().email('Invalid email format'),
 });
 
