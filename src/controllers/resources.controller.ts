@@ -8,11 +8,7 @@ export const addResource = async(req: Request | any, res: Response): Promise<voi
         res.status(403).json({message: "Unauthorized to add resources"})
         return;
     } 
-    const {resourceName, resourceLink, division} = req.body 
-    if (!resourceName || !resourceLink || !division) {
-        res.status(400).json({ message: "resourceName, resourceLink, and division are required" });
-        return;
-    }       
+    const {resourceName, resourceLink, division} = req.body      
     if (await canManageDivision(clubRole, division)) {
         try{
              const newResource = await Resource.create({
