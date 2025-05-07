@@ -5,8 +5,8 @@ import DivisionGroup from '../models/divisionGroupModel';
 
 const createDivisionSchema = z.object({
   divisionName: z.string().min(5, 'divisionName is required'),
-  headName: z.string().min(5, 'headName is required'),
-  email: z.string().email('Invalid email format'),
+  // headName: z.string().min(5, 'headName is required'),
+  // email: z.string().email('Invalid email format'),
 });
 
 export const validateCreateDivision = async (
@@ -23,7 +23,8 @@ export const validateCreateDivision = async (
     });
     return
   }
-  const { divisionName, headName, email } = parseResult.data;
+  // const { divisionName, headName, email } = parseResult.data;
+  const { divisionName } = parseResult.data;
 
   const divisionExists = await DivisionGroup.findOne({ division: divisionName });
   if (divisionExists) {
@@ -32,17 +33,17 @@ export const validateCreateDivision = async (
     return
   }
 
-  const member = await Member.findOne({ email });
-  if (!member) {
-    res.status(400)
-      .json({ message: `No member found with email "${email}"` });
-    return
-  }
+  // const member = await Member.findOne({ email });
+  // if (!member) {
+  //   res.status(400)
+  //     .json({ message: `No member found with email "${email}"` });
+  //   return
+  // }
 
   req.body = {
     divisionName: divisionName,
-    headName: headName,
-    email: email,
+    // headName: headName,
+    // email: email,
   };
 
   next();

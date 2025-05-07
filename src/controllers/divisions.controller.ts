@@ -41,13 +41,15 @@ export const createDivision = async (req: Request | any, res: Response): Promise
         res.status(403).json({message: `${clubRole} can not add a division`})
         return
     }
-    const { divisionName, headName, email } = req.body;
+    // const { divisionName, headName, email } = req.body;
+    const { divisionName } = req.body;
+
     try{ 
         const newDivision = await DivisionGroup.create({ division: divisionName })  
-        await Member.findOneAndUpdate({email}, {$set:{clubRole: `${divisionName} President`}})
+        // await Member.findOneAndUpdate({email}, {$set:{clubRole: `${divisionName} President`}})
 
         const Division = await getDivisionModel(divisionName)
-        await Division.create({ name: divisionName, divisionHead: headName}) 
+        await Division.create({ name: divisionName }) 
     
         res.status(201).json({ message:"Division created successfully", division:  newDivision})
 

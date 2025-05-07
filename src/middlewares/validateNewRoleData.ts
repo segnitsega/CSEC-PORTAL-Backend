@@ -17,7 +17,9 @@ export const validateAddNewRole = async (
     // role: z.string().min(1, { message: "role is required" }),
   });
 
-  const result = schema.safeParse({ division, name, email, role });
+  // const result = schema.safeParse({ division, name, email, role });
+  const result = schema.safeParse({ division, name, email });
+
 
   if (!result.success) {
     res.status(400).json({

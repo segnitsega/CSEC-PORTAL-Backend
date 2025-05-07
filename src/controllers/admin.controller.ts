@@ -12,15 +12,8 @@ export const addNewRole = async (req: Request | any,res:Response): Promise<void>
         res.status(401).json({message: `${clubRole} can not assign new role`})
         return
     } 
-    const { division, name, email } = req.body;
-
-    const memberExists = await Member.findOne({email})
-    if(!memberExists){
-        res.status(400).json({message: `Invalid email, member with email ${email} does not exist`})
-        return
-    }
-
     try{
+        const { division, name, email } = req.body;
         await Member.findOneAndUpdate(
             { clubRole: division + " " + "President" }, 
             { $set:{ clubRole: "Member" } }
@@ -32,8 +25,6 @@ export const addNewRole = async (req: Request | any,res:Response): Promise<void>
         )      
 
         const Division = await getDivisionModel(division)
-        console.log(`Division model is: ${Division}`)
-
         await Division.findOneAndUpdate(
             { name: division }, 
             { $set:{ divisionHead: name } } 
