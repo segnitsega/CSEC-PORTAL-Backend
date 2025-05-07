@@ -14,7 +14,7 @@ export const validateAddNewRole = async (
     division: z.string().min(1, { message: "division is required" }),
     name: z.string().min(1, { message: "name is required" }),
     email: z.string().email({ message: "invalid email format" }),
-    role: z.string().min(1, { message: "role is required" }),
+    // role: z.string().min(1, { message: "role is required" }),
   });
 
   const result = schema.safeParse({ division, name, email, role });
@@ -27,26 +27,23 @@ export const validateAddNewRole = async (
     return;
   }
 
-  // Check if division exists
   const divisionExists = await DivisionGroup.findOne({ division: result.data.division });
   if (!divisionExists) {
     res.status(400).json({ message: `division "${result.data.division}" does not exist` });
     return;
   }
 
-  // Check if member exists
   const memberExists = await Member.findOne({ email: result.data.email });
   if (!memberExists) {
     res.status(400).json({ message: `Invalid email, member with email ${result.data.email} does not exist` });
     return;
   }
 
-  // Attach cleaned data to req.body
   req.body = {
     division: result.data.division.trim(),
     name: result.data.name.trim(),
     email: result.data.email.trim().toLowerCase(),
-    role: result.data.role.trim(),
+    // role: result.data.role.trim(),
   };
 
   next();
