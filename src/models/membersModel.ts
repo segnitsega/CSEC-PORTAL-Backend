@@ -26,8 +26,8 @@ export interface memberInterface extends Document {
     profilePicture?: string; 
     clubRole: string;
     //to add permissions/roles
-    permissions?: string[];
-    permissionStatus?: string;
+    // permissions?: string[];
+    // permissionStatus?: string;
     resources?: {
         resourceName: string,
         resourceLink: string
@@ -72,11 +72,11 @@ const memberSchema = new Schema<memberInterface>({
         default: 'Member'
     },
 
-    permissions: { type: [String], default:[] },
-    permissionStatus: { 
-        type: String,
-        enum: ["active", "inactive"] 
-    },
+    // permissions: { type: [String], default:[] },
+    // permissionStatus: { 
+    //     type: String,
+    //     enum: ["active", "inactive"] 
+    // },
 
     resources: [{ 
         resourceName: {type: String }, 
