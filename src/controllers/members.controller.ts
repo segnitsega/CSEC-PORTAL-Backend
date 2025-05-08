@@ -11,7 +11,8 @@ const secretKey = process.env.SECRET_KEY as string
 const refreshKey = process.env.REFRESH_KEY as string
 
 export const getMembers = async (req: Request | any, res: Response): Promise<void> => {
-    
+    const mem = await Member.findOne({email: req.user.email})
+    console.log(`Member email: ${req.user.email}. Last seen: ${mem?.lastSeen} `)
     try { 
       const {
         search,

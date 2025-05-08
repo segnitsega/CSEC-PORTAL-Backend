@@ -35,7 +35,6 @@ server.use('/api/resources', resourcesRouter)
 server.use('/api/admin', adminRouter)
 server.use('/api/rules', rulesRouter)
 
-
 connectDB();
 
 server.listen(PORT, () => {

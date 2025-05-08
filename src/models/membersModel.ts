@@ -25,6 +25,7 @@ export interface memberInterface extends Document {
     banned: boolean; 
     profilePicture?: string; 
     clubRole: string;
+    lastSeen: string;
     //to add permissions/roles
     // permissions?: string[];
     // permissionStatus?: string;
@@ -71,6 +72,7 @@ const memberSchema = new Schema<memberInterface>({
         type: String,
         default: 'Member'
     },
+    lastSeen: { type:String },
 
     // permissions: { type: [String], default:[] },
     // permissionStatus: { 

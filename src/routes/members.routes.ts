@@ -5,14 +5,15 @@ import { validateMemberOnboarding } from "../middlewares/validateMemberOnboardin
 import { validateProfileDetails } from "../middlewares/validateProfileDetails"
 import { authenticateToken } from "../middlewares/authMiddleware"
 import { upload } from "../middlewares/profilePictureuploadMiddleware"
+import { updateLastSeen } from "../middlewares/updateLastSeenMiddleware"
 
 export const membersRouter = express.Router()
 
-membersRouter.get('/', authenticateToken, getMembers) 
-membersRouter.get('/heads', authenticateToken, getAllHeads)
+membersRouter.get('/', authenticateToken, updateLastSeen, getMembers) 
+membersRouter.get('/heads', authenticateToken, updateLastSeen, getAllHeads)
 membersRouter.post('/login', handleLogin)    
 membersRouter.post('/refresh', handleRefreshToken) 
-membersRouter.post('/createMember', authenticateToken, validateMemberOnboarding, handleMemberOnboarding) 
-membersRouter.post('/profileDetails', authenticateToken, upload.single('profilePicture'),  validateProfileDetails, handleProfileDetails) 
-membersRouter.get('/:id',authenticateToken, getMemberById) 
-membersRouter.delete('/:id',authenticateToken, deleteMember) 
+membersRouter.post('/createMember', authenticateToken, updateLastSeen, validateMemberOnboarding, handleMemberOnboarding) 
+membersRouter.post('/profileDetails', authenticateToken, updateLastSeen, upload.single('profilePicture'),  validateProfileDetails, handleProfileDetails) 
+membersRouter.get('/:id',authenticateToken, updateLastSeen, getMemberById) 
+membersRouter.delete('/:id',authenticateToken, updateLastSeen,  deleteMember) 
