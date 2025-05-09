@@ -3,7 +3,7 @@ import { Schema, model, Document, Types } from "mongoose";
 export interface attendanceInterface extends Document {
   memberId: Types.ObjectId;
   sessionId: Types.ObjectId;
-  status: "Present" | "Absent" | "Excused";
+  status: "present" | "absent" | "excused";
   headsUp: string;
   date: Date;
 }

@@ -31,7 +31,7 @@ export const submitAttendance = async (req: Request | any, res: Response): Promi
   if (await canManageDivision(clubRole, sessionDivision)){
     res.status(403).json({ message: `${clubRole} can not submit attendance in ${sessionDivision} ` })
     return
-  }
+  } 
     try {
     const bulkOperations = records.map((record: any) => ({
       updateOne: {
