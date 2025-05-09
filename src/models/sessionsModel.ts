@@ -6,12 +6,12 @@ export interface sessionsInterface extends Document {
     groups: string[];
     startDate: string,
     endDate: string,
+    status: "planned"| "started" | "ended" | "on-going";
     sessions: {
         day: string,
         startTime: string,
         endTime: string
     }[],
-    status: string;
 }
 
 const sessionSchema = new Schema<sessionsInterface>({
@@ -20,6 +20,7 @@ const sessionSchema = new Schema<sessionsInterface>({
   groups: {type: [String], required: true},
   startDate: {type: String, required: true},
   endDate: {type: String, required: true},
+  status: {enum: ["planned", "started", "ended", "on-going"], required: true, default: "planned"},
   sessions: [
     {
       day: {type: String, required: true},
@@ -27,7 +28,6 @@ const sessionSchema = new Schema<sessionsInterface>({
       endTime: {type: String, required: true}
     }
   ],
-  status: {type: String, default: "Planned"}
 })
 
 export default model<sessionsInterface>('Session', sessionSchema)

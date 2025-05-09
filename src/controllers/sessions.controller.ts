@@ -15,6 +15,7 @@ export const createSession = async(req: Request | any, res: Response): Promise<v
         groups,
         startDate,
         endDate,
+        sessionStatus,
         sessions
     } = req.body
 
@@ -28,6 +29,7 @@ export const createSession = async(req: Request | any, res: Response): Promise<v
                 groups, 
                 startDate: formattedStartDate, 
                 endDate: formattedEndDate, 
+                sessionStatus,
                 sessions
            })
            res.status(201).json({ message: "New session created", session: newSession })
