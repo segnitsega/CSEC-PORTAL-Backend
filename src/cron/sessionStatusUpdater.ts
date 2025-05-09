@@ -7,7 +7,7 @@ const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday","Thursday", "Friday
 cron.schedule("* * * * *", async () => {
   const now = moment.tz("Africa/Addis_Ababa");
   const todayName = WEEKDAYS[now.day()];
-
+  const datePrefix = now.format("YYYY-MM-DD")
   const sessions = await Session.find();
   for (const session of sessions) {
     let updatedStatus: sessionsInterface["status"] = session.status;
@@ -17,13 +17,17 @@ cron.schedule("* * * * *", async () => {
       if (slot.day !== todayName){
         continue
       }
-      const [h1, m1] = slot.startTime.split(":").map(Number);
-      const [h2, m2] = slot.endTime.split(":").map(Number);
+    slotFound = true;
+    const startToday = moment.tz(`${datePrefix} ${slot.startTime}`,
+        "YYYY-MM-DD h:mm A",
+        "Africa/Addis_Ababa"
+    )
+    const endToday = moment.tz(
+        `${datePrefix} ${slot.endTime}`,
+        "YYYY-MM-DD h:mm A",
+        "Africa/Addis_Ababa"
+    );
 
-      const startToday = now.clone().hour(h1).minute(m1).second(0);
-      const endToday   = now.clone().hour(h2).minute(m2).second(0);
-
-      slotFound = true;
       if (now.isBefore(startToday)) {
         updatedStatus = "planned";
       } 
@@ -43,17 +47,14 @@ cron.schedule("* * * * *", async () => {
     }
 
     if (!slotFound) {
-      const startOverall = moment(session.startDate, "YY/MM/DD");
-      const endOverall   = moment(session.endDate, "YY/MM/DD");
+      const startOverall = moment(session.startDate, "YY/MM/DD", "Africa/Addis_Ababa");
+      const endOverall   = moment(session.endDate, "YY/MM/DD", "Africa/Addis_Ababa");
       if (now.isBefore(startOverall)) {
         updatedStatus = "planned";
       } 
       else if (now.isAfter(endOverall)) {
         updatedStatus = "ended";
       } 
-      else {
-        updatedStatus = session.status; 
-      }
     }
 
     if (session.status !== updatedStatus) {
@@ -62,5 +63,5 @@ cron.schedule("* * * * *", async () => {
     }
   }
 
-  console.log("Session statuses updated at:", now.format());
+  console.log("Session statuses updated at:", now.format("hh:mm A"));
 });
