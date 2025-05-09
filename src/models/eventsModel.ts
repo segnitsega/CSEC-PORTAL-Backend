@@ -7,6 +7,7 @@ export interface eventsInterface extends Document {
     eventDate: string;
     startTime: string;
     endTime: string;
+    status: "planned" | "started" | "on-going" | "ended";
     visibility: string;
     attendance?: string;
 }
@@ -18,6 +19,7 @@ const eventSchema = new Schema<eventsInterface>({
     eventDate: {type: String, required: true},
     startTime: {type: String, required: true},
     endTime: {type: String, required: true},
+    status: {type: String, enum: ["planned", "started", "on-going", "ended"], default: "planned"},
     visibility: {type: String, required: true},
     attendance: {type: String, default: "Optional"}
 }) 
