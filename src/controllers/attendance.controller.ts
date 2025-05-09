@@ -28,7 +28,8 @@ export const submitAttendance = async (req: Request | any, res: Response): Promi
     return
   }
   const sessionDivision = session?.division
-  if (await canManageDivision(clubRole, sessionDivision)){
+  const allowed = await canManageDivision(clubRole, sessionDivision)
+  if (!allowed){
     res.status(403).json({ message: `${clubRole} can not submit attendance in ${sessionDivision} ` })
     return
   } 
@@ -40,9 +41,15 @@ export const submitAttendance = async (req: Request | any, res: Response): Promi
         upsert: true,
       },
     }));
-
-    await Attendance.bulkWrite(bulkOperations);
-    res.status(200).json({ message: "Attendance saved successfully" });
+    if(session.status === "on-going"){
+      await Attendance.bulkWrite(bulkOperations);
+      res.status(200).json({ message: "Attendance saved successfully" })
+    }
+    else{
+      res.status(400).json({ message: `can not submit attendance for session status: ${session.status}` })
+      return
+    }
+    
   } catch (error) {
     console.error("Error saving attendance:", error);
     res.status(500).json({ message: "Failed to save attendance" });
