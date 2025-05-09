@@ -20,7 +20,7 @@ const sessionSchema = new Schema<sessionsInterface>({
   groups: {type: [String], required: true},
   startDate: {type: String, required: true},
   endDate: {type: String, required: true},
-  status: {enum: ["planned", "started", "ended", "on-going"], required: true, default: "planned"},
+  status: {type: String, enum: ["planned", "started", "ended", "on-going"], default: "planned"},
   sessions: [
     {
       day: {type: String, required: true},
