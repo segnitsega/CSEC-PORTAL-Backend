@@ -11,6 +11,7 @@ import attendanceRouter from "./routes/attendance.routes";
 import { resourcesRouter } from "./routes/resources.routes";
 import { adminRouter } from "./routes/admin.routes";
 import { rulesRouter } from "./routes/rules.routes";
+import "./cron/sessionStatusUpdater"
 
 dotenv.config()
 
