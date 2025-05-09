@@ -276,7 +276,7 @@ export const getAllHeads = async (req: Request | any, res: Response): Promise<vo
         return
     } 
     try { 
-      const heads = await Member.find({ clubRole: { $ne: "Member" } }).select("firstName middleName lastName clubRole email permissions permissionStatus");
+      const heads = await Member.find({ clubRole: { $ne: "Member" } }).select("firstName middleName lastName clubRole email membershipStatus");
   
       if (!heads || heads.length === 0) {
         res.status(400).json({ message: "No heads found" });
