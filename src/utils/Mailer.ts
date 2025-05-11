@@ -38,7 +38,9 @@ export async function sendOnboardingEmail(memberEmail: string, generatedPassword
             <p style="margin: 0 0 10px;">Here are your login details:</p>
             <p style="font-size: 16px; margin: 5px 0;"><strong>Email:</strong> <span style="color: #0057D9;">${memberEmail}</span></p>
             <p style="font-size: 16px; margin: 5px 0;"><strong>Password:</strong> <code style="background: #f0f0f0; padding: 4px 8px; border-radius: 4px; color: #d63384;">${generatedPassword}</code></p>
-            <a href="https://link-to-login-page">LOGIN HERE</a>
+            <a href="https://csec-portal-frontend-forked.vercel.app" style="display: inline-block; padding: 10px 20px; background-color: #0057D9; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: bold;">
+              Log in to Your Account
+            </a>
           </div>
 
           <p style="margin-top: 30px;">Please make sure to <strong>change your password</strong> immediately after your first login to keep your account secure.</p>
