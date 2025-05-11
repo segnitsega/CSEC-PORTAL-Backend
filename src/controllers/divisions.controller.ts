@@ -1,6 +1,5 @@
 import { Request, Response } from "express"
 import DivisionGroup from "../models/divisionGroupModel"
-import Member from "../models/membersModel";
 import { getDivisionModel } from "../models/dynamicDivisionModel";
 
 export const getAllDivisions = async (req: Request, res: Response): Promise<void> => {
@@ -27,8 +26,7 @@ export const getGroups = async (req: Request, res:Response): Promise<void> => {
                 length: divisionDocument.groups.length,
                 groups: divisionDocument.groups 
             })
-        }
-                
+        }         
     }catch(error){ 
         res.status(500).json({message: "Failed to get groups", error: error})
     }
@@ -41,18 +39,12 @@ export const createDivision = async (req: Request | any, res: Response): Promise
         res.status(403).json({message: `${clubRole} can not add a division`})
         return
     }
-    // const { divisionName, headName, email } = req.body;
     const { divisionName } = req.body;
-
     try{ 
         const newDivision = await DivisionGroup.create({ division: divisionName })  
-        // await Member.findOneAndUpdate({email}, {$set:{clubRole: `${divisionName} President`}})
-
         const Division = await getDivisionModel(divisionName)
         await Division.create({ name: divisionName }) 
-    
         res.status(201).json({ message:"Division created successfully", division:  newDivision})
-
     }catch(error){
         console.log(error)
         res.status(500).json({message: "Failed to create division", error: error})
