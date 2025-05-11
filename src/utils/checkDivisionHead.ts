@@ -7,5 +7,5 @@ export const canManageDivision = async(clubRole: string, divisionName: string)=>
     availableDivisions.forEach((division) => {
         divisionPresidents[`${division} President`] = division
     })
-   return topRoles.includes(clubRole) || divisionPresidents[clubRole] === divisionName
+   return topRoles.includes(clubRole) || divisionPresidents[clubRole] === divisionName;
 }

@@ -26,7 +26,6 @@ export const getMembers = async (req: Request | any, res: Response): Promise<voi
       const limitNumber = Math.max(1, parseInt(req.query.limit as string, 10) || 10)
       const skip = (pageNumber - 1) * limitNumber;
 
-
       const query: any = {};
 
       if (search) {
@@ -109,9 +108,9 @@ export const handleLogin = async(req: Request, res: Response): Promise<void> => 
             return  
         }
 
-        // set the expiration back to limited hours...
-        const token = jwt.sign({id: foundMember._id, email: foundMember.email, clubRole: foundMember.clubRole}, secretKey, {expiresIn: "1d"})  
+        const token = jwt.sign({id: foundMember._id, email: foundMember.email, clubRole: foundMember.clubRole}, secretKey, {expiresIn: "2h"})  
         const refreshToken = jwt.sign({id: foundMember._id, email: foundMember.email, clubRole: foundMember.clubRole}, refreshKey, {expiresIn: "7d"})
+
         await Member.updateOne({email}, {$set: {refreshToken}})
 
        res.status(200).json({
@@ -223,7 +222,6 @@ export const handleProfileDetails = async(req: Request, res: Response): Promise<
                 cv, 
                 leetcodeHandle, 
                 bio,
-                // resources
             } = req.body 
 
         let profilePictureUrl: string | undefined;
@@ -277,7 +275,6 @@ export const getAllHeads = async (req: Request | any, res: Response): Promise<vo
     } 
     try { 
       const heads = await Member.find({ clubRole: { $ne: "Member" } }).select("firstName middleName lastName clubRole email membershipStatus");
-  
       if (!heads || heads.length === 0) {
         res.status(400).json({ message: "No heads found" });
         return;
@@ -321,5 +318,4 @@ export const deleteMember = async(req: Request | any, res: Response): Promise<vo
     } else{
         res.status(403).json({message: `${clubRole} is not allowed to ban members in ${division}` })
     }
-   
 }

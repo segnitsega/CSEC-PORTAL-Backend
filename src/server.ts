@@ -18,15 +18,13 @@ dotenv.config()
 
 const server = express();
 const PORT = process.env.PORT || 3000;
+const origin = process.env.CLIENT_URL || "*";
 
 server.use(cors({
-    origin: "*",
-    credentials: true
+    origin: origin,
 }))
 
-server.use('/uploads', express.static('uploads'));
 server.use(express.json())
-
 server.use('/api/members', membersRouter) 
 server.use('/api/divisions', divisionsRouter)  
 server.use('/api/groups', groupsRouter) 
