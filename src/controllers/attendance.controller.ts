@@ -12,16 +12,7 @@ export const submitAttendance = async (req: Request | any, res: Response): Promi
   if(clubRole === "Member"){
     res.status(403).json({message: "Unauthorized to submit attendance"})
     return;
-} 
-//from frontend :
-//   req.body = {
-//     "sessionId": "abc123",
-//     "records": [
-//       { "memberId": "u123", "status": "Present" },
-//       { "memberId": "u456", "status": "Absent", "headsUp": "..."}
-//     ]
-//   }
-
+  } 
   const session = await Session.findById(sessionId)
   if(!session){
     res.status(400).json({message: `Session with id ${sessionId} not found`})

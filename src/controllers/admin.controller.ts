@@ -94,12 +94,10 @@ export const banMembers = async(req: Request | any, res: Response): Promise<void
         res.status(400).json({ message: 'Email list is required and must be an array.' });
         return
     }
-
     const result = await Member.updateMany(
       { email: { $in: emails } },
       { $set: { banned: true, membershipStatus: 'Banned' } }
     );
-
     res.status(200).json({
       message: `${result.modifiedCount} member(s) banned successfully.`,
       updatedCount: result.modifiedCount

@@ -16,9 +16,7 @@ export const createGroup = async(req: Request | any, res: Response): Promise<voi
                 { division },
                 { $addToSet: { groups: group } }
               );
-              
             res.status(201).json({ message: "New group created", group: newGroup });
-
         } catch (error) {
             console.error("Error creating group:", error);
             res.status(500).json({ message: "Failed to create group", error });
@@ -29,7 +27,6 @@ export const createGroup = async(req: Request | any, res: Response): Promise<voi
 } 
 
 export const getGroupMembers = async(req: Request | any, res: Response): Promise<void> => {
-    
     const {
         division, 
         group, 

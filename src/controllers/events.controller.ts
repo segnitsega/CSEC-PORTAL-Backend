@@ -9,7 +9,6 @@ export const addEvent = async(req: Request | any, res: Response) => {
         res.status(403).json({message: `${clubRole} can not add event`})
         return
     }
-
     const {
         eventTitle,
         division,
@@ -43,7 +42,6 @@ export const addEvent = async(req: Request | any, res: Response) => {
             }
         }
     }    
-
     try{
         const newEvent = await Event.create({
             eventTitle,
