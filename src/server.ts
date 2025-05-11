@@ -18,7 +18,7 @@ dotenv.config()
 
 const server = express();
 const PORT = process.env.PORT || 3000;
-const origin = process.env.CLIENT_URL;
+const origin = process.env.CLIENT_URL || "*";
 
 server.use(cors({
     origin: origin,
