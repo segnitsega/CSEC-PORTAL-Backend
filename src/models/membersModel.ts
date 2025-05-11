@@ -29,10 +29,10 @@ export interface memberInterface extends Document {
     //to add permissions/roles
     // permissions?: string[];
     // permissionStatus?: string;
-    resources?: {
-        resourceName: string,
-        resourceLink: string
-    }[];
+    // resources?: {
+    //     resourceName: string,
+    //     resourceLink: string
+    // }[];
     division: string; 
     group: string;
     divisionRole: 'Admin' | 'Coordinator' | 'Member';
@@ -80,10 +80,10 @@ const memberSchema = new Schema<memberInterface>({
     //     enum: ["active", "inactive"] 
     // },
 
-    resources: [{ 
-        resourceName: {type: String }, 
-        resourceLink: { type: String } 
-    }], 
+    // resources: [{ 
+    //     resourceName: {type: String }, 
+    //     resourceLink: { type: String } 
+    // }], 
     division: {
         type: String,
         required: true,
