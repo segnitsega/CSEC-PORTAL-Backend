@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import DivisionGroup from "../models/divisionGroupModel"
 import { getDivisionModel } from "../models/dynamicDivisionModel";
+import Member from "../models/membersModel";
 
 export const getAllDivisions = async (req: Request, res: Response): Promise<void> => {
     try{ 
@@ -48,5 +49,23 @@ export const createDivision = async (req: Request | any, res: Response): Promise
     }catch(error){
         console.log(error)
         res.status(500).json({message: "Failed to create division", error: error})
+    }
+}
+
+export const getDivisionMembers = async(req: Request, res: Response): Promise<void> => {
+    const division = req.params.division
+    try{
+        const availableDivisions = await DivisionGroup.distinct('division')
+        if(!availableDivisions.includes(division)){
+            res.status(400).json({message: "Invalid division"})
+            return
+        }
+        const divisionMembers = await Member.find({division}).select("firstName lastName")
+        res.status(200).json({
+            length: divisionMembers.length,
+            divisionMembers: divisionMembers
+        })
+    }catch(error){
+        res.status(500).json({message: "Failed to get members", error: error})
     }
 }
