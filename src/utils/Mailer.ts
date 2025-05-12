@@ -43,8 +43,6 @@ export async function sendOnboardingEmail(memberEmail: string, generatedPassword
             </a>
           </div>
 
-          <p style="margin-top: 30px;">Please make sure to <strong>change your password</strong> immediately after your first login to keep your account secure.</p>
-
           <p>If you have any questions or need help, feel free to contact our team.</p>
 
           <p style="margin-top: 40px;">Cheers,<br/><strong>CSEC Club Team</strong></p>
