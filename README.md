@@ -94,6 +94,18 @@ Welcome to the backend repository of the Computer Science & Engineering Club com
 - Preparing introductory learning sessions for fresh students
 - Organizing seminars
 - Hosting competition and fun events
+
+## 🌐 Related Repositories
+-**Frontend Repository**: https://github.com/fafiyusuf/csec_portal_frontend_forked.git 
+
+## 👥 Team
+- [@Member1](https://github.com/segnitsega) - Backend Developer
+- [@Member2](https://github.com/HabteMel) - Backend Developer
+- [@Member3](https://github.com/fafiyusuf) - Frontend Developer
+- [@Member4](https://github.com/lu00009) - Frontend Devevloper
+- [@Team Lead](bsahle95@gmail.com) - Backend Team Lead
+- [@Team Lead](besumicheal@gmail.com) - Frontend Team Lead
+
 ## 🚀 Getting Started
 ## Prerequisites:
 Before you begin, ensure you have met the following requirements:
@@ -123,8 +135,8 @@ Before you begin, ensure you have met the following requirements:
 ```
 ## 📚 API Documentation
 Explore the comprehensive API documentation:
-**Swagger UI**: [Link to be added]
-**Postman Collection**: [Link to Postman collection]
+-**Swagger UI**: [Link to be added]
+-**Postman Collection**: [Link to Postman collection]
 ## 🤝 Contributions
 We welcome contributions from all members! Please follow these steps:
 1. Fork the repository
@@ -137,4 +149,5 @@ For any queries, please contact:
 - **Project Maintainer**: Segni Tsega
 - **Email**: segnitsega6@gmail.com
 - **Community Portal**: [Portal Link to be added]
+- **Project Frontned**: 
 <p align="center"> ⏰ Perfectly Timed Code for a Perfectly Scheduled Community! ⏰ </p>
