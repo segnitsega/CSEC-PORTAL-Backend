@@ -99,12 +99,12 @@ Welcome to the backend repository of the Computer Science & Engineering Club com
 -**Frontend Repository**: https://github.com/fafiyusuf/csec_portal_frontend_forked.git 
 
 ## 👥 Team
-- [@Member1](https://github.com/segnitsega) - Backend Developer
-- [@Member2](https://github.com/HabteMel) - Backend Developer
-- [@Member3](https://github.com/fafiyusuf) - Frontend Developer
-- [@Member4](https://github.com/lu00009) - Frontend Devevloper
-- [@Team Lead](bsahle95@gmail.com) - Backend Team Lead
-- [@Team Lead](besumicheal@gmail.com) - Frontend Team Lead
+- [@Member1](https://github.com/segnitsega) - Segni Tsega(Backend Developer)
+- [@Member2](https://github.com/HabteMel) - Habte Melese(Backend Developer)
+- [@Member3](https://github.com/fafiyusuf) - Fetiya Yusuf(Frontend Developer)
+- [@Member4](https://github.com/lu00009) - Lelo Mohammed(Frontend Devevloper)
+- [@Team Lead](bsahle95@gmail.com) - Bereket Sahle(Backend Team Lead)
+- [@Team Lead](besumicheal@gmail.com) - Besufikad Michael(Frontend Team Lead)
 
 ## 🚀 Getting Started
 ## Prerequisites:
@@ -149,5 +149,4 @@ For any queries, please contact:
 - **Project Maintainer**: Segni Tsega
 - **Email**: segnitsega6@gmail.com
 - **Community Portal**: [Portal Link to be added]
-- **Project Frontned**: 
 <p align="center"> ⏰ Perfectly Timed Code for a Perfectly Scheduled Community! ⏰ </p>
