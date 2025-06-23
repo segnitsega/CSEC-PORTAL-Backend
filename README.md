@@ -1,29 +1,29 @@
-# 🚀 CSE Community Portal - Backend
+# 🚀 CSEC Community Portal - Backend
 
-Welcome to the backend repository of the Computer Science & Engineering Community Portal! This powerful Node.js application serves as the backbone for managing our vibrant student community, events, sessions, and various technical divisions.
+Welcome to the backend repository of the Computer Science & Engineering Club community Portal! This powerful Node.js application serves as the backbone for managing our vibrant student community, events, sessions, and various technical divisions.
 
 # 🌟 Features
 
-### 🕒 Automated Status Management
+## 🕒 Automated Status Management
     * Real-time event tracking: Automatic status updates (planned → started → on-going → ended)
     * Session lifecycle management: Intelligent status transitions based on schedule
     * Timezone-aware: All operations use Addis Ababa time (Africa/Addis_Ababa)
     * Minute-by-minute checks: Cron jobs run every minute for maximum accuracy
 
-### 🛡️ Authentication & Authorization
+## 🛡️ Authentication & Authorization
     * JWT-based authentication for secure access
     * Role-based access control with multiple privilege levels:
         * Admin (President/Vice President)
         * Division Heads (Competitive Programming, Development, Cyber Security, Data Science)
         * General Members
         * Public access for certain endpoints
-### 🏛️ Core Functionalities
+## 🏛️ Core Functionalities
     * Member Management: Add, update, and track all student members
     * Event Management: Create, schedule, and manage technical events
     * Session Management: Organize and track learning sessions
     * Division Management: Handle all division-specific activities
     * Attendance Tracking: Monitor member participation
-### 📂 Project Structure (MVC Architecture)
+## 📂 Project Structure (MVC Architecture)
 ```
         backend/
         ├── config/          # Environment configurations
@@ -38,7 +38,7 @@ Welcome to the backend repository of the Computer Science & Engineering Communit
         ├── .env.example     # Environment variables template
         ├── server.js        # Main application entry point
 ```
-### 💻 Tech Stack
+## 💻 Tech Stack
     * Runtime: Node.js
     * Framework: Express.js
     * Language: Typescript
@@ -53,7 +53,7 @@ Welcome to the backend repository of the Computer Science & Engineering Communit
         * Multer for file uploads
         * Nodemailer for email notifications
 ## 🕒 Cron Job Details
-### 1. Event Status Updater
+## 1. Event Status Updater
     * Frequency: Runs every minute
     * Functionality:
         * Checks all events against current time
@@ -61,7 +61,7 @@ Welcome to the backend repository of the Computer Science & Engineering Communit
             * planned → started → on-going → ended
         * Includes 15-minute grace period after start time
         * Handles timezone conversion automatically
-### 2. Session Status Updater
+## 2. Session Status Updater
     * Frequency: Runs every minute
     * Functionality:
         * Manages recurring weekly sessions
@@ -79,7 +79,7 @@ Before you begin, ensure you have met the following requirements:
 - **Email service credentials** (for nodemailer)
 
 ## 🚀 Getting Started
-### Installation
+## Installation
     1. Clone the repository
     ````
         git clone https://github.com/segnitsega/CSEC-PORTAL-Backend.git
