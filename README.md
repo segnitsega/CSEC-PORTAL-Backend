@@ -25,7 +25,7 @@ Welcome to the backend repository of the Computer Science & Engineering Club com
 - Attendance Tracking: Monitor member participation
 ## 📂 Project Structure (MVC Architecture)
 ```
-        backend/
+        src/
         ├── config/          # Environment configurations
         ├── controllers/     # Business logic handlers
         ├── models/          # MongoDB schema definitions
