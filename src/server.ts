@@ -13,6 +13,8 @@ import { adminRouter } from "./routes/admin.routes";
 import { rulesRouter } from "./routes/rules.routes";
 import "./cron/sessionStatusUpdater"
 import "./cron/eventStatusUpdater"
+import swaggerUi from "swagger-ui-express"
+import { swaggerSpec, swaggerUiOptions } from "./utils/swagger";
 
 dotenv.config()
 
@@ -36,6 +38,8 @@ server.use('/api/admin', adminRouter)
 server.use('/api/rules', rulesRouter)
 
 connectDB();
+
+server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)

@@ -10,4 +10,4 @@ divisionsRouter.get('/allDivisions', authenticateToken, updateLastSeen, getAllDi
 divisionsRouter.get('/members/:division', authenticateToken, updateLastSeen, getDivisionMembers)
 divisionsRouter.get('/getGroups/:division', authenticateToken, updateLastSeen, getGroups) 
 divisionsRouter.post('/createDivision', authenticateToken, updateLastSeen, validateCreateDivision, createDivision) 
-divisionsRouter.get('/divisionSummary', authenticateToken, updateLastSeen, getDivisionSummary)
+divisionsRouter.get('/divisionSummary', authenticateToken, updateLastSeen, getDivisionSummary) 
