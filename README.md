@@ -135,8 +135,8 @@ Before you begin, ensure you have met the following requirements:
 ```
 ## 📚 API Documentation
 Explore the comprehensive API documentation:
--**Swagger UI**: [Link to be added]
--**Postman Collection**: [Link to Postman collection]
+-**Swagger UI**: [Swagger Documentation](https://csec-portal-backend-1.onrender.com/api-docs/)
+-**Postman Collection**: [CSEC Portal API postman collection](https://winter-meadow-976641.postman.co/workspace/My-Workspace~cc44312f-db84-4c6b-8e1c-7c915f5a023c/collection/38482859-f3f5f8d7-da7a-4e01-8ec5-e7c013a1f522?action=share&creator=38482859)
 ## 🤝 Contributions
 We welcome contributions from all members! Please follow these steps:
 1. Fork the repository
