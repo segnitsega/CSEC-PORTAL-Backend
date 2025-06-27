@@ -148,5 +148,6 @@ We welcome contributions from all members! Please follow these steps:
 For any queries, please contact:
 - **Project Maintainer**: Segni Tsega
 - **Email**: segnitsega6@gmail.com
-- **Community Portal**: [Portal Link to be added]
+- **Community Portal**: [Portal Link](https://csec-portal-frontend-forked.vercel.app/auth/login)
+
 <p align="center"> ⏰ Perfectly Timed Code for a Perfectly Scheduled Community! ⏰ </p>
