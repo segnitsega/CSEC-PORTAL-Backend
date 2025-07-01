@@ -32,7 +32,7 @@ export const submitAttendance = async (req: Request | any, res: Response): Promi
         upsert: true,
       },
     }));
-    if(session.status === "on-going"){
+    if(session.status === "started" || session.status === "on-going"){
       await Attendance.bulkWrite(bulkOperations);
       res.status(200).json({ message: "Attendance saved successfully" })
     }
