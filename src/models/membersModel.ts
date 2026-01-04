@@ -1,6 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
 
-// indexing later 
 export interface memberInterface extends Document {
     firstName?: string;
     middleName?: string; 
@@ -115,5 +114,9 @@ const memberSchema = new Schema<memberInterface>({
     refreshToken: { type: String, default: null },
 
 }, { timestamps: true });
+
+memberSchema.index({ division: 1, group: 1, createdAt: -1 });
+
+memberSchema.index({ refreshToken: 1 });
 
 export default model<memberInterface>('Member', memberSchema);

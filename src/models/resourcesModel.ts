@@ -12,4 +12,6 @@ const resourceSchema = new Schema<resourcesInterface>({
     division: {type: String, required: true},
 })
 
+resourceSchema.index({ division: 1 });
+
 export default model<resourcesInterface>("Resource", resourceSchema);

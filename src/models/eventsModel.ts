@@ -22,6 +22,10 @@ const eventSchema = new Schema<eventsInterface>({
     status: {type: String, enum: ["planned", "started", "on-going", "ended"], default: "planned"},
     visibility: {type: String, required: true},
     attendance: {type: String, default: "Optional"}
-}) 
+}, { timestamps: true })
 
-export default model<eventsInterface>('Event', eventSchema) 
+
+eventSchema.index({ createdAt: -1 });
+eventSchema.index({ status: 1 });
+
+export default model<eventsInterface>('Event', eventSchema)

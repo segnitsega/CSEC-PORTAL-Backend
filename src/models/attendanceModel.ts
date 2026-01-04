@@ -20,4 +20,6 @@ const attendanceSchema = new Schema<attendanceInterface>({
   date: { type: Date, default: Date.now },
 }, { timestamps: true });
 
+attendanceSchema.index({ memberId: 1, sessionId: 1 }, { unique: true });
+
 export default model<attendanceInterface>("Attendance", attendanceSchema);

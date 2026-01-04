@@ -28,6 +28,9 @@ const sessionSchema = new Schema<sessionsInterface>({
       endTime: {type: String, required: true}
     }
   ],
-})
+}, { timestamps: true })
+
+sessionSchema.index({ createdAt: -1 });
+sessionSchema.index({ division: 1, status: 1 });
 
 export default model<sessionsInterface>('Session', sessionSchema)
