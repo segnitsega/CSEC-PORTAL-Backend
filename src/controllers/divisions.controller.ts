@@ -72,24 +72,52 @@ export const getDivisionMembers = async(req: Request, res: Response): Promise<vo
 
 export const getDivisionSummary = async (req: Request, res: Response): Promise<void> => {
   try {
-    const divisionDocs = await DivisionGroup.find({});
-    const result = await Promise.all(
-      divisionDocs.map(async (divisionDoc) => {
-        const { division, groups } = divisionDoc;
-        const groupsWithMembers = await Promise.all(
-          groups.map(async (groupName: string) => {
-            const members = await Member.find({ division, group: groupName })
-              .select('-password -refreshToken')
-              .sort({ createdAt: -1 });
-            return {
-              group: groupName,
-              memberCount: members.length,
-              members
-            };
-          }));
-        return { division, groupCount: groups.length, groups: groupsWithMembers };
-      })
-    );
+    const result = await DivisionGroup.aggregate([
+      {
+        $lookup: {
+          from: Member.collection.name,
+          let: { division: "$division" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$division", "$$division"] } } },
+            { $sort: { createdAt: -1 } },
+            { $project: { password: 0, refreshToken: 0 } },
+          ],
+          as: "divisionMembers",
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          division: 1,
+          groupCount: { $size: "$groups" },
+          groups: {
+            $map: {
+              input: "$groups",
+              as: "groupName",
+              in: {
+                $let: {
+                  vars: {
+                    groupMembers: {
+                      $filter: {
+                        input: "$divisionMembers",
+                        as: "member",
+                        cond: { $eq: ["$$member.group", "$$groupName"] },
+                      },
+                    },
+                  },
+                  in: {
+                    group: "$$groupName",
+                    memberCount: { $size: "$$groupMembers" },
+                    members: "$$groupMembers",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    ]);
+
     res.status(200).json(result);
   } catch (error) {
     console.error("Error getting all division details:", error);
