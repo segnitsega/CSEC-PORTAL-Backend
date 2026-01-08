@@ -6,6 +6,7 @@ import { sendOnboardingEmail } from "../utils/Mailer";
 import mongoose from "mongoose";
 import { uploadToCloudinary } from "../config/cloudinary";
 import { canManageDivision } from "../utils/checkDivisionHead";
+import { buildMemberSearchOr } from "../utils/search";
 
 const secretKey = process.env.SECRET_KEY as string
 const refreshKey = process.env.REFRESH_KEY as string
@@ -28,16 +29,8 @@ export const getMembers = async (req: Request | any, res: Response): Promise<voi
 
       const query: any = {};
 
-      if (search) {
-        const regex = new RegExp(search, 'i'); 
-        query.$or = [
-          { firstName: regex },
-          { middleName: regex },
-          { lastName: regex },
-          { email: regex },
-          { universityId: regex }
-        ];
-      }
+      const searchOr = buildMemberSearchOr(search);
+      if (searchOr) query.$or = searchOr;
   
       if (division) query.division = division;
       if (group) query.group = group;

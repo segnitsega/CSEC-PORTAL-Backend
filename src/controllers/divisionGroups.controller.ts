@@ -2,6 +2,7 @@ import { Request, Response } from "express"
 import DivisionGroup from "../models/divisionGroupModel"
 import Member from "../models/membersModel"
 import { canManageDivision } from "../utils/checkDivisionHead"
+import { buildMemberSearchOr } from "../utils/search"
 
 export const createGroup = async(req: Request | any, res: Response): Promise<void> => {
     const {clubRole} = req.user 
@@ -48,16 +49,8 @@ export const getGroupMembers = async(req: Request | any, res: Response): Promise
         group: group
     };
 
-    if (search) {
-        const regex = new RegExp(search as string, 'i'); 
-        query.$or = [
-          { firstName: regex },
-          { middleName: regex },
-          { lastName: regex },
-          { email: regex },
-          { universityId: regex }
-        ];
-      }
+    const searchOr = buildMemberSearchOr(search);
+    if (searchOr) query.$or = searchOr;
 
       if (campusStatus) query.campusStatus = campusStatus;
       if (attendance) query.attendance = attendance;
