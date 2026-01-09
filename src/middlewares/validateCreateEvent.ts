@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import DivisionGroup from '../models/divisionGroupModel';
+import { getDivisions } from '../utils/divisionCache';
 import Event from '../models/eventsModel';
 
 const addEventSchema = z.object({
@@ -37,7 +37,7 @@ export const validateCreateEvent = async (
       return
     }
 
-    const available = await DivisionGroup.distinct('division');
+    const available = await getDivisions();
     if (!available.includes(data.division)) {
       res.status(400).json({
         message: `Division "${data.division}" is not a valid division`,

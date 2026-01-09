@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import DivisionGroup from '../models/divisionGroupModel';
+import { getDivisions } from '../utils/divisionCache';
 import Resource from "../models/resourcesModel";
 
 
@@ -26,7 +26,7 @@ export const validateResource = async (
 
   const { resourceName, resourceLink, division } = parseResult.data;
 
-  const availableDivisions = await DivisionGroup.distinct('division');
+  const availableDivisions = await getDivisions();
   if (!availableDivisions.includes(division)) {
     res.status(400).json({ message: `${division} is not a valid division` });
     return

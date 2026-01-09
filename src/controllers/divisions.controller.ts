@@ -2,10 +2,11 @@ import { Request, Response } from "express"
 import DivisionGroup from "../models/divisionGroupModel"
 import { getDivisionModel } from "../models/dynamicDivisionModel";
 import Member from "../models/membersModel";
+import { getDivisions, invalidateDivisions } from "../utils/divisionCache";
 
 export const getAllDivisions = async (req: Request, res: Response): Promise<void> => {
-    try{ 
-        const divisions = await DivisionGroup.distinct('division');
+    try{
+        const divisions = await getDivisions();
         res.status(200).json({length: divisions.length, divisions: divisions})
     } 
     catch(error){
@@ -14,9 +15,9 @@ export const getAllDivisions = async (req: Request, res: Response): Promise<void
 };
 
 export const getGroups = async (req: Request, res:Response): Promise<void> => {
-    const division = req.params.division   
+    const division = req.params.division
     try{
-        const availableDivisions = await DivisionGroup.distinct('division'); 
+        const availableDivisions = await getDivisions();
         if(!availableDivisions.includes(division)){
             res.status(400).json({message: "Invalid division"})
             return
@@ -42,9 +43,10 @@ export const createDivision = async (req: Request | any, res: Response): Promise
     }
     const { divisionName } = req.body;
     try{ 
-        const newDivision = await DivisionGroup.create({ division: divisionName })  
+        const newDivision = await DivisionGroup.create({ division: divisionName })
+        invalidateDivisions()
         const Division = await getDivisionModel(divisionName)
-        await Division.create({ name: divisionName }) 
+        await Division.create({ name: divisionName })
         res.status(201).json({ message:"Division created successfully", division:  newDivision})
     }catch(error){
         console.log(error)
@@ -55,7 +57,7 @@ export const createDivision = async (req: Request | any, res: Response): Promise
 export const getDivisionMembers = async(req: Request, res: Response): Promise<void> => {
     const division = req.params.division
     try{
-        const availableDivisions = await DivisionGroup.distinct('division')
+        const availableDivisions = await getDivisions();
         if(!availableDivisions.includes(division)){
             res.status(400).json({message: "Invalid division"})
             return

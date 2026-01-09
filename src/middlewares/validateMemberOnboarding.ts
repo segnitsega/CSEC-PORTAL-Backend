@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import DivisionGroup from '../models/divisionGroupModel';
+import { getDivisions } from '../utils/divisionCache';
 
 const strongPasswordRegex =/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
 export const validateMemberOnboarding = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
   try {  
-    const validDivisions = await DivisionGroup.distinct('division');
+    const validDivisions = await getDivisions();
     const onboardingSchema = z.object({
       firstName: z.string({ required_error: 'First name is required.' })
         .min(2, 'First name must be at least 2 characters long.')

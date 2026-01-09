@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
-import DivisionGroup from '../models/divisionGroupModel';
+import { getDivisions } from '../utils/divisionCache';
 import Session from '../models/sessionsModel';
 
 const sessionSchema = z.object({
@@ -41,7 +41,7 @@ export const validateSessionInput = async (
     sessions,
   } = parseResult.data;
 
-  const availableDivisions = await DivisionGroup.distinct('division');
+  const availableDivisions = await getDivisions();
   if (!availableDivisions.includes(division)) {
     res.status(400).json({
       message: `Division "${division}" is not valid`,
