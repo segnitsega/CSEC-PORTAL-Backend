@@ -15,6 +15,7 @@ import "./cron/sessionStatusUpdater"
 import "./cron/eventStatusUpdater"
 import swaggerUi from "swagger-ui-express"
 import { swaggerSpec, swaggerUiOptions } from "./utils/swagger";
+import { notFoundHandler, errorHandler } from "./middlewares/errorHandler";
 
 dotenv.config()
 
@@ -40,6 +41,9 @@ server.use('/api/rules', rulesRouter)
 connectDB();
 
 server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
+
+server.use(notFoundHandler);
+server.use(errorHandler);
 
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
