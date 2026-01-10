@@ -1,86 +1,26 @@
-import { Request, Response } from "express"
-import DivisionGroup from "../models/divisionGroupModel"
-import Member from "../models/membersModel"
-import { canManageDivision } from "../utils/checkDivisionHead"
-import { buildMemberSearchOr } from "../utils/search"
+import { Request, Response } from "express";
+import { divisionGroupService } from "../services/divisionGroup.service";
+import { handleServiceError } from "../errors/ServiceError";
 
-export const createGroup = async(req: Request | any, res: Response): Promise<void> => {
-    const {clubRole} = req.user 
-    if(clubRole === "Member"){
-        res.status(403).json({message: "Unauthorized to create a group"})
-        return;
-    }  
-    const {group, division} = req.body    
-    if (await canManageDivision(clubRole, division)) {       
-        try {  
-            const newGroup = await DivisionGroup.updateOne(
-                { division },
-                { $addToSet: { groups: group } }
-              );
-            res.status(201).json({ message: "New group created", group: newGroup });
-        } catch (error) {
-            console.error("Error creating group:", error);
-            res.status(500).json({ message: "Failed to create group", error });
-        }
-    } else { 
-        res.status(403).json({ message: `${clubRole} can not create a group in ${division}` });
-    }
-} 
+export const createGroup = async (req: Request | any, res: Response): Promise<void> => {
+  const { group, division } = req.body;
+  try {
+    const result = await divisionGroupService.createGroup(req.user.clubRole, group, division);
+    res.status(201).json(result);
+  } catch (error) {
+    if (handleServiceError(res, error)) return;
+    console.error("Error creating group:", error);
+    res.status(500).json({ message: "Failed to create group", error });
+  }
+};
 
-export const getGroupMembers = async(req: Request | any, res: Response): Promise<void> => {
-    const {
-        division, 
-        group, 
-        search, 
-        campusStatus, 
-        attendance, 
-        membershipStatus
-    } = req.query
-
-    const pageNumber = Math.max(1, parseInt(req.query.page as string, 10) || 1)
-    const limitNumber = Math.max(1, parseInt(req.query.limit as string, 10) || 10)
-
-    if(!group || !division){
-        res.status(400).json({ message: "Group name and division required" })  
-        return;
-    }  
-    const query: any = {
-        division: division,
-        group: group
-    };
-
-    const searchOr = buildMemberSearchOr(search);
-    if (searchOr) query.$or = searchOr;
-
-      if (campusStatus) query.campusStatus = campusStatus;
-      if (attendance) query.attendance = attendance;
-      if (membershipStatus) query.membershipStatus = membershipStatus;
-
-      const skip = (pageNumber - 1) * limitNumber;
-
-    const groupExist = await DivisionGroup.findOne({ groups: group, division}) 
-    if(!groupExist){
-        res.status(400).json({ message: `Group "${group}" does not exist in ${division}`})  
-        return;
-    }   
-    try{
-        const [groupMembers, total] = await Promise.all([
-            Member.find(query)
-            .select("-password -refreshToken")
-            .skip(skip)
-            .limit(limitNumber)
-            .sort({createdAt: -1}),
-            Member.countDocuments(query)
-        ])
-        res.status(200).json({ 
-            currentPage: pageNumber, 
-            totalPages: Math.ceil(total / limitNumber),
-            totalGroupMembers: total,
-            groupMembers: groupMembers });
-
-    }catch (error) {
-        console.error("Error fetching group members:", error);
-        res.status(500).json({ message: "Failed to fetch members", error });
-      }
-    
-} 
+export const getGroupMembers = async (req: Request | any, res: Response): Promise<void> => {
+  try {
+    const result = await divisionGroupService.getGroupMembers(req.query);
+    res.status(200).json(result);
+  } catch (error) {
+    if (handleServiceError(res, error)) return;
+    console.error("Error fetching group members:", error);
+    res.status(500).json({ message: "Failed to fetch members", error });
+  }
+};
