@@ -15,9 +15,9 @@
  * re-inserting, so it is safe to run repeatedly on a fresh/test cluster.
  */
 
+import { config } from "./config";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import dotenv from "dotenv";
 
 import Member from "./models/membersModel";
 import DivisionGroup from "./models/divisionGroupModel";
@@ -28,9 +28,7 @@ import { ClubRule } from "./models/clubRulesModel";
 import Attendance from "./models/attendanceModel";
 import { getDivisionModel } from "./models/dynamicDivisionModel";
 
-dotenv.config();
-
-const MONGO_URI = process.env.MONGO_URI || "";
+const MONGO_URI = config.MONGO_URI;
 const PASSWORD = "Pass@123";
 
 // ---------------------------------------------------------------------------

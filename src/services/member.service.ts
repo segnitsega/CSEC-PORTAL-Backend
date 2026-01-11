@@ -7,9 +7,10 @@ import { uploadToCloudinary } from "../config/cloudinary";
 import { canManageDivision } from "../utils/checkDivisionHead";
 import { buildMemberSearchOr } from "../utils/search";
 import { ServiceError } from "../errors/ServiceError";
+import { config } from "../config";
 
-const secretKey = process.env.SECRET_KEY as string;
-const refreshKey = process.env.REFRESH_KEY as string;
+const secretKey = config.SECRET_KEY;
+const refreshKey = config.REFRESH_KEY;
 
 export interface MemberListFilters {
   search?: unknown;

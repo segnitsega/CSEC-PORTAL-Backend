@@ -1,6 +1,6 @@
+import { config } from "./config";
 import express from "express";
 import { connectDB } from "./config/db";
-import dotenv from "dotenv";
 import { membersRouter } from "./routes/members.routes";
 import { groupsRouter } from "./routes/groups.routes";
 import cors from "cors"
@@ -17,11 +17,9 @@ import swaggerUi from "swagger-ui-express"
 import { swaggerSpec, swaggerUiOptions } from "./utils/swagger";
 import { notFoundHandler, errorHandler } from "./middlewares/errorHandler";
 
-dotenv.config()
-
 const server = express();
-const PORT = process.env.PORT || 3000;
-const origin = process.env.CLIENT_URL || "*";
+const PORT = config.PORT;
+const origin = config.CLIENT_URL;
 
 server.use(cors({
     origin: origin,

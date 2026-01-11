@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, {JwtPayload, VerifyErrors} from "jsonwebtoken"
+import { config } from "../config";
 
-const secretKey = process.env.SECRET_KEY || "SECRET_KEY"
+const secretKey = config.SECRET_KEY
 
 interface authenticatedRequest extends Request {
     user ?: string | JwtPayload

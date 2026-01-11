@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
 import { GridFSBucket } from "mongodb";
-import dotenv from "dotenv"
+import { config } from "./index";
 
-dotenv.config()
-const MONGO_URI = process.env.MONGO_URI || "";
+const MONGO_URI = config.MONGO_URI;
 export let gfsBucket: GridFSBucket;
 export const connectDB = async() => {
     let retry = 5

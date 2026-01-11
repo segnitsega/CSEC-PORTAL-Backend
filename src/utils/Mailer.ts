@@ -1,9 +1,8 @@
 import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
+import { config } from '../config';
 
-dotenv.config();
-const backendEmail = process.env.BACKEND_EMAIL
-const appPassword = process.env.EMAIL_PASS
+const backendEmail = config.BACKEND_EMAIL
+const appPassword = config.EMAIL_PASS
 
 export const transporter = nodemailer.createTransport({
   service: 'gmail',
