@@ -5,7 +5,8 @@ import moment from "moment-timezone";
 
 let isRunning = false;
 
-cron.schedule("* * * * *", async () => {
+export const startEventStatusUpdater = () => {
+  cron.schedule("* * * * *", async () => {
   if (isRunning) return;
   isRunning = true;
 
@@ -60,4 +61,5 @@ cron.schedule("* * * * *", async () => {
   } finally {
     isRunning = false;
   }
-});
+  });
+};

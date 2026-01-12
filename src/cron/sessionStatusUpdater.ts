@@ -7,7 +7,8 @@ const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday","Thursday", "Friday
 
 let isRunning = false;
 
-cron.schedule("* * * * *", async () => {
+export const startSessionStatusUpdater = () => {
+  cron.schedule("* * * * *", async () => {
   if (isRunning) return;
   isRunning = true;
 
@@ -87,4 +88,5 @@ cron.schedule("* * * * *", async () => {
   } finally {
     isRunning = false;
   }
-});
+  });
+};

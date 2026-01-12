@@ -11,8 +11,8 @@ import attendanceRouter from "./routes/attendance.routes";
 import { resourcesRouter } from "./routes/resources.routes";
 import { adminRouter } from "./routes/admin.routes";
 import { rulesRouter } from "./routes/rules.routes";
-import "./cron/sessionStatusUpdater"
-import "./cron/eventStatusUpdater"
+import { startSessionStatusUpdater } from "./cron/sessionStatusUpdater"
+import { startEventStatusUpdater } from "./cron/eventStatusUpdater"
 import swaggerUi from "swagger-ui-express"
 import { swaggerSpec, swaggerUiOptions } from "./utils/swagger";
 import { notFoundHandler, errorHandler } from "./middlewares/errorHandler";
@@ -36,13 +36,23 @@ server.use('/api/resources', resourcesRouter)
 server.use('/api/admin', adminRouter)
 server.use('/api/rules', rulesRouter)
 
-connectDB();
-
 server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUiOptions));
 
 server.use(notFoundHandler);
 server.use(errorHandler);
 
-server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
-})
+const startServer = async () => {
+    await connectDB();
+
+    startSessionStatusUpdater();
+    startEventStatusUpdater();
+
+    server.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`)
+    })
+};
+
+startServer().catch((error) => {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+});
