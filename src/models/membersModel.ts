@@ -1,4 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
+import bcrypt from 'bcrypt';
 
 export interface memberInterface extends Document {
     firstName?: string;
@@ -118,5 +119,13 @@ const memberSchema = new Schema<memberInterface>({
 memberSchema.index({ division: 1, group: 1, createdAt: -1 });
 
 memberSchema.index({ refreshToken: 1 });
+
+memberSchema.pre('save', async function (next) {
+    if (!this.isModified('password') || !this.password) {
+        return next();
+    }
+    this.password = await bcrypt.hash(this.password, 10);
+    next();
+});
 
 export default model<memberInterface>('Member', memberSchema);

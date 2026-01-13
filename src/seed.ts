@@ -239,6 +239,8 @@ async function seedDivisions() {
 }
 
 async function seedMembers() {
+  // insertMany bypasses the Member schema's pre('save') hashing hook, so the
+  // password must be hashed explicitly here for the bulk insert.
   const hashedPassword = await bcrypt.hash(PASSWORD, 10);
   const docs = PEOPLE.map((p) => buildMember(p, hashedPassword));
   await Member.insertMany(docs);

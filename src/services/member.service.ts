@@ -167,14 +167,13 @@ export const memberService = {
     }
 
     if (await canManageDivision(actorClubRole, division as string)) {
-      const hashedPassword = await bcrypt.hash(generatedPassword as string, 10);
       const newMember = memberRepository.create({
         firstName,
         lastName,
         division,
         group,
         email,
-        password: hashedPassword,
+        password: generatedPassword,
       });
       await newMember.save();
 
