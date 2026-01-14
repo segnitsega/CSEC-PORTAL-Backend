@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { ruleService } from "../services/rule.service";
 import { handleServiceError } from "../errors/ServiceError";
+import { AuthenticatedRequest } from "../types/express";
 
 export const getRules = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -12,9 +13,9 @@ export const getRules = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const addRules = async (req: Request | any, res: Response): Promise<void> => {
+export const addRules = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const result = await ruleService.addRules(req.user.clubRole, req.body);
+    const result = await ruleService.addRules(req.user!.clubRole, req.body);
     res.json(result);
   } catch (err) {
     if (handleServiceError(res, err)) return;

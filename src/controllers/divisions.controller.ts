@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { divisionService } from "../services/division.service";
 import { handleServiceError } from "../errors/ServiceError";
+import { AuthenticatedRequest } from "../types/express";
 
 export const getAllDivisions = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -25,9 +26,9 @@ export const getGroups = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const createDivision = async (req: Request | any, res: Response): Promise<void> => {
+export const createDivision = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const result = await divisionService.createDivision(req.user.clubRole, req.body.divisionName);
+    const result = await divisionService.createDivision(req.user!.clubRole, req.body.divisionName);
     res.status(201).json(result);
   } catch (error) {
     if (handleServiceError(res, error)) return;

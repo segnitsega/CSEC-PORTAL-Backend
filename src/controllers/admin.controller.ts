@@ -1,10 +1,11 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { adminService } from "../services/admin.service";
 import { handleServiceError } from "../errors/ServiceError";
+import { AuthenticatedRequest } from "../types/express";
 
-export const addNewRole = async (req: Request | any, res: Response): Promise<void> => {
+export const addNewRole = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const result = await adminService.assignNewRole(req.user.clubRole, req.body);
+    const result = await adminService.assignNewRole(req.user!.clubRole, req.body);
     res.status(200).json(result);
   } catch (error) {
     if (handleServiceError(res, error)) return;
@@ -52,9 +53,9 @@ export const addNewRole = async (req: Request | any, res: Response): Promise<voi
 
 // }
 
-export const banMembers = async (req: Request | any, res: Response): Promise<void> => {
+export const banMembers = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const result = await adminService.banMembers(req.user.clubRole, req.body.emails);
+    const result = await adminService.banMembers(req.user!.clubRole, req.body.emails);
     res.status(200).json(result);
   } catch (error) {
     if (handleServiceError(res, error)) return;

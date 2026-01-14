@@ -9,7 +9,7 @@ const createDivisionSchema = z.object({
 });
 
 export const validateCreateGroup = async (
-  req: Request | any,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {

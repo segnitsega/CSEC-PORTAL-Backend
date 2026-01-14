@@ -10,7 +10,7 @@ const createDivisionSchema = z.object({
 });
 
 export const validateCreateDivision = async (
-  req: Request | any,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {

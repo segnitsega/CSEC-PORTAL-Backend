@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import { memberService } from "../services/member.service";
 import { handleServiceError } from "../errors/ServiceError";
+import { AuthenticatedRequest } from "../types/express";
 
-export const getMembers = async (req: Request | any, res: Response): Promise<void> => {
+export const getMembers = async (req: Request, res: Response): Promise<void> => {
   try {
     const result = await memberService.listMembers(req.query);
     res.status(200).json(result);
@@ -51,9 +52,9 @@ export const handleRefreshToken = async (req: Request, res: Response): Promise<v
   }
 };
 
-export const handleMemberOnboarding = async (req: Request | any, res: Response): Promise<void> => {
+export const handleMemberOnboarding = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const result = await memberService.onboardMember(req.user.clubRole, req.body);
+    const result = await memberService.onboardMember(req.user!.clubRole, req.body);
     res.status(200).json(result);
   } catch (error) {
     if (handleServiceError(res, error)) return;
@@ -61,7 +62,7 @@ export const handleMemberOnboarding = async (req: Request | any, res: Response):
   }
 };
 
-export const handleProfileDetails = async (req: Request | any, res: Response): Promise<void> => {
+export const handleProfileDetails = async (req: Request, res: Response): Promise<void> => {
   try {
     const result = await memberService.updateProfileDetails(req.body, req.file?.buffer);
     res.status(200).json(result);
@@ -72,9 +73,9 @@ export const handleProfileDetails = async (req: Request | any, res: Response): P
   }
 };
 
-export const getAllHeads = async (req: Request | any, res: Response): Promise<void> => {
+export const getAllHeads = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const result = await memberService.getAllHeads(req.user.clubRole);
+    const result = await memberService.getAllHeads(req.user!.clubRole);
     res.status(200).json(result);
   } catch (error) {
     if (handleServiceError(res, error)) return;
@@ -82,9 +83,9 @@ export const getAllHeads = async (req: Request | any, res: Response): Promise<vo
   }
 };
 
-export const deleteMember = async (req: Request | any, res: Response): Promise<void> => {
+export const deleteMember = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const result = await memberService.banMember(req.user.clubRole, req.params.id);
+    const result = await memberService.banMember(req.user!.clubRole, req.params.id);
     res.status(200).json(result);
   } catch (error) {
     if (handleServiceError(res, error)) return;

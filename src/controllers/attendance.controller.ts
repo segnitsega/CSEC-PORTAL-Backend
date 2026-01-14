@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
 import { attendanceService } from "../services/attendance.service";
 import { handleServiceError } from "../errors/ServiceError";
+import { AuthenticatedRequest } from "../types/express";
 
-export const submitAttendance = async (req: Request | any, res: Response): Promise<void> => {
+export const submitAttendance = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   const { sessionId, records } = req.body;
   try {
-    const result = await attendanceService.submitAttendance(req.user.clubRole, sessionId, records);
+    const result = await attendanceService.submitAttendance(req.user!.clubRole, sessionId, records);
     res.status(200).json(result);
   } catch (error) {
     if (handleServiceError(res, error)) return;

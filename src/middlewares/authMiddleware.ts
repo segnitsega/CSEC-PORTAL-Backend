@@ -1,14 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, {JwtPayload, VerifyErrors} from "jsonwebtoken"
 import { config } from "../config";
+import { AuthUser } from "../types/express";
 
 const secretKey = config.SECRET_KEY
 
-interface authenticatedRequest extends Request {
-    user ?: string | JwtPayload
-}
-
-export const authenticateToken = (req: authenticatedRequest, res: Response, next: NextFunction): void => {
+export const authenticateToken = (req: Request, res: Response, next: NextFunction): void => {
     const token = req.headers['authorization']?.split(' ')[1];
 
     if(!token){
@@ -20,7 +17,7 @@ export const authenticateToken = (req: authenticatedRequest, res: Response, next
         if(error){
             return res.status(403).json({message: "Invalid token"})
         }
-        req.user = user 
-        next() 
+        req.user = user as AuthUser
+        next()
     })
-} 
+}

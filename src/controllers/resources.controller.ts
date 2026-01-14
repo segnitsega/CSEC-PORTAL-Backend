@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import { resourceService } from "../services/resource.service";
 import { handleServiceError } from "../errors/ServiceError";
+import { AuthenticatedRequest } from "../types/express";
 
-export const addResource = async (req: Request | any, res: Response): Promise<void> => {
+export const addResource = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const result = await resourceService.addResource(req.user.clubRole, req.body);
+    const result = await resourceService.addResource(req.user!.clubRole, req.body);
     res.status(201).json(result);
   } catch (error) {
     if (handleServiceError(res, error)) return;
@@ -23,9 +24,9 @@ export const getResources = async (req: Request, res: Response): Promise<void> =
   }
 };
 
-export const deleteResource = async (req: Request | any, res: Response): Promise<void> => {
+export const deleteResource = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const result = await resourceService.deleteResource(req.user.clubRole, req.params.id);
+    const result = await resourceService.deleteResource(req.user!.clubRole, req.params.id);
     res.status(200).json(result);
   } catch (error) {
     if (handleServiceError(res, error)) return;
@@ -33,9 +34,9 @@ export const deleteResource = async (req: Request | any, res: Response): Promise
   }
 };
 
-export const updateResource = async (req: Request | any, res: Response): Promise<void> => {
+export const updateResource = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const result = await resourceService.updateResource(req.user.clubRole, req.params.id, req.body);
+    const result = await resourceService.updateResource(req.user!.clubRole, req.params.id, req.body);
     res.status(200).json(result);
   } catch (error) {
     if (handleServiceError(res, error)) return;

@@ -5,7 +5,7 @@ const LAST_SEEN_THROTTLE_MS = 5 * 60 * 1000;
 
 const lastWriteByUser = new Map<string, number>();
 
-export const updateLastSeen = (req: Request | any, res: Response, next: NextFunction) => {
+export const updateLastSeen = (req: Request, res: Response, next: NextFunction) => {
     const email: string | undefined = req.user?.email;
     if (!email) {
         return next();

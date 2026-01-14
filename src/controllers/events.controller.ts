@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import { eventService } from "../services/event.service";
 import { handleServiceError } from "../errors/ServiceError";
+import { AuthenticatedRequest } from "../types/express";
 
-export const addEvent = async (req: Request | any, res: Response) => {
+export const addEvent = async (req: AuthenticatedRequest, res: Response) => {
   try {
-    const result = await eventService.addEvent(req.user.clubRole, req.body);
+    const result = await eventService.addEvent(req.user!.clubRole, req.body);
     res.status(201).json(result);
   } catch (error) {
     if (handleServiceError(res, error)) return;
@@ -24,9 +25,9 @@ export const getEvents = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteEvent = async (req: Request | any, res: Response): Promise<void> => {
+export const deleteEvent = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const result = await eventService.deleteEvent(req.user.clubRole, req.params.id);
+    const result = await eventService.deleteEvent(req.user!.clubRole, req.params.id);
     res.status(200).json(result);
   } catch (error) {
     if (handleServiceError(res, error)) return;
@@ -34,9 +35,9 @@ export const deleteEvent = async (req: Request | any, res: Response): Promise<vo
   }
 };
 
-export const updateEvent = async (req: Request | any, res: Response): Promise<void> => {
+export const updateEvent = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const result = await eventService.updateEvent(req.user.clubRole, req.params.id, req.body);
+    const result = await eventService.updateEvent(req.user!.clubRole, req.params.id, req.body);
     res.status(200).json(result);
   } catch (error) {
     if (handleServiceError(res, error)) return;
