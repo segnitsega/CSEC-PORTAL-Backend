@@ -1,5 +1,4 @@
 import { divisionGroupRepository } from "../repositories/divisionGroup.repository";
-import { divisionRepository } from "../repositories/division.repository";
 import { memberRepository } from "../repositories/member.repository";
 import { getDivisions, invalidateDivisions } from "../utils/divisionCache";
 import { ServiceError } from "../errors/ServiceError";
@@ -32,7 +31,6 @@ export const divisionService = {
     }
     const newDivision = await divisionGroupRepository.create(divisionName);
     invalidateDivisions();
-    await divisionRepository.createDivisionRecord(divisionName);
     return { message: "Division created successfully", division: newDivision };
   },
 

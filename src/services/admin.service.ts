@@ -1,5 +1,5 @@
 import { memberRepository } from "../repositories/member.repository";
-import { divisionRepository } from "../repositories/division.repository";
+import { divisionGroupRepository } from "../repositories/divisionGroup.repository";
 import { ServiceError } from "../errors/ServiceError";
 
 const topRoles = ["President", "Vice President"];
@@ -19,7 +19,7 @@ export const adminService = {
       division as string,
       email as string
     );
-    await divisionRepository.setDivisionHead(division as string, name as string);
+    await divisionGroupRepository.setDivisionHead(division as string, name as string);
 
     return {
       message: `${name} has been successfully assigned as ${division} President.`,

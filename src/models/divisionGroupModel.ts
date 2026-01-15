@@ -1,18 +1,20 @@
 import { Schema, model, Document } from 'mongoose';
 
 export interface divisionGroupInterface extends Document {
-    groups: string[]; 
-    division: string
+    groups: string[];
+    division: string;
+    divisionHead: string;
 }
 
 const divisionGroupSchema = new Schema<divisionGroupInterface>({
   groups: { type: [String], default: ["Group 1"] },
-  division: { 
+  division: {
     type: String,
-    unique: true, 
+    unique: true,
     required: true
   },
-  
+  divisionHead: { type: String, default: "" },
+
 }, { timestamps: true });
 
 

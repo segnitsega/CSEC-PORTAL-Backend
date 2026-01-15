@@ -18,6 +18,10 @@ export const divisionGroupRepository = {
     return DivisionGroup.findOne({ groups: group, division });
   },
 
+  setDivisionHead(division: string, name: string) {
+    return DivisionGroup.updateOne({ division }, { $set: { divisionHead: name } });
+  },
+
   divisionSummary() {
     return DivisionGroup.aggregate([
       {

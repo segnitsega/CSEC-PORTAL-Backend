@@ -26,7 +26,6 @@ import Event from "./models/eventsModel";
 import Resource from "./models/resourcesModel";
 import { ClubRule } from "./models/clubRulesModel";
 import Attendance from "./models/attendanceModel";
-import { getDivisionModel } from "./models/dynamicDivisionModel";
 
 const MONGO_URI = config.MONGO_URI;
 const PASSWORD = "Pass@123";
@@ -227,13 +226,10 @@ function buildMember(p: SeedPerson, hashedPassword: string) {
 }
 
 async function seedDivisions() {
-  // Mirror createDivision(): a DivisionGroup doc + a row in the per-division
-  // dynamic collection.
+  // Mirror createDivision(): one DivisionGroup doc per division (divisionHead
+  // defaults to "" and is set later when a president is assigned).
   for (const division of DIVISIONS) {
     await DivisionGroup.create({ division, groups: [...GROUPS] });
-    const Division = await getDivisionModel(division);
-    await Division.deleteMany({});
-    await Division.create({ name: division });
   }
   console.log(`  ✓ ${DIVISIONS.length} divisions created`);
 }
