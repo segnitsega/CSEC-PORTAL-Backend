@@ -1,153 +1,238 @@
-# 🚀 CSEC Community Portal - Backend
+<div align="center">
 
-Welcome to the backend repository of the Computer Science & Engineering Club community Portal! This powerful Node.js application serves as the backbone for managing our vibrant student community, events, sessions, and various technical divisions.
+# CSEC Community Portal — Backend
 
-# 🌟 Features
+**The backend service powering the Computer Science & Engineering Club community portal.**
 
-## 🕒 Automated Status Management
-- Real-time event tracking: Automatic status updates (planned → started → on-going → ended)
-- Session lifecycle management: Intelligent status transitions based on schedule
-- Timezone-aware: All operations use Addis Ababa time (Africa/Addis_Ababa)
-- Minute-by-minute checks: Cron jobs run every minute for maximum accuracy
+Member management, event & session scheduling, attendance tracking, and automated status lifecycles for a vibrant student tech community.
 
-## 🛡️ Authentication & Authorization
-- JWT-based authentication for secure access
-- Role-based access control with multiple privilege levels:
-    - Admin (President/Vice President)
-    - Division Heads (Competitive Programming, Development, Cyber Security, Data Science)
-    - General Members
-    - Public access for certain endpoints
-## 🏛️ Core Functionalities
-- Member Management: Add, update, and track all student members
-- Event Management: Create, schedule, and manage technical events
-- Session Management: Organize and track learning sessions
-- Division Management: Handle all division-specific activities
-- Attendance Tracking: Monitor member participation
-## 📂 Project Structure (MVC Architecture)
+[![Node.js](https://img.shields.io/badge/Node.js-16%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Express](https://img.shields.io/badge/Express-5.x-000000?logo=express&logoColor=white)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-4.4%2B-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![License](https://img.shields.io/badge/License-ISC-blue.svg)](#license)
+
+[API Docs](https://csec-portal-backend-1.onrender.com/api-docs/) · [Live Portal](https://csec-portal-frontend-forked.vercel.app/auth/login) · [Frontend Repo](https://github.com/fafiyusuf/csec_portal_frontend_forked)
+
+</div>
+
+---
+
+## 📽️ Demo
+
+<!-- Screen recording of the app goes here. -->
+<!-- Drag & drop your video into this section on GitHub, or replace the line below with the embed/link. -->
+
+> _A screen recording walkthrough of the portal will be added here soon._
+
+---
+
+## 📌 Overview
+
+The CSEC Community Portal backend is a TypeScript + Express REST API that serves as the backbone of the club's operations. It manages members, the club's technical divisions, learning sessions, events, resources, and attendance — and keeps event and session statuses up to date automatically through scheduled jobs.
+
+All time-based logic runs on **Africa/Addis_Ababa** time and is re-evaluated every minute, so the portal always reflects what is actually happening on the ground.
+
+## ✨ Features
+
+- **🔐 Authentication & RBAC** — JWT-based auth with refresh tokens and role-based access control (Admins, Division Heads, Members, and public endpoints).
+- **🕒 Automated status lifecycles** — Cron jobs transition events (`planned → started → on-going → ended`) and recurring weekly sessions automatically, with a grace period and full timezone awareness.
+- **👥 Member management** — Onboarding, profiles, roles, banning, and last-seen tracking.
+- **🏛️ Division management** — Five technical divisions, each with its own groups, sessions, and resources.
+- **📅 Events & sessions** — Create, schedule, and track one-off events and recurring weekly sessions.
+- **✅ Attendance tracking** — Submit and monitor member participation per session/event.
+- **📚 Resources & rules** — Share division resources and manage club rules.
+- **📤 File uploads** — Profile pictures and assets stored via Cloudinary (Multer ingestion).
+- **✉️ Email notifications** — Transactional emails through Nodemailer.
+- **🧪 Validated config & input** — Environment variables and request payloads validated with Zod; fail-fast on misconfiguration.
+- **📖 Interactive API docs** — Swagger UI served directly from the API.
+
+## 🛠️ Tech Stack
+
+| Category         | Technology                                   |
+| ---------------- | -------------------------------------------- |
+| Runtime          | Node.js (v16.20.1+)                           |
+| Language         | TypeScript                                    |
+| Framework        | Express 5                                     |
+| Database         | MongoDB + Mongoose ODM                        |
+| Authentication   | JSON Web Tokens (JWT)                         |
+| Validation       | Zod                                           |
+| Scheduling       | node-cron / cron                              |
+| Time handling    | moment-timezone, dayjs                        |
+| File storage     | Cloudinary + Multer                           |
+| Email            | Nodemailer                                    |
+| API docs         | Swagger (swagger-jsdoc + swagger-ui-express)  |
+| Password hashing | bcrypt                                        |
+
+## 🏗️ Architecture
+
+The codebase follows a layered architecture for clear separation of concerns:
+
 ```
-        src/
-        ├── config/          # Environment configurations
-        ├── controllers/     # Business logic handlers
-        ├── models/          # MongoDB schema definitions
-        ├── routes/          # API endpoint definitions
-        ├── middleware/      # Custom middleware (auth, validation)
-        ├── utils/           # Helper functions and utilities
-        ├── cron/            # Automated job schedulers
-            ├── eventStatusUpdater.ts    # Event status management
-            ├── sessionStatusUpdater.ts  # Session status management
-        ├── .env.example     # Environment variables template
-        ├── server.js        # Main application entry point
+Routes → Controllers → Services → Repositories → Models (MongoDB)
 ```
-## 💻 Tech Stack
-- Runtime: Node.js
-- Framework: Express.js
-- Language: Typescript
-- Database: MongoDB (with Mongoose ODM)
-- Authentication: JSON Web Tokens (JWT)
-- Scheduling: node-cron
-- Time Handling: moment-timezone
-- API Documentation: Swagger
-- Other Libraries:
-    - Bcrypt.js for password hashing
-    - Zod for input sanitization and validation
-    - Multer for file uploads
-    - Nodemailer for email notifications
-## 🕒 Cron Job Details
-## 1. Event Status Updater
-- Frequency: Runs every minute
-- Functionality:
-    - Checks all events against current time
-    - Updates status through lifecycle stages:
-        - planned → started → on-going → ended
-    - Includes 15-minute grace period after start time
-    - Handles timezone conversion automatically
-## 2. Session Status Updater
-- Frequency: Runs every minute
-- Functionality:
-    - Manages recurring weekly sessions
-    - Handles day-specific time slots
-    - Updates status based on:
-        - Current day of week
-        - Session time slots
-        - Overall start/end dates
+
+```
+src/
+├── config/          # Env loading & Zod-validated configuration, DB, Cloudinary
+├── controllers/     # HTTP request/response handlers
+├── services/        # Business logic
+├── repositories/    # Data-access layer (Mongoose queries)
+├── models/          # Mongoose schema definitions
+├── routes/          # API endpoint definitions
+├── middlewares/     # Auth, validation, error handling, uploads
+├── cron/            # Scheduled jobs (event & session status updaters)
+├── swagger/         # Swagger/OpenAPI definitions per resource
+├── errors/          # Custom error types
+├── utils/           # Helpers (mailer, search, caching, asyncHandler)
+├── types/           # Shared TypeScript declarations
+├── seed.ts          # Database seed script
+└── server.ts        # Application entry point
+```
+
+## 🔗 API Endpoints
+
+All routes are prefixed with `/api`:
+
+| Resource   | Base path         | Description                          |
+| ---------- | ----------------- | ------------------------------------ |
+| Members    | `/api/members`    | Member onboarding, profiles, roles   |
+| Admin      | `/api/admin`      | Administrative operations            |
+| Divisions  | `/api/divisions`  | Division management                  |
+| Groups     | `/api/groups`     | Division groups                      |
+| Sessions   | `/api/sessions`   | Recurring weekly learning sessions   |
+| Events     | `/api/events`     | One-off events                       |
+| Attendance | `/api/attendance` | Attendance submission & tracking     |
+| Resources  | `/api/resources`  | Shared division resources            |
+| Rules      | `/api/rules`      | Club rules                           |
+
+> 📖 Full request/response schemas are available in the [Swagger UI](https://csec-portal-backend-1.onrender.com/api-docs/) and the [Postman collection](https://winter-meadow-976641.postman.co/workspace/My-Workspace~cc44312f-db84-4c6b-8e1c-7c915f5a023c/collection/38482859-f3f5f8d7-da7a-4e01-8ec5-e7c013a1f522?action=share&creator=38482859).
+
+## ⏰ Scheduled Jobs
+
+Both jobs run **every minute** on `Africa/Addis_Ababa` time:
+
+1. **Event Status Updater** — Evaluates every event against the current time and advances it through `planned → started → on-going → ended`, including a 15-minute grace period after the start time.
+2. **Session Status Updater** — Manages recurring weekly sessions, resolving status from the current day of week, day-specific time slots, and the session's overall start/end dates.
+
 ## 🌐 Division Structure
-1. **Competitive Programming Division**
-- Coding contests
-- Data structures and algorithms(DSA) learning sessions
-- Problem solving sessions
-- Interview preparation sessions
-2. **Development Division**
-- Web and app development bootcamps
-- Open source contributions
-- Project collaborations
-- Weekly workshop sessions
-3. **Cyber Security Division**
-- CTF competitions
-- Security workshops
-- Ethical hacking sessions
-4. **Data Science Division**
-- ML/AI workshops
-- Data analysis projects
-- Research collaborations
-- AI and Data Science introductory bootcamps
-5. **Capacity Building Division**
-- Preparing introductory learning sessions for fresh students
-- Organizing seminars
-- Hosting competition and fun events
 
-## 🌐 Related Repositories
--**Frontend Repository**: https://github.com/fafiyusuf/csec_portal_frontend_forked.git 
-
-## 👥 Team
-- [@Member1](https://github.com/segnitsega) - Segni Tsega(Backend Developer)
-- [@Member2](https://github.com/HabteMel) - Habte Melese(Backend Developer)
-- [@Member3](https://github.com/fafiyusuf) - Fetiya Yusuf(Frontend Developer)
-- [@Member4](https://github.com/lu00009) - Lelo Mohammed(Frontend Devevloper)
-- [@Team Lead](bsahle95@gmail.com) - Bereket Sahle(Backend Team Lead)
-- [@Team Lead](besumicheal@gmail.com) - Besufikad Michael(Frontend Team Lead)
+| Division                    | Focus                                                                  |
+| --------------------------- | ---------------------------------------------------------------------- |
+| **Competitive Programming** | Coding contests, DSA sessions, problem solving, interview prep         |
+| **Development**             | Web/app bootcamps, open source, project collaboration, workshops       |
+| **Cyber Security**          | CTF competitions, security workshops, ethical hacking                  |
+| **Data Science**            | ML/AI workshops, data analysis, research, intro bootcamps              |
+| **Capacity Building**       | Intro sessions for fresh students, seminars, competitions & fun events |
 
 ## 🚀 Getting Started
-## Prerequisites:
-Before you begin, ensure you have met the following requirements:
-- **Node.js**: v16.20.1 or higher
-- **MongoDB**: v4.4 or higher
-- **npm**: Comes with Node.js
-- **Cloudinary account** (for file storage)
-- **Email service credentials** (for nodemailer)
-## Installation
-1. **Clone the repository**
-```
-    git clone https://github.com/segnitsega/CSEC-PORTAL-Backend.git
-    cd CSEC-PORTAL-Backend
-```
-2. **Install dependencies**
-```
-    npm install
-```
-3. **Set up  environment variables**
-```
-    cp .env.example .env
-    # Edit .env with your configurations
-```
-4. **Start the development server**
-```
-    npm run dev
-```
-## 📚 API Documentation
-Explore the comprehensive API documentation:
--**Swagger UI**: [Swagger Documentation](https://csec-portal-backend-1.onrender.com/api-docs/)
--**Postman Collection**: [CSEC Portal API postman collection](https://winter-meadow-976641.postman.co/workspace/My-Workspace~cc44312f-db84-4c6b-8e1c-7c915f5a023c/collection/38482859-f3f5f8d7-da7a-4e01-8ec5-e7c013a1f522?action=share&creator=38482859)
-## 🤝 Contributions
-We welcome contributions from all members! Please follow these steps:
-1. Fork the repository
-2. Create your feature branch (git checkout -b feature/yourFeature)
-3. Commit your changes (git commit -m 'Add some AmazingFeature')
-4. Push to the branch (git push origin feature/AmazingFeature)
-5. Open a Pull Request
-## ✉️ Contact
-For any queries, please contact:
-- **Project Maintainer**: Segni Tsega
-- **Email**: segnitsega6@gmail.com
-- **Community Portal**: [Portal Link](https://csec-portal-frontend-forked.vercel.app/auth/login)
 
-<p align="center"> ⏰ Perfectly Timed Code for a Perfectly Scheduled Community! ⏰ </p>
+### Prerequisites
+
+- **Node.js** v16.20.1 or higher
+- **MongoDB** v4.4 or higher (local or Atlas)
+- **npm** (bundled with Node.js)
+- A **Cloudinary** account (file storage)
+- **Email service credentials** (for Nodemailer)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/segnitsega/CSEC-PORTAL-Backend.git
+   cd CSEC-PORTAL-Backend
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Configure environment variables**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your own values
+   ```
+
+4. **(Optional) Seed the database** with divisions, leadership accounts, and sample content:
+   ```bash
+   npm run seed
+   ```
+   > ⚠️ The seed script is destructive — it wipes the collections it manages before re-inserting. Only run it against a fresh or test cluster.
+
+5. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+   The API will be available at `http://localhost:3000` (or your configured `PORT`).
+
+### Environment Variables
+
+| Variable                | Required | Description                            |
+| ----------------------- | :------: | -------------------------------------- |
+| `MONGO_URI`             |    ✅    | MongoDB connection string              |
+| `SECRET_KEY`            |    ✅    | Secret used for access-token signing   |
+| `REFRESH_KEY`           |    ✅    | Secret used for refresh tokens         |
+| `BACKEND_EMAIL`         |    ✅    | Sender email address for notifications |
+| `EMAIL_PASS`            |    ✅    | Email app password                     |
+| `CLOUDINARY_CLOUD_NAME` |    ✅    | Cloudinary cloud name                  |
+| `CLOUDINARY_API_KEY`    |    ✅    | Cloudinary API key                     |
+| `CLOUDINARY_API_SECRET` |    ✅    | Cloudinary API secret                  |
+| `PORT`                  |    ❌    | Server port (defaults to `3000`)       |
+| `CLIENT_URL`            |    ❌    | Allowed CORS origin (defaults to `*`)  |
+
+### Available Scripts
+
+| Script          | Description                                    |
+| --------------- | ---------------------------------------------- |
+| `npm run dev`   | Start the dev server with hot reload (nodemon) |
+| `npm run build` | Compile TypeScript to `dist/`                  |
+| `npm start`     | Run the compiled production build              |
+| `npm run seed`  | Seed the database with sample data             |
+
+## 📚 API Documentation
+
+- **Swagger UI:** [csec-portal-backend-1.onrender.com/api-docs](https://csec-portal-backend-1.onrender.com/api-docs/)
+- **Postman Collection:** [CSEC Portal API](https://winter-meadow-976641.postman.co/workspace/My-Workspace~cc44312f-db84-4c6b-8e1c-7c915f5a023c/collection/38482859-f3f5f8d7-da7a-4e01-8ec5-e7c013a1f522?action=share&creator=38482859)
+
+## 🔗 Related Repositories
+
+- **Frontend:** [csec_portal_frontend_forked](https://github.com/fafiyusuf/csec_portal_frontend_forked)
+
+## 🤝 Contributing
+
+Contributions are welcome! To propose a change:
+
+1. Fork the repository
+2. Create a feature branch — `git checkout -b feature/your-feature`
+3. Commit your changes — `git commit -m "Add your feature"`
+4. Push the branch — `git push origin feature/your-feature`
+5. Open a Pull Request
+
+## 👥 Team
+
+| Name              | Role               | Contact                                      |
+| ----------------- | ------------------ | -------------------------------------------- |
+| Bereket Sahle     | Backend Team Lead  | bsahle95@gmail.com                           |
+| Besufikad Michael | Frontend Team Lead | besumicheal@gmail.com                        |
+| Segni Tsega       | Backend Developer  | [@segnitsega](https://github.com/segnitsega) |
+| Habte Melese      | Backend Developer  | [@HabteMel](https://github.com/HabteMel)     |
+| Fetiya Yusuf      | Frontend Developer | [@fafiyusuf](https://github.com/fafiyusuf)   |
+| Lelo Mohammed     | Frontend Developer | [@lu00009](https://github.com/lu00009)       |
+
+## ✉️ Contact
+
+- **Maintainer:** Segni Tsega — segnitsega6@gmail.com
+- **Community Portal:** [Live Portal](https://csec-portal-frontend-forked.vercel.app/auth/login)
+
+## 📄 License
+
+This project is licensed under the **ISC License**.
+
+---
+
+<div align="center">
+
+⏰ _Perfectly timed code for a perfectly scheduled community._ ⏰
+
+</div>
